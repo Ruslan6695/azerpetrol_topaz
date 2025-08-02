@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "214039580094",
+    "project_id": "azerpetrol-430f8",
+    "storage_bucket": "azerpetrol-430f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214039580094:android:252d9962108acd7af7fdef",
+        "android_client_info": {
+          "package_name": "com.vek21.azerpetrol"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214039580094-79gb8tgirnng5ppsb53l92etslv7vb4k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtJuM2sDQXY61w8gICJ_xSo2AE81bISYY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214039580094-79gb8tgirnng5ppsb53l92etslv7vb4k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

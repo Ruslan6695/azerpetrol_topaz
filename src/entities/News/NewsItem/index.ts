@@ -1,0 +1,4 @@
+export * from './ui/NewsItem'
+export type { INewsItem } from './config/interfaces/INewsItem'
+export type { TNewsDetailsScreenParams } from './config/types/TPromotionsAndBonusesScreenParams'
+export * from './ui/NewsItemSkeleton'
