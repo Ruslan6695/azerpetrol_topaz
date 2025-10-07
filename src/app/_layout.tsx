@@ -122,6 +122,14 @@ export default function Layout() {
 
                                 headerShown: false,
                             }}
+                            name={'fuel_prices/index'}
+                        />
+                        <Stack.Screen
+                            options={{
+                                title: 'Пополнить баланс',
+
+                                headerShown: false,
+                            }}
                             name={'payBalance/index'}
                         />
                         <Stack.Screen

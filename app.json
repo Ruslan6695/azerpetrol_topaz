@@ -2,7 +2,7 @@
     "expo": {
         "name": "Азерпетрол",
         "slug": "azerpetrol",
-        "version": "1.2.8",
+        "version": "1.2.9",
         "scheme": "azerpetrol",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
@@ -20,7 +20,8 @@
                 "NSContactsUsageDescription": "This application sends contacts to the server without saving there to check if the contact is available for fuel transfer.",
                 "NSLocationWhenInUseUsageDescription": "This application uses the location to determine which gas station the user is at.",
                 "NSLocationAlwaysUsageDescription": "This application uses the location to determine which gas station the user is at.",
-                "NSLocationAlwaysAndWhenInUseUsageDescription": "This application uses the location to determine which gas station the user is at."
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This application uses the location to determine which gas station the user is at.",
+                "ITSAppUsesNonExemptEncryption": false
             }
         },
         "android": {
@@ -29,7 +30,7 @@
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#FFFFFF"
             },
-            "versionCode": 18,
+            "versionCode": 19,
             "package": "com.vek21.azerpetrol"
         },
         "web": {
