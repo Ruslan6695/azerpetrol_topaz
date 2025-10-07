@@ -41,7 +41,6 @@ export const SelectCoffeeMachineWidget = ({
 
     const handleScann = useCallback((text: string) => {
         const splittedtext = text.split('=')
-        console.info(splittedtext)
         if (
             splittedtext.length == 2 &&
             splittedtext[0] === 'coffee_machine_id'

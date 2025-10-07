@@ -22,6 +22,7 @@ import { IHomeMainwidgetData } from '../config/interfaces/IHomeMainwidgetData'
 import { HomeStore } from '../model/HomeStore'
 import { OpenCoffeeBonusScreenFromCoffee } from '../../../../features/Coffee/OpenCoffeeBonusScreen'
 import { ShowMainPromotions } from '../../../../features/Home/ShowMainPromotions'
+import { OpenFuelPricesScreen } from '../../../../features/Home/OpenFuelPricesScreen'
 
 type Props = {}
 
@@ -128,7 +129,29 @@ export const HomeMainWidget = (props: Props) => {
                     )}
                 </View>
                 <ShowMainPromotions />
-
+                {isDataLoading && !data ? (
+                    <View style={styles.row}>
+                        <Skeleton
+                            width={SIZES.WIDTH(1) - 40 * SIZES.PX}
+                            height={140 * SIZES.PX}
+                        />
+                    </View>
+                ) : (
+                    <>
+                        {data?.options?.includes(ESCREENS.FUEL_PRICES) && (
+                            <View style={styles.row}>
+                                <OpenFuelPricesScreen
+                                    big_text={
+                                        texts[ESCREENS.FUEL_PRICES]?.big_text
+                                    }
+                                    small_text={
+                                        texts[ESCREENS.FUEL_PRICES]?.small_text
+                                    }
+                                />
+                            </View>
+                        )}
+                    </>
+                )}
                 {isDataLoading && !data ? (
                     <View style={styles.row}>
                         <Skeleton
@@ -150,6 +173,7 @@ export const HomeMainWidget = (props: Props) => {
                         )}
                     </>
                 )}
+
                 {isDataLoading && !data ? (
                     <View style={styles.row}>
                         <Skeleton
