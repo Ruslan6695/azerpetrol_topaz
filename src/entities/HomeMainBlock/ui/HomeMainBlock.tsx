@@ -1,42 +1,37 @@
-import { ReactElement, memo, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { ESCREENS, SIZES } from '../../../shared'
-import { CustomText } from '../../../shared/CustomText'
-import { MPLayout } from '../../../shared/MpLayout'
-import { SvgProps } from 'react-native-svg'
 import { useRouter } from 'expo-router'
+import { ReactElement, memo, useCallback } from 'react'
+import { StyleSheet } from 'react-native'
+import { ESCREENS, SIZES, ThemeStore } from '../../../shared'
 import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {
     title: string
     icon: ReactElement
     bgColor: string
     desciptionText?: string
-    mainText: {
-        color: string
-        text: string
-        fz?: number
-    }
+    mainText: string
     link: ESCREENS
 }
 
 export const HomeMainBlock = memo(
     ({ bgColor, desciptionText, icon: Icon, mainText, title, link }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
+
         const router = useRouter()
         const styles = StyleSheet.create({
             container: {
-                backgroundColor: bgColor,
-                flex: 1,
-                borderRadius: 20 * SIZES.PX,
-                padding: SIZES.PX * 10,
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
+                width: SIZES.WIDTH(0.5) - 25 * SIZES.PX,
+                borderRadius: 16 * SIZES.PX,
+                padding: SIZES.PX * 16,
+                borderColor: COLORS.BRAND.Secondary,
+                borderWidth: 0.9 * SIZES.PX,
             },
             bottom: {
                 flexDirection: 'row',
                 alignItems: 'flex-end',
                 justifyContent: 'space-between',
-            },
-            icon: {
-                transform: [{ rotate: '10deg' }],
             },
         })
 
@@ -49,22 +44,13 @@ export const HomeMainBlock = memo(
                 activeOpacity={0.7}
                 style={styles.container}
             >
-                <CustomText fz={21} fw="600" white>
+                {Icon}
+                <Typography marginsPaddings={{ mt: 12 }} type="displaySmall">
                     {title}
-                </CustomText>
-                <View style={styles.bottom}>
-                    <View>
-                        <CustomText white>{desciptionText}</CustomText>
-                        <CustomText
-                            fw="700"
-                            fz={mainText.fz ? mainText.fz : 30}
-                            color={mainText.color}
-                        >
-                            {mainText.text}
-                        </CustomText>
-                    </View>
-                    <View style={styles.icon}>{Icon}</View>
-                </View>
+                </Typography>
+                <Typography type="caption">
+                    {desciptionText} {mainText}
+                </Typography>
             </CustomTouchableOpacity>
         )
     }

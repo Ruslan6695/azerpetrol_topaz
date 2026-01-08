@@ -8,6 +8,9 @@ type Props = {
 
 export const Logo = ({ size }: Props) => {
     return (
-        <LogoSvg width={size || 50 * SIZES.PX} height={size || 50 * SIZES.PX} />
+        <LogoSvg
+            width={(size || 50) * SIZES.PX}
+            height={(size || 50) * SIZES.PX}
+        />
     )
 }

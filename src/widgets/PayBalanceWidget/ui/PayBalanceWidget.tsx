@@ -17,7 +17,7 @@ type Props = {
 
 export const PayBalanceWidget = memo(({ params }: Props) => {
     const [road, setRoad] = useState<'changeSum' | 'selectBank' | 'waiting'>(
-        'changeSum'
+        'waiting'
     )
     const [orderData, setOrderData] = useState<IPayBalanceFormData>()
     const handleSetOrderData = useCallback((order: IPayBalanceFormData) => {
@@ -35,7 +35,7 @@ export const PayBalanceWidget = memo(({ params }: Props) => {
 
     return (
         <>
-            <ScreenTitle title="ПОПОЛНИТЬ БАЛАНС" />
+            <ScreenTitle title="Пополните баланс" />
             {road === 'waiting' && orderData ? (
                 <PayBalanceWaiting
                     backLink={params.backLink}

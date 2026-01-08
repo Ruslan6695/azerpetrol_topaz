@@ -1,6 +1,7 @@
-import { ITrkType } from '../../../../../shared'
+import { ITrkType } from "../../../../../shared";
 
 export interface ISelectTrkTypeData {
-    trc_types: ITrkType[]
-    balance: number
+  trc_types: ITrkType[];
+  balance: number;
+  fuel_on_debt: boolean;
 }

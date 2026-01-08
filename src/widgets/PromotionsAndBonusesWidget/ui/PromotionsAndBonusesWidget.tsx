@@ -1,13 +1,12 @@
 import { memo, useCallback, useEffect } from 'react'
-import { SIZES, useFetchData } from '../../../shared'
-import { promotionsAndBonusesWidgetApi } from '../api/promotionsAndBonusesWidgetApi'
-import { CustomText } from '../../../shared/CustomText'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
 import { StyleSheet, View } from 'react-native'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
-import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
 import { PromotionsAndBonusesItem } from '../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
 import { WithoutPromotionsAndBonusesBlock } from '../../../entities/PromotionsAndBonuses/WithoutPromotionsAndBonusesBlock'
+import { ScreenTitle } from '../../../entities/ScreenTitle'
+import { SIZES, useFetchData } from '../../../shared'
+import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
+import { promotionsAndBonusesWidgetApi } from '../api/promotionsAndBonusesWidgetApi'
 
 type Props = {}
 
@@ -21,6 +20,8 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
         fetchData({
             args: undefined,
             hideToastOnError: true,
+            afterDataCallback(data) {
+            },
         })
     }, [])
 

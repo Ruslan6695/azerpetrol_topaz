@@ -1,20 +1,33 @@
-import { memo, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { IHistoryItem } from '../config/interfaces/IHistoryItem'
-import { EHistoryItemType } from '../../config/enums/EHistoryItemType'
-import { CustomText } from '../../../../shared/CustomText'
-import { COLORS, ESCREENS, SIZES, divideNumber } from '../../../../shared'
-import { CoffeeIcon } from '../../../../shared/Icons/CoffeeIcon'
-import { WalletIcon } from '../../../../shared/WalletIcon'
-import { PersonIcon } from '../../../../shared/Icons/PersonIcon'
-import { FuelIcon } from '../../../../shared/Icons/FuelIcon'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
 import { useRouter } from 'expo-router'
+import { memo, useCallback, useMemo } from 'react'
+import { StyleSheet, View } from 'react-native'
+import {
+    COLORS,
+    EColorThemes,
+    ESCREENS,
+    SIZES,
+    ThemeStore,
+    divideNumber,
+} from '../../../../shared'
+import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { CoffeeIcon } from '../../../../shared/Icons/CoffeeIcon'
+import { FuelIcon } from '../../../../shared/Icons/FuelIcon'
+import { PersonIcon } from '../../../../shared/Icons/PersonIcon'
 import { ProductsIcon } from '../../../../shared/Icons/ProductsIcon/ui/ProductsIcon'
+import { Typography } from '../../../../shared/Typography'
+import { WalletIcon } from '../../../../shared/WalletIcon'
+import { EHistoryItemType } from '../../config/enums/EHistoryItemType'
+import { IHistoryItem } from '../config/interfaces/IHistoryItem'
+import { BonusIcon } from '../../../../shared/BonusIcon'
 
-interface IProps extends IHistoryItem {}
+interface IProps extends IHistoryItem {
+    isFirst: boolean
+    isLast: boolean
+}
 export const HistoryItem = memo(
-    ({ date, text, type, sum, header, id }: IProps) => {
+    ({ date, text, type, sum, header, id, isFirst, isLast }: IProps) => {
+        const COLORS = ThemeStore.useCOLORS()
+        const colorTheme = ThemeStore.useTheme()
         const router = useRouter()
         const handlePress = useCallback(() => {
             router.navigate({
@@ -22,6 +35,44 @@ export const HistoryItem = memo(
                 params: { type, id },
             })
         }, [id, type])
+
+        const styles = useMemo(
+            () =>
+                StyleSheet.create({
+                    container: {
+                        width: '100%',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingHorizontal: SIZES.PX * 14,
+                        paddingVertical: 5 * SIZES.PX,
+                        borderWidth: 0,
+                        borderTopLeftRadius: isFirst ? 16 * SIZES.PX : 0,
+                        borderTopRightRadius: isFirst ? 16 * SIZES.PX : 0,
+                        borderBottomLeftRadius: isLast ? 16 * SIZES.PX : 0,
+                        borderBottomRightRadius: isLast ? 16 * SIZES.PX : 0,
+                        backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    },
+                    left: {
+                        flex: 4,
+                    },
+                    right: {
+                        flexDirection: 'row',
+                        backgroundColor: COLORS.BACKGROUND.Primary,
+                        paddingHorizontal: SIZES.PX * 10,
+                        paddingVertical: SIZES.PX * 5,
+                        borderRadius: SIZES.PX * 10,
+                        flex: 1.5,
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    },
+                    row: {
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    },
+                }),
+            [COLORS]
+        )
+
         return (
             <CustomTouchableOpacity
                 onPress={handlePress}
@@ -29,55 +80,40 @@ export const HistoryItem = memo(
                 style={styles.container}
             >
                 <View style={styles.left}>
-                    <CustomText
-                        fw="300"
-                        color={sum > 0 ? COLORS.GREEN : COLORS.RED}
-                        fz={13}
+                    <Typography
+                        style={{ maxWidth: '95%' }}
+                        type="captionAccent"
+                        color={sum > 0 ? 'success' : 'error'}
                     >
                         {header}
-                    </CustomText>
-                    <CustomText fz={13}>{date}</CustomText>
+                    </Typography>
+                    <Typography color="secondary" type="caption">
+                        {date}
+                    </Typography>
                 </View>
                 <View style={styles.right}>
                     {type === EHistoryItemType.BUY_COFFEE ? (
-                        <CoffeeIcon width={15} size={20} />
+                        <CoffeeIcon size={18} />
                     ) : type === EHistoryItemType.PAY_BALANCE ? (
-                        <WalletIcon size={15} />
+                        <WalletIcon gray size={20} />
                     ) : type === EHistoryItemType.TRANSFER_BALANCE ? (
-                        <PersonIcon size={15} />
+                        <PersonIcon size={20} />
                     ) : type === EHistoryItemType.FUEL_FILLING ? (
-                        <FuelIcon size={18} />
+                        <FuelIcon size={20} />
                     ) : type === EHistoryItemType.BUY_ON_CASH ? (
                         <ProductsIcon size={20} />
                     ) : (
                         <></>
                     )}
 
-                    <CustomText fz={13}> {divideNumber(sum)} ₽</CustomText>
+                    <View style={styles.row}>
+                        <Typography type="caption">
+                            {divideNumber(sum)}
+                        </Typography>
+                        <BonusIcon mt={2} size={11} />
+                    </View>
                 </View>
             </CustomTouchableOpacity>
         )
     }
 )
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        flexDirection: 'row',
-        marginVertical: SIZES.PX * 5,
-        alignItems: 'center',
-    },
-    left: {
-        flex: 4,
-        backgroundColor: COLORS.WHITE,
-    },
-    right: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.GRAY_3,
-        paddingHorizontal: SIZES.PX * 10,
-        paddingVertical: SIZES.PX * 5,
-        borderRadius: SIZES.PX * 5,
-        flex: 1.5,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-})

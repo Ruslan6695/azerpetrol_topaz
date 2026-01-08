@@ -1,18 +1,32 @@
-import { memo, useCallback, useEffect, useState } from 'react'
+import { useFocusEffect, useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { BalanceBlock } from '../../../entities/BalanceBlock'
 import { QrBlock } from '../../../entities/QrBlock'
+import { ScreenTitle } from '../../../entities/ScreenTitle'
 import { MapInfoBlocks } from '../../../features/MapInfoBlocks'
-import { SIZES, UserStore, getToken, useGetBalance } from '../../../shared'
-import { BALANCE_WIDGET_INFO_TEXTS } from '../config/constants/BALANCE_WIDGET_INFO_TEXTS'
+import {
+    AppStore,
+    ESCREENS,
+    SIZES,
+    UserStore,
+    useGetBalance,
+} from '../../../shared'
 import { CustomButton } from '../../../shared/CustomButton'
-import { useFocusEffect } from 'expo-router'
+import { BALANCE_WIDGET_INFO_TEXTS } from '../config/constants/BALANCE_WIDGET_INFO_TEXTS'
 
-type Props = {}
+type Props = {
+    isHidePayButton: boolean
+}
 
-export const BalanceWidget = memo((props: Props) => {
+export const BalanceWidget = memo(({ isHidePayButton }: Props) => {
     const { balance, fetchBalance, isBalanceLoading } = useGetBalance()
+    const isTokenRefreshed = AppStore.useIsTokenRefreshed()
     const token = UserStore.useUser()?.token
+    const router = useRouter()
+
+    const onPayBalance = useCallback(() => {
+        router.navigate(ESCREENS.PAY_BALANCE)
+    }, [])
 
     useFocusEffect(
         useCallback(() => {
@@ -23,10 +37,18 @@ export const BalanceWidget = memo((props: Props) => {
     )
     return (
         <View>
+            <ScreenTitle title="Ваш уникальный код" />
             <View style={styles.center}>
-                <QrBlock qr={token} title="ВАШ УНИКАЛЬНЫЙ КОД" />
+                <QrBlock qr={isTokenRefreshed ? token : undefined} />
             </View>
-            <BalanceBlock balance={balance} />
+            {!isHidePayButton && (
+                <CustomButton
+                    onPress={onPayBalance}
+                    styled={{ marginsPaddings: { mt: 20 }, type: 'primary' }}
+                >
+                    Пополнить счет
+                </CustomButton>
+            )}
             <MapInfoBlocks infoBlocks={BALANCE_WIDGET_INFO_TEXTS} />
         </View>
     )
@@ -35,7 +57,7 @@ export const BalanceWidget = memo((props: Props) => {
 const styles = StyleSheet.create({
     center: {
         alignItems: 'center',
-        marginBottom: 30 * SIZES.PX,
+        marginTop: 20 * SIZES.PX,
     },
     container: {
         alignItems: 'center',

@@ -6,6 +6,7 @@ export interface IUserStore {
     getUserIsLoadung: boolean
     setBalance: (props: { balance: number }) => void
     setUser: (user: IUser) => void
+    setToken: (token: string) => void
     registrationUser: (user: IUser) => void
     getUser: () => void
     logout: () => void

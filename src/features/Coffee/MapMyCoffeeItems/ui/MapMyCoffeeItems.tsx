@@ -1,11 +1,11 @@
 import { memo } from 'react'
-import { SIZES, useFetchData } from '../../../../shared'
+import { StyleSheet, View } from 'react-native'
 import {
     IMyCoffeeItem,
     MyCoffeeItem,
 } from '../../../../entities/Coffee/MyCoffeeItem'
-import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
+import { SIZES } from '../../../../shared'
+import { Typography } from '../../../../shared/Typography'
 import { MapMyCoffeeItemsSkeleton } from './MapMyCoffeeItemsSkeleton'
 
 type Props = {
@@ -18,18 +18,23 @@ export const MapMyCoffeeItems = memo(
     ({ coffee, onChangeSelectedCoffee, selectedCoffeeId }: Props) => {
         return (
             <View style={styles.container}>
-                <CustomText fz={11} textAlign="center">
-                    Кофе из списка активно 24 часа с момента приобритения
-                </CustomText>
+                <Typography
+                    marginsPaddings={{ mb: 2 }}
+                    color="secondary"
+                    type="displaySmall"
+                >
+                    Вы покупали за 24 часа
+                </Typography>
                 {coffee ? (
                     coffee.length == 0 ? (
-                        <CustomText
-                            secondary
-                            marginsPaddings={{ mt: 100 }}
+                        <Typography
+                            color="secondary"
+                            type="caption"
+                            marginsPaddings={{ mt: 70 }}
                             textAlign="center"
                         >
                             НЕТ АКТИВНЫХ КОФЕ
-                        </CustomText>
+                        </Typography>
                     ) : (
                         coffee?.map((coffee) => (
                             <MyCoffeeItem
@@ -50,7 +55,7 @@ export const MapMyCoffeeItems = memo(
 
 const styles = StyleSheet.create({
     container: {
-        gap: SIZES.PX * 10,
+        gap: SIZES.PX * 16,
         marginBottom: SIZES.PX * 20,
     },
 })

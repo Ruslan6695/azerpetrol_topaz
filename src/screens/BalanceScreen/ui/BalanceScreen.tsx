@@ -1,8 +1,14 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 import { BalanceWidget } from '../../../widgets/BalanceWidget'
+import { HomeStore } from '../../../widgets/Home/HomeMainWidget/model/HomeStore'
+import { ESCREENS } from '../../../shared'
 
 type Props = {}
 
 export const BalanceScreen = memo((props: Props) => {
-    return <BalanceWidget />
+    const homeStore = HomeStore.useData()
+    const isHidePayButton = useMemo(() => {
+        return homeStore?.options.includes(ESCREENS.PAY_BALANCE) ? false : true
+    }, [homeStore])
+    return <BalanceWidget isHidePayButton={isHidePayButton} />
 })

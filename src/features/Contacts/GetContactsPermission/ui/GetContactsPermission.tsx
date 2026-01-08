@@ -13,6 +13,9 @@ export const GetContactsPermission = memo(
 
         const handleAllowPermission = useCallback(() => {
             onAllowPermission()
+            intervalId.current = setTimeout(() => {
+                fetchPermission()
+            }, 1000)
         }, [onAllowPermission, fetchPermission])
 
         useEffect(() => {

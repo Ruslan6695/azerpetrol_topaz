@@ -38,7 +38,7 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
         } catch (error: any) {
             setFetchError(
                 error?.response?.data ||
-                    'Ошибка при получении Азс. Попробуйте выбрать вручную'
+                    `Ошибка при определении Азс.\nПопробуйте выбрать вручную`
             )
         } finally {
             setFetchAzsIsLoading(false)
@@ -64,14 +64,12 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
                 <CustomButton
                     onPress={fetchLocationOnPress}
                     styled={{
-                        type: 'OUTLINED',
-                        width: { value: '100%', type: 'absolute' },
+                        type: 'secondary',
                         marginsPaddings: { mb: 30 },
-                        fz: 16,
-                        height: { value: 40, type: 'px' },
+                        height: { value: 56, type: 'px' },
                     }}
                 >
-                    ВКЛЮЧИТЬ
+                    Включить
                 </CustomButton>
             </>
         )

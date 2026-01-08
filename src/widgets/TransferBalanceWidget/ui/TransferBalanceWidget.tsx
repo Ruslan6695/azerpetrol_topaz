@@ -33,7 +33,7 @@ export const TransferBalanceWidget = ({ params }: Props) => {
 
     return (
         <View style={styles.container}>
-            <ScreenTitle title="Перевод средств" />
+            <ScreenTitle title="Перевести средства" />
             {isOnConfirm ? (
                 <TransferBalanceConfirm
                     onGoBack={handleGoBackFromConfirm}
@@ -43,8 +43,8 @@ export const TransferBalanceWidget = ({ params }: Props) => {
                 />
             ) : (
                 <TransferBalanceForm
-                    name={params.name }
-                    phone={params.phone }
+                    name={params.name}
+                    phone={params.phone}
                     onTransfer={handleChangeState}
                 />
             )}

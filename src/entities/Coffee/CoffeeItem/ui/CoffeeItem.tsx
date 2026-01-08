@@ -1,10 +1,11 @@
 import { memo, useCallback, useMemo } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { ICoffeeItem } from '../config/interfaces/ICoffeeItem'
 import { COLORS, SIZES, divideNumber } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
-import { NoImageIcon } from '../../../../shared/Icons/NoImageIcon'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { NoImageIcon } from '../../../../shared/Icons/NoImageIcon'
+import { Typography } from '../../../../shared/Typography'
+import { ICoffeeItem } from '../config/interfaces/ICoffeeItem'
+import { BonusIcon } from '../../../../shared/BonusIcon'
 interface IProps extends ICoffeeItem {
     onPress: (coffee: ICoffeeItem) => void
     bonus?: boolean
@@ -39,36 +40,36 @@ export const CoffeeItem = memo(
                         <NoImageIcon />
                     )}
                 </View>
-                <CustomText
-                    marginsPaddings={{ mt: 10, mb: 10 }}
-                    fz={18}
-                    fw="600"
-                >
+                <Typography marginsPaddings={{ mb: 12 }} type="displaySmall">
                     {name}
-                </CustomText>
+                </Typography>
                 {!bonus && (
                     <View style={styles.pricesRow}>
-                        <CustomText
-                            secondary={!!discountRub}
-                            style={{
-                                textDecorationLine: !!discountRub
-                                    ? 'line-through'
-                                    : 'none',
-                            }}
-                            fz={16}
-                            fw="600"
-                        >
-                            {divideNumber(price)} ₽
-                        </CustomText>
-                        {discountRub && (
-                            <CustomText
-                                fz={16}
-                                fw="700"
-                                color={COLORS.TOAST_ERROR}
-                                marginsPaddings={{ ml: 10 }}
+                        <View style={styles.pricesRow}>
+                            <Typography
+                                type="bodyAccentSmall"
+                                style={{
+                                    textDecorationLine: !!discountRub
+                                        ? 'line-through'
+                                        : 'none',
+                                }}
                             >
-                                {discountRub} ₽
-                            </CustomText>
+                                {divideNumber(price)}
+                            </Typography>
+                            <BonusIcon />
+                        </View>
+
+                        {discountRub && (
+                            <View style={styles.pricesRow}>
+                                <Typography
+                                    type="bodyAccentSmall"
+                                    color={'error'}
+                                    marginsPaddings={{ ml: 10 }}
+                                >
+                                    {discountRub}
+                                </Typography>
+                                <BonusIcon color={COLORS.TEXT.Error} />
+                            </View>
                         )}
                     </View>
                 )}
@@ -84,10 +85,11 @@ const styles = StyleSheet.create({
     imageContainer: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: COLORS.GRAY_3,
-        height: SIZES.PX * 190,
-        borderRadius: SIZES.PX * 20,
+        backgroundColor: '#F8F8F8',
+        height: SIZES.PX * 165,
+        borderRadius: SIZES.PX * 16,
         justifyContent: 'center',
+        marginBottom: SIZES.PX * 10,
     },
     img: {
         objectFit: 'contain',

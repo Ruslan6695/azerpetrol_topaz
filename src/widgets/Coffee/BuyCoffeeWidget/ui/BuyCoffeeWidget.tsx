@@ -1,16 +1,14 @@
-import { memo, useCallback, useState } from 'react'
-import { View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { MapCoffeeItems } from '../../../../features/Coffee/MapCoffeeItems'
-import { UserStore, useFetchData, useModal } from '../../../../shared'
-import { buyCoffeeWidgetApi } from '../api/buyCoffeeWidgetApi'
 import { useFocusEffect } from 'expo-router'
-import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
-import { BuySelectCoffeeModal } from '../../../../features/Coffee/BuySelectCoffeeModal'
+import { memo, useCallback, useState } from 'react'
 import { ICoffeeItem } from '../../../../entities/Coffee/CoffeeItem'
+import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
+import { ScreenTitle } from '../../../../entities/ScreenTitle'
+import { BuySelectCoffeeModal } from '../../../../features/Coffee/BuySelectCoffeeModal'
+import { MapCoffeeItems } from '../../../../features/Coffee/MapCoffeeItems'
 import { OpenCoffeeBonusScreenFromCoffee } from '../../../../features/Coffee/OpenCoffeeBonusScreen'
+import { UserStore, useFetchData, useModal } from '../../../../shared'
 import { MPLayout } from '../../../../shared/MpLayout'
-import { CoffeeMachinesStore } from '../../../../features/Coffee/SelectCoffeeMachine'
+import { buyCoffeeWidgetApi } from '../api/buyCoffeeWidgetApi'
 
 type Props = {
     onBuyCoffee: () => void
@@ -20,7 +18,6 @@ type Props = {
 export const BuyCoffeeWidget = memo(
     ({ onBuyCoffee, selectedCoffeeMachineId }: Props) => {
         const setBalance = UserStore.useSetBalance()
-        const isCoffeeMachinesLoading = CoffeeMachinesStore.useIsLoading()
         const { data, errorText, fetchData, isDataLoading } = useFetchData({
             apiCallback: buyCoffeeWidgetApi.getCoffee,
             errorText: 'Произошла ошибка при загрузке кофе',
@@ -61,19 +58,14 @@ export const BuyCoffeeWidget = memo(
             <>
                 {data?.bonus && data.bonus > 0 && (
                     <MPLayout mb={10}>
-                        <OpenCoffeeBonusScreenFromCoffee
-                            coffeeMachineId={selectedCoffeeMachineId}
-                            count={data.bonus}
-                        />
+                        <OpenCoffeeBonusScreenFromCoffee count={data.bonus} />
                     </MPLayout>
                 )}
-                <CustomText marginsPaddings={{ mb: 15 }} fz={20} fw="500">
-                    ВЫБЕРИТЕ НАПИТОК
-                </CustomText>
+                <ScreenTitle title="Выберите напиток" />
 
                 <MapCoffeeItems
                     onBuyCoffee={handleOpenBuyCoffeeModal}
-                    isItemsLoading={isDataLoading || isCoffeeMachinesLoading}
+                    isItemsLoading={isDataLoading}
                     items={data?.coffee}
                 />
 

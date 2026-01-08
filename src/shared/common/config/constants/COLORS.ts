@@ -1,21 +1,80 @@
 export const COLORS = {
-    GREEN: '#00C12A',
-    GREEN_2: 'rgba(51, 206, 85, 1)',
-    RED: '#d40032',
-    GRAY: '#4C5159',
-    GRAY_1: '#828890',
-    GRAY_2: '#F5F5F5', // используется в инпутах например
-    GRAY_3: '#F9F9F9', // используется как background в каких-то блоках
-    WHITE: '#FFFFFF',
-    TEXT: '#636F74',
-    TEXT_2: '#93A1A7',
-    TOAST_ERROR: 'rgba(241, 113, 104, 1)',
-    TOAST_SUCCESS: 'rgba(66, 220, 137, 1)',
-    TOAST_WARNING: 'rgba(241, 186, 104, 1)',
-    TOAST_INFO: 'rgba(104, 159, 241, 1)',
-    PURPLE: 'rgba(138, 103, 226, 1)',
-    PURPLE_2: 'rgba(155, 118, 249, 0.8)',
-    PURPLE_3: 'rgba(216, 201, 255, 0.8)',
-    ORANGE: '#EA8900',
-    BROWN: 'rgba(147, 86, 0, 1);',
+    BRAND: {
+        Primary: '#00C12A',
+        Secondary: '#62D82A',
+        Tertiary: '#9BB83D',
+    },
+
+    SUCCESS: {
+        Primary: '#12C85B',
+        Secondary: '#59D88C',
+    },
+    ERROR: {
+        Primary: '#FF4D34',
+        Secondary: '#FF8271',
+    },
+    TEXT: {
+        Primary: '#0A2033',
+        Secondary: '#858585',
+        Tertiary: '#C2C7CC',
+        Invert: '#FFFFFF',
+        Error: '#FF4D34',
+        Success: '#12C85B',
+        Link: '#00C12A',
+    },
+    Icon: {
+        Primary: '#0A2033',
+        Secondary: '#848F99',
+        Tertiary: '#C2C7CC',
+        Invert: '#FFFFFF',
+        Error: '#FF4D34',
+        Success: '#12C85B',
+        Link: '#9FBB3D',
+    },
+    BACKGROUND: {
+        Primary: '#FFF',
+        Secondary: '#DEDEDE',
+        Tertiary: '#F0F0F0',
+        Invert: '#060807ff',
+    },
+}
+export const COLORS_DARK = {
+    BRAND: {
+        Primary: '#00C12A',
+        Secondary: '#62D82A',
+        Tertiary: '#9BB83D',
+    },
+
+    SUCCESS: {
+        Primary: '#12C85B',
+        Secondary: '#59D88C',
+    },
+    ERROR: {
+        Primary: '#FF4D34',
+        Secondary: '#FF8271',
+    },
+    TEXT: {
+        Primary: '#FFFFFF',
+        Secondary: '#BEBEBE',
+        Tertiary: '#C2C7CC',
+        Invert: '#FFFFFF',
+        Error: '#FF4D34',
+        Success: '#12C85B',
+        Link: '#00C12A',
+    },
+    Icon: {
+        Primary: '#FFFFFF',
+        Secondary: '#979797',
+        Tertiary: '#C2C7CC',
+        Invert: '#FFFFFF',
+        Error: '#FF4D34',
+        Success: '#12C85B',
+        Link: '#369500',
+    },
+    BACKGROUND: {
+        Primary: '#1F1F1F',
+        Secondary: '#DEDEDE',
+        Tertiary: '#272727',
+        Invert: '#0a331c',
+    },
 }

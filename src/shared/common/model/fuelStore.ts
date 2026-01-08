@@ -11,6 +11,7 @@ const store = create<IFuelStore>()(
             liters: null,
             rubles: null,
             trkType: null,
+            fuelOnDebt: false,
         },
         changeAzs(azs) {
             set((state) => {
@@ -33,12 +34,17 @@ const store = create<IFuelStore>()(
                 state.state.rubles = rubles
             })
         },
+        changeFuelOnDebt(fuelOnDebt) {
+            set((state) => {
+                state.state.fuelOnDebt = fuelOnDebt
+            })
+        },
         clearState() {
             set((state) => {
                 state.state.azs = null
                 state.state.column = null
                 state.state.liters = null
-            
+                state.state.fuelOnDebt = false
             })
         },
     }))

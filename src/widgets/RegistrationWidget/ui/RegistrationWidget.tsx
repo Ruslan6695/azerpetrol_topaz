@@ -1,24 +1,13 @@
 import { memo, useCallback, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { OpenUseTerms } from '../../../features/OpenUseTerms'
 import { RegistrationForm } from '../../../features/RegistrationForm'
 import { SendSmsCallCodeForm } from '../../../features/SendSmsCallCodeForm'
-import {
-    COLORS,
-    IUser,
-    SIZES,
-    UserStore,
-    useModal,
-    useSendFetch,
-} from '../../../shared'
-import BottomSheet from '../../../shared/BottomSheet/ui/BottomSheet'
+import { IUser, UserStore, useSendFetch } from '../../../shared'
 import { useInput } from '../../../shared/CustomInput'
 import { Loader } from '../../../shared/Loader'
 import { LogoFull } from '../../../shared/Logo'
-import { MPLayout } from '../../../shared/MpLayout'
-import { registrationWidgetApi } from '../api/registrationWidgetApi'
 import { showError } from '../../../shared/ToastComponent'
-import { useFocusEffect } from 'expo-router'
+import { registrationWidgetApi } from '../api/registrationWidgetApi'
 
 type Props = {}
 
@@ -109,49 +98,33 @@ export const RegistrationWidget = memo((props: Props) => {
     )
 
     return (
-        <View style={styles.wrapper}>
-            <View style={styles.logo}>
-                <LogoFull width={250} height={160} />
-                {isSendCodeLoading || isRegisterLoading ? (
-                    <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
-                ) : road === 'input' ? (
-                    <RegistrationForm
-                        onSubmitRegistration={handleSubmitRegistration}
-                        onChangeSurnameValue={handleChangeSurnameValue}
-                        surnameValue={surnameValue}
-                        onChangeNameValue={handleChangeNameValue}
-                        nameValue={nameValue}
-                        onChangePhoneValue={handleChangePhoneValue}
-                        phoneValue={phoneValue}
-                    />
-                ) : (
-                    <SendSmsCallCodeForm
-                        confirmationType={confirmationType}
-                        onToggleConfirmationType={handleToggleConfirmationType}
-                        onSend={handleSubmitCode}
-                    />
-                )}
-
-                <MPLayout mt={30}>
-                    <OpenUseTerms />
-                </MPLayout>
-            </View>
-        </View>
+        <>
+            {isSendCodeLoading || isRegisterLoading ? (
+                <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
+            ) : road === 'input' ? (
+                <RegistrationForm
+                    onSubmitRegistration={handleSubmitRegistration}
+                    onChangeSurnameValue={handleChangeSurnameValue}
+                    surnameValue={surnameValue}
+                    onChangeNameValue={handleChangeNameValue}
+                    nameValue={nameValue}
+                    onChangePhoneValue={handleChangePhoneValue}
+                    phoneValue={phoneValue}
+                />
+            ) : (
+                <SendSmsCallCodeForm
+                    confirmationType={confirmationType}
+                    onToggleConfirmationType={handleToggleConfirmationType}
+                    onSend={handleSubmitCode}
+                />
+            )}
+        </>
     )
 })
 
 const styles = StyleSheet.create({
-    wrapper: {
-        backgroundColor: COLORS.WHITE,
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        borderTopLeftRadius: SIZES.PX * 40,
-        borderTopRightRadius: SIZES.PX * 40,
-    },
     logo: {
-        top: -60 * SIZES.PX,
-        flexDirection: 'column',
-        alignItems: 'center',
+        top: '-60%',
+        position: 'absolute',
     },
 })

@@ -1,10 +1,9 @@
 import { useRouter } from 'expo-router'
 import { memo, useRef } from 'react'
+import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
 import { ESCREENS } from '../../../shared'
 import { CustomButton } from '../../../shared/CustomButton'
 import { CustomInput } from '../../../shared/CustomInput'
-import { PersonIcon } from '../../../shared/Icons/PersonIcon'
-import { PhoneIcon } from '../../../shared/PhoneIcon'
 
 type Props = {
     onChangePhoneValue: (value: string) => void
@@ -41,9 +40,9 @@ export const RegistrationForm = memo(
                     }}
                     placeholder="Имя"
                     styled={{
-                        marginsPaddings: { mt: 20, mb: 10 },
+                        marginsPaddings: { mb: 10 },
+                        width: { type: 'absolute', value: '100%' },
                     }}
-                    icon={<PersonIcon />}
                     value={nameValue}
                     onChangeText={onChangeNameValue}
                 />
@@ -57,40 +56,45 @@ export const RegistrationForm = memo(
                     ref={ref1}
                     placeholder="Фамилия"
                     styled={{
-                        marginsPaddings: { mb: 10 },
+                        width: { type: 'absolute', value: '100%' },
                     }}
-                    icon={<PersonIcon />}
                     value={surnameValue}
                     onChangeText={onChangeSurnameValue}
                 />
                 <CustomInput
+                    styled={{
+                        width: { type: 'absolute', value: '100%' },
+                        marginsPaddings: { mt: 10, mb: 16 },
+                    }}
                     onSubmitEditing={onSubmitRegistration}
                     ref={ref2}
                     mask="8 999 999 99 99"
                     placeholder="Номер телефона"
-                    icon={<PhoneIcon />}
                     value={phoneValue}
                     onChangeText={onChangePhoneValue}
                 />
                 <CustomButton
                     onPress={onSubmitRegistration}
                     styled={{
-                        marginsPaddings: { mb: 10, mt: 20 },
+                        borderRadius: 1000,
+                        width: { type: 'absolute', value: '100%' },
                     }}
                 >
-                    Регистрация
+                    Зарегистрироваться
                 </CustomButton>
-
+                <ButtonsSeparator />
                 <CustomButton
                     onPress={() => {
                         router.navigate(ESCREENS.LOGIN)
                     }}
                     styled={{
-                        type: 'DARK',
+                        borderRadius: 1000,
+                        type: 'secondary',
                         height: { value: 56 },
+                        width: { type: 'absolute', value: '100%' },
                     }}
                 >
-                    Вход
+                    Войти
                 </CustomButton>
             </>
         )

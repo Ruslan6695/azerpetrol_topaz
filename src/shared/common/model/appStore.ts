@@ -7,6 +7,12 @@ import { IAppStore } from '../config/interfaces/IAppStore'
 const store = create<IAppStore>()(
     immer((set) => ({
         isHasNet: true,
+        isTokenRefreshed: false,
+        toggleIsTokenRefreshed(refreshed) {
+            set((state) => {
+                state.isTokenRefreshed = refreshed
+            })
+        },
         toggleIsHasNet(isHasNet) {
             set((state) => {
                 state.isHasNet = isHasNet

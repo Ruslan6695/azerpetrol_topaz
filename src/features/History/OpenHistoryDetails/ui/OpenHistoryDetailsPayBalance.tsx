@@ -1,21 +1,28 @@
-import { memo } from 'react'
-import { View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { divideNumber } from '../../../../shared'
+import { memo } from "react";
+import { divideNumber } from "../../../../shared";
+import { Typography } from "../../../../shared/Typography";
+import { StyleSheet, View } from "react-native";
+import { BonusIcon } from "../../../../shared/BonusIcon";
 
 type Props = {
-    sum: number
-}
+  sum: number;
+};
 
 export const OpenHistoryDetailsPayBalance = memo(({ sum }: Props) => {
-    return (
-        <>
-            <CustomText fz={18} marginsPaddings={{ mt: 20 }} secondary>
-                Cумма
-            </CustomText>
-            <CustomText fz={25} fw="600">
-                {divideNumber(sum)} ₽
-            </CustomText>
-        </>
-    )
-})
+  return (
+    <>
+      <Typography marginsPaddings={{ mt: 20 }}>ИТОГ</Typography>
+      <View style={styles.row}>
+        <Typography type="bodyMedium">{divideNumber(sum)}</Typography>
+        <BonusIcon size={16} mt={2} />
+      </View>
+    </>
+  );
+});
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});

@@ -4,6 +4,7 @@ export interface IPromotionsAndBonusesItem {
     html_text: string
     date_create: string
     header: string
-    page_link:null | string
-    show_main:boolean
+    page_link: null | string
+    show_main: boolean
+    show_modal:boolean
 }

@@ -1,4 +1,4 @@
- import { axiosIntsanse, getToken } from '../../../../shared'
+import { axiosIntsanse, getToken } from '../../../../shared'
 import { IGetAzsListData } from '../config/interfaces/IGetAzsListData'
 import { IGetColumnsData } from '../config/interfaces/IGetColumnsData'
 

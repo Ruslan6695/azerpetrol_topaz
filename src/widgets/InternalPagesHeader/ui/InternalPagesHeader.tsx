@@ -1,12 +1,11 @@
+import * as Device from 'expo-device'
+import { usePathname, useRouter } from 'expo-router'
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { NativeStackHeaderProps } from '@react-navigation/native-stack'
-import { CustomText } from '../../../shared/CustomText'
 import { EDeviceOsNames, SCREENS_TITLES, SIZES } from '../../../shared'
-import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
 import { BackIcon } from '../../../shared/BackIcon'
-import { useNavigation, useRouter, usePathname } from 'expo-router'
-import * as Device from 'expo-device'
+import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../shared/Typography'
 type Props = {}
 
 export const InternalPagesHeader = memo(({}: Props) => {
@@ -36,7 +35,9 @@ export const InternalPagesHeader = memo(({}: Props) => {
             >
                 <BackIcon />
             </CustomTouchableOpacity>
-            <CustomText fz={18}>{SCREENS_TITLES[pathname]}</CustomText>
+            <Typography type="displaySmall">
+                {SCREENS_TITLES[pathname]}
+            </Typography>
         </View>
     )
 })

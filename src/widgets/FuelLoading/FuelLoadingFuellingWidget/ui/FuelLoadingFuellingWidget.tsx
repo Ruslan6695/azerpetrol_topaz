@@ -64,7 +64,7 @@ export const FuelLoadingFuellingWidget = memo(
         }
         return (
             <AnimateFuelLoading
-                rubles={state.rubles}
+                rubles={data ? data.volume * data.price : 0}
                 liters={state.liters}
                 percent={procents}
                 volume={data?.volume}

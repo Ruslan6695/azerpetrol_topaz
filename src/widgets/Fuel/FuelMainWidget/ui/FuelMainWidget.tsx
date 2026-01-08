@@ -4,6 +4,7 @@ import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
 import { FUEL_MAIN_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_MAIN_WIDGET_INFO_TEXTS'
 import { useNavigation, useRouter } from 'expo-router'
 import { ESCREENS } from '../../../../shared'
+import { ScreenTitle } from '../../../../entities/ScreenTitle'
 
 type Props = {
     setRoad: React.Dispatch<
@@ -33,6 +34,7 @@ export const FuelMainWidget = memo(({ setRoad }: Props) => {
 
     return (
         <>
+            <ScreenTitle title="Выберите метод" />
             <MapFuelMainBlocks
                 onNeedHelp={onNeedHelp}
                 onScanColumn={onScanColumn}

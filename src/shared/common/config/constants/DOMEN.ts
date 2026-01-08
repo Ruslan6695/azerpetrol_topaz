@@ -1,1 +1,1 @@
-export const DOMEN = 'https://demo.azscontrol.ru/adapters/primary/mobile_app/'
+export const DOMEN = "https://demo.azs-control.ru/adapters/primary/mobile_app/";

@@ -1,14 +1,13 @@
+import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useRef } from 'react'
-import { PayBalanceWaitingGif } from '../../../../entities/PayBalanceWaitingGif'
 import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
+import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
+import { PayBalanceWaitingGif } from '../../../../entities/PayBalanceWaitingGif'
+import { ESCREENS, useSendFetch } from '../../../../shared'
 import { CustomButton } from '../../../../shared/CustomButton'
-import { ESCREENS, SIZES, useSendFetch } from '../../../../shared'
-import { showError } from '../../../../shared/ToastComponent'
+import { Typography } from '../../../../shared/Typography'
 import { payBalanceWaitingApi } from '../api/payBalanceWaitingApi'
 import { IPayBalanceWaitingData } from '../config/interfaces/IPayBalanceWaitingData'
-import { useRouter } from 'expo-router'
-import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 
 type Props = {
     payId: number
@@ -73,45 +72,39 @@ export const PayBalanceWaiting = memo(
                         <CustomButton
                             onPress={goOnHomePage}
                             styled={{
-                                type: 'OUTLINED',
-                                fz: 16,
                                 width: { type: 'px', value: 300 },
                                 height: { type: 'px', value: 50 },
                                 marginsPaddings: { mb: 15 },
                             }}
                         >
-                            ВЕРНУТЬСЯ НА ГЛАВНУЮ
+                            Вернуться на главную
                         </CustomButton>
                     </>
                 ) : (
                     <>
-                        <PayBalanceWaitingGif width={300} height={300} />
-                        <CustomText
-                            fw="600"
-                            fz={25}
+                        <PayBalanceWaitingGif width={200} height={300} />
+                        <Typography
+                            type="bodyAccentMedium"
                             textAlign="center"
                             marginsPaddings={{ mt: -20 }}
                         >
                             НЕМНОГО ПОДОЖДИТЕ
-                        </CustomText>
-                        <CustomText
+                        </Typography>
+                        <Typography
+                            type="bodySmall"
                             marginsPaddings={{ mb: 30 }}
-                            fz={18}
                             textAlign="center"
                         >
                             ДЕНЬГИ ПОСТУПЯТ АВТОМАТИЧЕСКИ
-                        </CustomText>
+                        </Typography>
                         <CustomButton
                             onPress={onGoBack}
                             styled={{
-                                type: 'OUTLINED',
-                                fz: 16,
                                 width: { type: 'px', value: 300 },
-                                height: { type: 'px', value: 50 },
                                 marginsPaddings: { mb: 15 },
                             }}
                         >
-                            ВЕРНУТЬСЯ К ВЫБОРУ БАНКА
+                            Вернуться к выбору банков
                         </CustomButton>
                     </>
                 )}
@@ -119,10 +112,8 @@ export const PayBalanceWaiting = memo(
                 <CustomButton
                     onPress={() => {}}
                     styled={{
-                        type: 'DARK',
-                        fz: 20,
+                        type: 'secondary',
                         width: { type: 'px', value: 300 },
-                        height: { type: 'px', value: 50 },
                     }}
                 >
                     ПОМОЩЬ

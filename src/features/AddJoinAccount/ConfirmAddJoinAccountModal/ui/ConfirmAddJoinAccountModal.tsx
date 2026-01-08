@@ -4,8 +4,8 @@ import { ProfileImg } from '../../../../entities/Profile/ProfileImg'
 import { SIZES, useFetchData, useModal, useSendFetch } from '../../../../shared'
 import BottomSheet from '../../../../shared/BottomSheet/ui/BottomSheet'
 import { CustomButton } from '../../../../shared/CustomButton'
-import { CustomText } from '../../../../shared/CustomText'
 import { showToast } from '../../../../shared/ToastComponent'
+import { Typography } from '../../../../shared/Typography'
 import { MapInfoBlocks } from '../../../MapInfoBlocks'
 import { confirmAddJoinAccountModalApi } from '../api/confirmAddJoinAccountModalApi'
 import { CONFIRM_ADD_JOIN_ACCOUNT_MODAL_INFO_TEXTS } from '../config/constants/CONFIRM_ADD_JOIN_ACCOUNT_MODAL_INFO_TEXTS'
@@ -81,7 +81,7 @@ export const ConfirmAddJoinAccountModal = memo(({}: Props) => {
                     <CustomButton
                         onPress={handleAbort}
                         styled={{
-                            type: 'OUTLINED',
+                            type: 'secondary',
                             width: { type: 'px', value: 120 },
                             height: { type: 'px', value: 48 },
                         }}
@@ -91,7 +91,6 @@ export const ConfirmAddJoinAccountModal = memo(({}: Props) => {
                     <CustomButton
                         onPress={handleConfirm}
                         styled={{
-                            type: 'SUCCES',
                             width: { type: 'px', value: 120 },
                             height: { type: 'px', value: 48 },
                         }}
@@ -100,25 +99,23 @@ export const ConfirmAddJoinAccountModal = memo(({}: Props) => {
                     </CustomButton>
                 </View>
                 <ProfileImg size={90} />
-                <CustomText
+                <Typography
+                    type="displayMedium"
                     textAlign="center"
                     marginsPaddings={{ mt: 10 }}
-                    fz={20}
-                    fw="600"
                 >
                     {data?.invite?.name}
-                </CustomText>
-                <CustomText
+                </Typography>
+                <Typography
+                    type="bodySmall"
                     textAlign="center"
                     marginsPaddings={{ mb: 10 }}
-                    fz={16}
-                    fw="600"
                 >
                     {data?.invite?.phone}
-                </CustomText>
-                <CustomText fz={18} textAlign="center">
+                </Typography>
+                <Typography textAlign="center">
                     {`Приглашает вас присоединиться к общему балансу.`}
-                </CustomText>
+                </Typography>
                 <MapInfoBlocks
                     infoBlocks={CONFIRM_ADD_JOIN_ACCOUNT_MODAL_INFO_TEXTS}
                 />

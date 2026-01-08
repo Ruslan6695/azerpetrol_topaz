@@ -1,6 +1,6 @@
+import NetInfo from '@react-native-community/netinfo'
 import * as Notifications from 'expo-notifications'
 import { Stack, useRouter } from 'expo-router'
-import NetInfo from '@react-native-community/netinfo'
 import * as SplashScreen from 'expo-splash-screen'
 import * as TaskManager from 'expo-task-manager'
 import React, { useEffect } from 'react'
@@ -8,18 +8,24 @@ import {
     AppStore,
     ESCREENS,
     SCREENS_TITLES,
+    ThemeStore,
     UserStore,
     useNotifications,
+    useSetFonts,
 } from '../shared'
 import { ToastComponent } from '../shared/ToastComponent'
+
 import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { ConfirmAddJoinAccountModal } from '../features/AddJoinAccount/ConfirmAddJoinAccountModal'
+
 const TASK = 'BACKGROUND_NOTIFICATION-TASK'
-TaskManager.defineTask(TASK, ({ data, error }) => {})
+TaskManager.defineTask(TASK)
 SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
+    const COLORS = ThemeStore.useCOLORS()
     Notifications.registerTaskAsync(TASK)
     const { registerForPushNotificationsAsync, handleNotificationResponse } =
         useNotifications()
@@ -29,8 +35,39 @@ export default function Layout() {
     const getUser = UserStore.useGetUser()
     const user = UserStore.useUser()
     const isGetUserLoading = UserStore.useGetUserIsLoadung()
+    const fontIsLoaded = useSetFonts()
+    const getColorTheme = ThemeStore.useGetColoreTheme()
+    /*   useEffect(() => {
+        let isMounted = true
 
+        function redirect(notification: Notifications.Notification) {
+            const url = notification.request.content.data?.url
+            if (url) {
+                router.push(url)
+            }
+        }
+
+        Notifications.getLastNotificationResponseAsync().then((response) => {
+            if (!isMounted || !response?.notification) {
+                return
+            }
+            redirect(response?.notification)
+        })
+
+        const subscription =
+            Notifications.addNotificationResponseReceivedListener(
+                (response) => {
+                    redirect(response.notification)
+                }
+            )
+
+        return () => {
+            isMounted = false
+            subscription.remove()
+        }
+    }, []) */
     useEffect(() => {
+        getColorTheme()
         let isMounted = true
         let subscription: any
         if (isHasNet) {
@@ -42,6 +79,15 @@ export default function Layout() {
                     router.navigate(url)
                 }
             }
+
+            /*   Notifications.getLastNotificationResponseAsync().then(
+                (response) => {
+                    if (!isMounted || !response?.notification) {
+                        return
+                    }
+                    redirect(response?.notification)
+                }
+            ) */
 
             subscription =
                 Notifications.addNotificationResponseReceivedListener(
@@ -55,6 +101,8 @@ export default function Layout() {
                     shouldShowAlert: true,
                     shouldPlaySound: true,
                     shouldSetBadge: true,
+                    shouldShowBanner: true,
+                    shouldShowList: false,
                 }),
             })
         }
@@ -66,7 +114,7 @@ export default function Layout() {
     }, [isHasNet])
 
     useEffect(() => {
-        if (!isGetUserLoading) {
+        if (!isGetUserLoading && fontIsLoaded) {
             if (!user) {
                 router.replace(ESCREENS.LOGIN)
             } else {
@@ -74,7 +122,7 @@ export default function Layout() {
             }
             SplashScreen.hideAsync()
         }
-    }, [user, isGetUserLoading])
+    }, [user, isGetUserLoading, fontIsLoaded])
 
     useEffect(() => {
         getUser()
@@ -88,7 +136,7 @@ export default function Layout() {
     return (
         <GestureHandlerRootView>
             {!user ? (
-                <Stack>
+                <Stack screenOptions={{ animation: 'none' }}>
                     <Stack.Screen
                         options={{ headerShown: false }}
                         name="index"
@@ -118,7 +166,7 @@ export default function Layout() {
                         />
                         <Stack.Screen
                             options={{
-                                title: 'Пополнить баланс',
+                                title: 'Цены на топливо',
 
                                 headerShown: false,
                             }}
@@ -127,10 +175,9 @@ export default function Layout() {
                         <Stack.Screen
                             options={{
                                 title: 'Пополнить баланс',
-
                                 headerShown: false,
                             }}
-                            name={'payBalance/index'}
+                            name={'pay_balance/index'}
                         />
                         <Stack.Screen
                             options={{

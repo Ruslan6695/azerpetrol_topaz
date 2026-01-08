@@ -7,9 +7,10 @@ import {
 } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { AppStore, COLORS, SIZES } from '../../../shared'
+import { AppStore, COLORS, SIZES, ThemeStore } from '../../../shared'
 import { CheckNetworkWidget } from '../../../widgets/CheckNetworkWidget'
 import { InternalPagesHeader } from '../../../widgets/InternalPagesHeader'
+import { BackgroundImage } from '../../../shared/BackgroundImage'
 
 type Props = {
     children: ReactNode
@@ -23,9 +24,10 @@ export const InternalPagesLayout = ({
     children,
     hideScroll,
     onScrollToEnd,
-    hideHeader,
     disablePaddings,
+    hideHeader,
 }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const isHasNet = AppStore.useIsHasNet()
     const handleScrollToEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
         if (onScrollToEnd) {
@@ -38,9 +40,10 @@ export const InternalPagesLayout = ({
             }
         }
     }
+
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: COLORS.WHITE,
+            backgroundColor: COLORS.BACKGROUND.Primary,
             flex: 1,
         },
         main: {
@@ -52,7 +55,8 @@ export const InternalPagesLayout = ({
     return (
         <GestureHandlerRootView>
             <View style={styles.container}>
-                {!hideHeader && <InternalPagesHeader />}
+                <BackgroundImage bottom={-10} right={1} />
+                {!hideHeader && <InternalPagesHeader />}{' '}
                 <KeyboardAwareScrollView
                     onMomentumScrollEnd={handleScrollToEnd}
                     showsVerticalScrollIndicator={false}

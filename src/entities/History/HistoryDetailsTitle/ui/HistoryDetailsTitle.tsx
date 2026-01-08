@@ -1,14 +1,15 @@
 import { memo, useMemo } from 'react'
-import { EHistoryItemType } from '../../config/enums/EHistoryItemType'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import { SIZES, ThemeStore } from '../../../../shared'
+import { Typography } from '../../../../shared/Typography'
+import { EHistoryItemType } from '../../config/enums/EHistoryItemType'
 
 type Props = {
     type: EHistoryItemType
 }
 
 export const HistoryDetailsTitle = memo(({ type }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const title = useMemo<string>(() => {
         switch (type) {
             case EHistoryItemType.PAY_BALANCE:
@@ -23,30 +24,32 @@ export const HistoryDetailsTitle = memo(({ type }: Props) => {
                 return 'Перевод пользователю'
         }
     }, [type])
-    const styles = StyleSheet.create({
-        container: {
-            borderColor:
-                type === EHistoryItemType.PAY_BALANCE
-                    ? COLORS.GREEN
-                    : COLORS.RED,
-            paddingVertical: SIZES.PX * 10,
-            paddingHorizontal: SIZES.PX * 10,
-            borderWidth: 1 * SIZES.PX,
-            borderRadius: SIZES.PX * 20,
-        },
-    })
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                container: {
+                    borderColor:
+                        type === EHistoryItemType.PAY_BALANCE
+                            ? COLORS.SUCCESS.Secondary
+                            : COLORS.ERROR.Secondary,
+                    paddingVertical: SIZES.PX * 10,
+                    paddingHorizontal: SIZES.PX * 10,
+                    borderWidth: 1 * SIZES.PX,
+                    borderRadius: SIZES.PX * 20,
+                },
+            }),
+        [COLORS]
+    )
     return (
         <View style={styles.container}>
-            <CustomText
-                fz={12}
+            <Typography
+                type="caption"
                 color={
-                    type === EHistoryItemType.PAY_BALANCE
-                        ? COLORS.GREEN
-                        : COLORS.RED
+                    type === EHistoryItemType.PAY_BALANCE ? 'success' : 'error'
                 }
             >
                 {title}
-            </CustomText>
+            </Typography>
         </View>
     )
 })

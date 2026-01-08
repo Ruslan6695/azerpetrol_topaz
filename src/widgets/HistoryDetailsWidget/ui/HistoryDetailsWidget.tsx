@@ -1,5 +1,6 @@
 import { ReactNode, memo, useCallback, useEffect, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import {
     EHistoryItemType,
     THistoryDetailsScreenParams,
@@ -12,12 +13,11 @@ import {
     OpenHistoryDetailsTransferBalance,
     OpenHistoryDetailsTransferBalanceSkeleton,
 } from '../../../features/History/OpenHistoryDetails'
-import { CustomText } from '../../../shared/CustomText'
-import { SIZES, useFetchData } from '../../../shared'
-import { historyDetailsWidgetApi } from '../api/historyDetailsWidgetApi'
-import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
-import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
 import { OpenHistoryDetailsPayBalanceSkeleton } from '../../../features/History/OpenHistoryDetails/ui/OpenHistoryDetailsPayBalanceSkeleton'
+import { SIZES, useFetchData } from '../../../shared'
+import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
+import { Typography } from '../../../shared/Typography'
+import { historyDetailsWidgetApi } from '../api/historyDetailsWidgetApi'
 
 type Props = {
     params: Partial<THistoryDetailsScreenParams>
@@ -154,9 +154,12 @@ export const HistoryDetailsWidget = memo(({ params }: Props) => {
                     height={30 * SIZES.PX}
                 />
             ) : (
-                <CustomText marginsPaddings={{ mb: 10 }} fw="600" fz={20}>
+                <Typography
+                    marginsPaddings={{ mb: 10 }}
+                    type="bodyAccentMedium"
+                >
                     {data?.text}
-                </CustomText>
+                </Typography>
             )}
 
             <View style={styles.row}>
@@ -173,7 +176,7 @@ export const HistoryDetailsWidget = memo(({ params }: Props) => {
                     </>
                 ) : (
                     <>
-                        <CustomText>{data?.date}</CustomText>
+                        <Typography type="caption">{data?.date}</Typography>
 
                         <HistoryDetailsTitle
                             //@ts-ignore

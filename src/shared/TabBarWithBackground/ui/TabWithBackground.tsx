@@ -1,10 +1,12 @@
-import { memo, useCallback } from 'react'
-import { ITabWithBackground } from '../config/interfaces/ITabWithBackground'
-import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../CustomText'
-import { SIZES } from '../../common/config/constants/sizes'
+import { memo, useCallback, useMemo } from 'react'
+import { StyleSheet } from 'react-native'
 import { COLORS } from '../../common/config/constants/COLORS'
+import { SIZES } from '../../common/config/constants/sizes'
 import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { ITabWithBackground } from '../config/interfaces/ITabWithBackground'
+import { Typography } from '../../Typography'
+import { ThemeStore } from '../../common/model/themeStore'
+import { EColorThemes } from '../../common/config/enums/EColorThemes'
 
 interface IProps extends ITabWithBackground {
     isFirst: boolean
@@ -15,18 +17,34 @@ interface IProps extends ITabWithBackground {
 
 export const TabWithBackground = memo(
     ({ label, value, isFirst, isLast, isSelected, onPress }: IProps) => {
-        const styles = StyleSheet.create({
-            container: {
-                flex: 1,
-                alignItems: 'center',
-                paddingVertical: SIZES.PX * 15,
-                backgroundColor: isSelected ? COLORS.GREEN_2 : COLORS.GRAY_2,
-                borderTopLeftRadius: isFirst ? 10 * SIZES.PX : undefined,
-                borderBottomLeftRadius: isFirst ? 10 * SIZES.PX : undefined,
-                borderTopRightRadius: isLast ? 10 * SIZES.PX : undefined,
-                borderBottomRightRadius: isLast ? 10 * SIZES.PX : undefined,
-            },
-        })
+        const COLORS = ThemeStore.useCOLORS()
+        const colorTheme = ThemeStore.useTheme()
+        const styles = useMemo(
+            () =>
+                StyleSheet.create({
+                    container: {
+                        flex: 1,
+                        alignItems: 'center',
+                        paddingVertical: SIZES.PX * 15,
+                        backgroundColor: isSelected
+                            ? COLORS.BRAND.Primary
+                            : COLORS.BACKGROUND.Tertiary,
+                        borderTopLeftRadius: isFirst
+                            ? 10 * SIZES.PX
+                            : undefined,
+                        borderBottomLeftRadius: isFirst
+                            ? 10 * SIZES.PX
+                            : undefined,
+                        borderTopRightRadius: isLast
+                            ? 10 * SIZES.PX
+                            : undefined,
+                        borderBottomRightRadius: isLast
+                            ? 10 * SIZES.PX
+                            : undefined,
+                    },
+                }),
+            [COLORS, isFirst, isSelected, isLast]
+        )
         const handlePress = useCallback(() => {
             onPress({ label, value })
         }, [value, label, onPress])
@@ -36,9 +54,15 @@ export const TabWithBackground = memo(
                 activeOpacity={0.7}
                 style={styles.container}
             >
-                <CustomText fw="500" white={isSelected}>
+                <Typography
+                    color={
+                        colorTheme === EColorThemes.LIGHT && isSelected
+                            ? 'invert'
+                            : undefined
+                    }
+                >
                     {label.toUpperCase()}
-                </CustomText>
+                </Typography>
             </CustomTouchableOpacity>
         )
     }

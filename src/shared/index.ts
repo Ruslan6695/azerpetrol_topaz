@@ -1,42 +1,46 @@
-export * from './common/config/constants/COLORS'
-export * from './common/api/axiosInstanse'
-export * from './common/config/constants/sizes'
-export type { IMarginsPaddings } from './common/config/interfaces/IMarginsPaddings'
-export * from './common/config/constants/USE_TERMS_LINK'
-export * from './common/config/enums/EScreens'
-export * from './common/config/constants/APP_VERSION'
-export * from './common/config/lib/asyncStorage/getItemFromAsyncStorage'
-export * from './common/config/lib/asyncStorage/getToken'
-export * from './common/config/lib/asyncStorage/removeItemfromAsyncStorage'
-export * from './common/config/lib/asyncStorage/setItemToAsyncStorage'
-export * from './common/model/userStore'
-export * from './common/config/interfaces/IUser'
-export * from './common/config/lib/hooks/useModal'
-export * from './common/config/constants/AZS_NAME'
-export * from './common/config/constants/SCREENS_TITLES'
-export * from './common/config/lib/hooks/useGetContactsPermission'
-export * from './common/config/enums/EPermissionsStatuses'
-export * from './common/config/lib/asyncStorage/getContacts'
-export type { TTRansferScreenParams } from './common/config/types/routeParams/TTRansferScreenParams'
-export * from './common/config/lib/helpers/divideNumber'
-export * from './common/config/lib/hooks/useGetLocationPermission'
-export * from './common/config/constants/PERMISSION_STATUSES'
-export * from './common/model/fuelStore'
-export type * from './common/config/interfaces/IFuel'
-export * from './common/config/lib/hooks/useFetchData'
-export * from './common/config/lib/helpers/getIp'
-export * from './common/config/lib/asyncStorage/getPushNotificationToken'
-export * from './common/config/lib/hooks/useNotifications'
-export * from './common/config/lib/hooks/useSendFetch'
-export * from './common/config/lib/hooks/useGetBalance'
-export * from './common/config/lib/hooks/useFetchStoreData'
-export * from './common/config/types/routeParams/TSuccessScreenParams'
-export * from './common/config/constants/DOMEN'
-export * from './common/config/lib/helpers/roundNumber'
-export * from './common/config/enums/EDeviceOsNames'
-export type { TCoffeeScreenParams } from './common/config/types/routeParams/TCoffeeScreenParams'
-export * from './common/config/types/routeParams/TPayBalanceScreenParams'
-export * from './common/config/types/routeParams/TContactsScreenParams'
-export * from './common/config/types/routeParams/TAddJoinAccountScreenParams'
-export type { TCoffeeBonusScreenParams } from './common/config/types/routeParams/TCoffeeBonusScreenParams'
-export * from './common/model/appStore'
+export * from "./common/config/constants/COLORS";
+export * from "./common/api/axiosInstanse";
+export * from "./common/config/constants/sizes";
+export type { IMarginsPaddings } from "./common/config/interfaces/IMarginsPaddings";
+export * from "./common/config/constants/USE_TERMS_LINK";
+export * from "./common/config/enums/EScreens";
+export * from "./common/config/constants/APP_VERSION";
+export * from "./common/config/lib/asyncStorage/getItemFromAsyncStorage";
+export * from "./common/config/lib/asyncStorage/getToken";
+export * from "./common/config/lib/asyncStorage/removeItemfromAsyncStorage";
+export * from "./common/config/lib/asyncStorage/setItemToAsyncStorage";
+export * from "./common/model/userStore";
+export * from "./common/config/interfaces/IUser";
+export * from "./common/config/lib/hooks/useModal";
+export * from "./common/config/constants/AZS_NAME";
+export * from "./common/config/constants/SCREENS_TITLES";
+export * from "./common/config/lib/hooks/useGetContactsPermission";
+export * from "./common/config/enums/EPermissionsStatuses";
+export * from "./common/config/lib/asyncStorage/getContacts";
+export type { TTRansferScreenParams } from "./common/config/types/routeParams/TTRansferScreenParams";
+export * from "./common/config/lib/helpers/divideNumber";
+export * from "./common/config/lib/hooks/useGetLocationPermission";
+export * from "./common/config/constants/PERMISSION_STATUSES";
+export * from "./common/model/fuelStore";
+export type * from "./common/config/interfaces/IFuel";
+export * from "./common/config/lib/hooks/useFetchData";
+export * from "./common/config/lib/helpers/getIp";
+export * from "./common/config/lib/asyncStorage/getPushNotificationToken";
+export * from "./common/config/lib/hooks/useNotifications";
+export * from "./common/config/lib/hooks/useSendFetch";
+export * from "./common/config/lib/hooks/useGetBalance";
+export * from "./common/config/lib/hooks/useFetchStoreData";
+export * from "./common/config/types/routeParams/TSuccessScreenParams";
+export * from "./common/config/constants/DOMEN";
+export * from "./common/config/lib/helpers/roundNumber";
+export * from "./common/config/enums/EDeviceOsNames";
+export type { TCoffeeScreenParams } from "./common/config/types/routeParams/TCoffeeScreenParams";
+export * from "./common/config/types/routeParams/TPayBalanceScreenParams";
+export * from "./common/config/types/routeParams/TContactsScreenParams";
+export * from "./common/config/types/routeParams/TAddJoinAccountScreenParams";
+export * from "./common/model/appStore";
+export * from "../shared/common/config/lib/hooks/useSetFonts";
+export * from "./common/config/constants/DEFAULT_ICON_SIZE";
+export * from "../shared/common/config/lib/asyncStorage/changeColorTheme";
+export * from "../shared/common/config/enums/EColorThemes";
+export * from "./common/model/themeStore";

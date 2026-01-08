@@ -1,12 +1,12 @@
+import { useFocusEffect, useRouter } from 'expo-router'
 import { memo, useCallback, useState } from 'react'
+import { ICoffeeItem } from '../../../../entities/Coffee/CoffeeItem'
+import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
+import { ScreenTitle } from '../../../../entities/ScreenTitle'
+import { BuySelectCoffeeModal } from '../../../../features/Coffee/BuySelectCoffeeModal'
+import { MapCoffeeItems } from '../../../../features/Coffee/MapCoffeeItems'
 import { ESCREENS, useFetchData, useModal } from '../../../../shared'
 import { coffeeBonusWidgetApi } from '../api/coffeeBonusWidgetApi'
-import { CustomText } from '../../../../shared/CustomText'
-import { MapCoffeeItems } from '../../../../features/Coffee/MapCoffeeItems'
-import { BuySelectCoffeeModal } from '../../../../features/Coffee/BuySelectCoffeeModal'
-import { useFocusEffect, useRouter } from 'expo-router'
-import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
-import { ICoffeeItem } from '../../../../entities/Coffee/CoffeeItem'
 
 type Props = {
     selectedCoffeeMachineId: number
@@ -53,9 +53,7 @@ export const CoffeeBonusWidget = memo(({ selectedCoffeeMachineId }: Props) => {
     }
     return (
         <>
-            <CustomText marginsPaddings={{ mb: 15 }} fz={20} fw="500">
-                ВЫБЕРИТЕ НАПИТОК
-            </CustomText>
+            <ScreenTitle title="Выберите напиток" />
 
             <MapCoffeeItems
                 bonus={true}

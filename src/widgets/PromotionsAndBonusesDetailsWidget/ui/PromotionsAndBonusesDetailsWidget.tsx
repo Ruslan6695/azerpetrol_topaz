@@ -1,19 +1,18 @@
 import { memo, useEffect, useState } from 'react'
-import { Button, Image, StyleSheet, View } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import RenderHTML from 'react-native-render-html'
-
-import { EDeviceOsNames, getToken, SIZES } from '../../../shared'
-import { CustomText } from '../../../shared/CustomText'
+import { EColorThemes, getToken, SIZES, ThemeStore } from '../../../shared'
+import { Typography } from '../../../shared/Typography'
 import { TPromotionsAndBonusesScreenParams } from '../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
 import WebView from 'react-native-webview'
-import * as Device from 'expo-device'
-import { useFocusEffect, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 
 type Props = {
     params: Partial<TPromotionsAndBonusesScreenParams>
 }
 
 export const PromotionsAndBonusesDetailsWidget = memo(({ params }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
     const [token, setToken] = useState<null | string>(null)
     const router = useRouter()
     const getTokenFromStorage = async () => {
@@ -49,19 +48,26 @@ export const PromotionsAndBonusesDetailsWidget = memo(({ params }: Props) => {
     }
     return (
         <>
-            <CustomText
+            <Typography
                 textAlign="center"
                 marginsPaddings={{ mb: 10 }}
-                fz={20}
-                fw="600"
+                type="bodyAccentMedium"
             >
                 {params.header}
-            </CustomText>
+            </Typography>
             <View style={styles.imageContainer}>
                 <Image style={styles.img} source={{ uri: params.img }} />
             </View>
             {params.html_text && (
-                <RenderHTML source={{ html: params.html_text }} />
+                <RenderHTML
+                    baseStyle={{
+                        color:
+                            colorTheme == EColorThemes.DARK
+                                ? 'white'
+                                : undefined,
+                    }}
+                    source={{ html: params.html_text }}
+                />
             )}
         </>
     )

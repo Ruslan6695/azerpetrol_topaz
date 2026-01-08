@@ -12,7 +12,7 @@ export const OpenProductsScreen = memo(({ big_text, small_text }: Props) => {
         <HomeMainBlock
             link={ESCREENS.PRODUCTS}
             bgColor="rgba(0, 193, 42, 0.8)"
-            mainText={{ color: '#04781D', text: big_text, fz: 20 }}
+            mainText={big_text}
             desciptionText={small_text}
             icon={<ProductsSvg height={85 * SIZES.PX} width={100 * SIZES.PX} />}
             title="КУПИТЬ ПРОДУКТЫ"

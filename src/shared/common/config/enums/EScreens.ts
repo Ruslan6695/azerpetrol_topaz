@@ -7,12 +7,13 @@ export enum ESCREENS {
     FUEL_LOADING = '/fuelLoading',
     PRODUCTS = '/products',
     PROFILE = '/profile',
-    PAY_BALANCE = '/payBalance',
+    PAY_BALANCE = '/pay_balance',
     TRANSFER_BALANCE = '/transferBalance',
     ADD_JOIN_AСCOUNT = '/add_join_account',
     SUCCESS = '/success',
     CONTACTS = '/contacts',
     COFFEE = '/coffee',
+    FUEL_PRICES = '/fuel_prices',
     COFFEE_BONUS = '/coffee_bonus',
     HELP = '/help',
     OSAGO = '/osago',
@@ -25,5 +26,4 @@ export enum ESCREENS {
     ABOUT_APP = '/about_app',
     ABOUT_COMPANY = '/about_company',
     SETTINGS = '/settings',
-    FUEL_PRICES = '/fuel_prices'
 }

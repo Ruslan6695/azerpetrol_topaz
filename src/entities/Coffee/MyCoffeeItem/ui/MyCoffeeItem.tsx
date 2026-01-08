@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { IMyCoffeeItem } from '../config/interfaces/IMyCoffeeItem'
-import { CustomText } from '../../../../shared/CustomText'
 import { COLORS, SIZES } from '../../../../shared'
+import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
 import { NoImageIcon } from '../../../../shared/Icons/NoImageIcon'
 import { MPLayout } from '../../../../shared/MpLayout'
+import { Typography } from '../../../../shared/Typography'
+import { IMyCoffeeItem } from '../config/interfaces/IMyCoffeeItem'
 
 interface IProps extends IMyCoffeeItem {
     onPress: (coffee: IMyCoffeeItem) => void
@@ -18,7 +18,7 @@ export const MyCoffeeItem = memo(
         }, [id, onPress])
         const styles = StyleSheet.create({
             container: {
-                backgroundColor: isSelected ? COLORS.GREEN_2 : COLORS.GRAY_3,
+                backgroundColor: isSelected ? COLORS.BRAND.Primary : undefined,
                 width: '100%',
                 padding: SIZES.PX * 10,
                 borderRadius: SIZES.PX * 10,
@@ -26,10 +26,12 @@ export const MyCoffeeItem = memo(
                 alignItems: 'center',
             },
             imageContainer: {
-                backgroundColor: COLORS.GRAY_3,
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
                 borderRadius: SIZES.PX * 8,
-                justifyContent:'center',
-                alignItems:'center'
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 48 * SIZES.PX,
+                height: 48 * SIZES.PX,
             },
             image: {
                 objectFit: 'contain',
@@ -48,13 +50,13 @@ export const MyCoffeeItem = memo(
                         {img ? (
                             <Image style={styles.image} source={{ uri: img }} />
                         ) : (
-                            <NoImageIcon width={45} height={45} />
+                            <NoImageIcon width={48} height={48} />
                         )}
                     </View>
                 </MPLayout>
-                <CustomText white={isSelected} fw="500" fz={16}>
+                <Typography color={isSelected ? 'invert' : undefined}>
                     {name}
-                </CustomText>
+                </Typography>
             </CustomTouchableOpacity>
         )
     }

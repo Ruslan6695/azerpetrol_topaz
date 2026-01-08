@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react'
-import { IProfileJoinAccountItem } from '../config/interfaces/IProfileJoinAccountItem'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { ProfileImg } from '../../ProfileImg'
-import { CustomText } from '../../../../shared/CustomText'
+import { SIZES, ThemeStore } from '../../../../shared'
 import { CloseIcon } from '../../../../shared/CloseIcon'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
+import { ProfileImg } from '../../ProfileImg'
+import { IProfileJoinAccountItem } from '../config/interfaces/IProfileJoinAccountItem'
 
 interface IProps extends IProfileJoinAccountItem {
     onDeleteAccount: (account: IProfileJoinAccountItem) => void
@@ -20,18 +20,19 @@ export const ProfileJoinAccountItem = ({
     deleteDisabled,
     isCreator,
 }: IProps) => {
+    const COLORS = ThemeStore.useCOLORS()
     const handleDelete = useCallback(() => {
         onDeleteAccount({ id, name })
     }, [id, onDeleteAccount, name])
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: isCreator ? 'rgba(255,217,0,0.2)' : COLORS.WHITE,
-            borderRadius: SIZES.PX * 15,
-            alignItems: 'center',
-            height: 110 * SIZES.PX,
-            justifyContent: 'center',
-            padding: SIZES.PX * 15,
+            backgroundColor: isCreator
+                ? COLORS.BRAND.Primary
+                : COLORS.BACKGROUND.Primary,
+            borderRadius: SIZES.PX * 8,
+            height: 98 * SIZES.PX,
+            padding: SIZES.PX * 12,
             minWidth: SIZES.WIDTH(0.3),
             position: 'relative',
         },
@@ -50,13 +51,18 @@ export const ProfileJoinAccountItem = ({
                     onPress={handleDelete}
                     style={styles.deleteButton}
                 >
-                    <CloseIcon size={22} red />
+                    <CloseIcon size={19} />
                 </CustomTouchableOpacity>
             )}
 
-            <ProfileImg size={42} />
-            <CustomText fz={13}>{name}</CustomText>
-            {isCreator && <CustomText fz={8}>создатель</CustomText>}
+            <ProfileImg size={48} />
+            <Typography
+                color={isCreator ? 'invert' : undefined}
+                type="captionAccent"
+                marginsPaddings={{ mt: 12 }}
+            >
+                {name}
+            </Typography>
         </View>
     )
 }

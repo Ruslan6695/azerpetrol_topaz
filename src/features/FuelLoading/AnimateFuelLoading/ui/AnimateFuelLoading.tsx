@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import Animated, {
     useAnimatedStyle,
@@ -6,8 +6,10 @@ import Animated, {
     withRepeat,
     withTiming,
 } from 'react-native-reanimated'
-import { COLORS, IAzs, IColumn, ITrkType, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import { FuelLoadingFuellingTotals } from '../../../../entities/FuelLoading/FuelLoadingFuellingTotals'
+import { ITrkType, SIZES, ThemeStore } from '../../../../shared'
+import { BackgroundImage } from '../../../../shared/BackgroundImage'
+import { Typography } from '../../../../shared/Typography'
 type Props = {
     trkType: ITrkType | null
     liters: number
@@ -23,11 +25,12 @@ export const AnimateFuelLoading = ({
     liters,
     rubles,
 }: Props) => {
-    const containerMarginTop = useSharedValue(0)
+    const COLORS = ThemeStore.useCOLORS()
+    const containerMarginTop = useSharedValue(100)
     const rotateFirst = useSharedValue(-50)
     const rotateSecond = useSharedValue(110)
     const rotateThree = useSharedValue(0)
-    const [isShowAnimation, setIsShowAnimation] = useState(false)
+    const [isShowAnimation, setIsShowAnimation] = useState(true)
     const secondCircleAnSt = useAnimatedStyle(() => {
         return {
             transform: [{ rotate: rotateSecond.value + 'deg' }],
@@ -46,8 +49,70 @@ export const AnimateFuelLoading = ({
     }, [])
     //@ts-ignore
     const containerAnStyle = useAnimatedStyle(() => {
-        return { marginTop: SIZES.PX * 2600 - containerMarginTop.value * 16.3 }
+        return { marginTop: SIZES.PX * 3600 - containerMarginTop.value * 16.3 }
     }, [])
+    const value = 4
+    const styles = useMemo(() => {
+        return StyleSheet.create({
+            main: {
+                height: '100%',
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+                backgroundColor: COLORS.BACKGROUND.Primary,
+            },
+            absoluteObject: {
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                zIndex: 1,
+                paddingVertical: SIZES.PX * 60,
+                paddingHorizontal: SIZES.PX * 20,
+            },
+            content: {
+                alignItems: 'center',
+                flex: 1,
+                justifyContent: 'center',
+            },
+            row: {
+                flexDirection: 'row',
+                alignItems: 'center',
+            },
+
+            baseBox: {
+                transform: [{ scale: 1.1 }],
+                borderRadius: SIZES.PX * 20,
+            },
+            box: {
+                width: SIZES.PX * 200 * value,
+                height: SIZES.PX * 250 * value,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: SIZES.PX * 20,
+            },
+            waveOne: {
+                opacity: 0.8,
+                bottom: 0,
+                backgroundColor: COLORS.BRAND.Primary,
+                width: SIZES.PX * 200 * value,
+                height: SIZES.PX * 200 * value,
+                borderRadius: SIZES.PX * 88 * value,
+                top: 0,
+            },
+            waveTwo: {
+                opacity: 0.5,
+                backgroundColor: COLORS.BRAND.Secondary,
+                top: SIZES.PX * -210 * value,
+                height: SIZES.PX * 220 * value,
+            },
+            waveThree: {
+                opacity: 0.5,
+                backgroundColor: COLORS.BRAND.Tertiary,
+                top: SIZES.PX * -430 * value,
+            },
+        })
+    }, [COLORS])
 
     useEffect(() => {
         rotateFirst.value = withRepeat(
@@ -68,71 +133,32 @@ export const AnimateFuelLoading = ({
     }, [])
     useEffect(() => {
         containerMarginTop.value = withTiming(percent, { duration: 300 })
-        if (volume === 0) {
-            setIsShowAnimation(true)
-        }
+        /*  if (volume === 0) { */
+        setIsShowAnimation(true)
     }, [volume])
     return (
         <View style={styles.main}>
+            <BackgroundImage bottom={100} right={10} />
             <View style={styles.absoluteObject}>
-                <CustomText textAlign="center" fz={22} white>
-                    НАЛИВ ТОПЛИВА
-                </CustomText>
                 <View style={styles.content}>
-                    <CustomText
+                    <Typography
+                        type="displayLarge"
                         textAlign="center"
-                        marginsPaddings={{ mb: 20 }}
-                        fw="500"
-                        white
-                        fz={50}
+                        marginsPaddings={{ mb: 8, mt: 34 }}
                     >
                         {trkType?.name}
-                    </CustomText>
-                    <CustomText
+                    </Typography>
+
+                    <Typography
+                        type="bodyMedium"
                         textAlign="center"
-                        marginsPaddings={{ mb: 20 }}
-                        white
-                        fz={20}
+                        marginsPaddings={{ mb: 8 }}
                     >
                         Идет налив топлива...
-                    </CustomText>
-                    <CustomText fw="600" textAlign="center" white fz={50}>
+                    </Typography>
+                    <Typography type="displayLarge" textAlign="center">
                         {isShowAnimation ? Math.round(percent) : 0} %
-                    </CustomText>
-                </View>
-
-                <CustomText white fz={20}>
-                    ИДЕТ НАЛИВ{' '}
-                </CustomText>
-                <View style={styles.row}>
-                    {trkType && (
-                        <CustomText
-                            marginsPaddings={{ mt: 10, mb: 2 }}
-                            white
-                            fw="600"
-                            fz={40}
-                        >
-                            {isShowAnimation
-                                ? volume
-                                    ? volume.toFixed(2)
-                                    : 0
-                                : 0}{' '}
-                            / {liters} л
-                        </CustomText>
-                    )}
-                </View>
-
-                <View style={styles.row}>
-                    {trkType && (
-                        <CustomText white fw="600" fz={25}>
-                            {isShowAnimation
-                                ? (volume ? volume * trkType.price : 0).toFixed(
-                                      2
-                                  )
-                                : 0}{' '}
-                            / {rubles} ₽
-                        </CustomText>
-                    )}
+                    </Typography>
                 </View>
             </View>
 
@@ -159,66 +185,10 @@ export const AnimateFuelLoading = ({
                     </View>
                 </Animated.View>
             )}
+            <FuelLoadingFuellingTotals
+                liters={volume || 0}
+                rubles={rubles.toFixed(2)}
+            />
         </View>
     )
 }
-const value = 4
-const styles = StyleSheet.create({
-    main: {
-        height: '100%',
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        overflow: 'hidden',
-        backgroundColor: COLORS.GRAY,
-    },
-    absoluteObject: {
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        zIndex: 1,
-        paddingVertical: SIZES.PX * 60,
-        paddingHorizontal: SIZES.PX * 20,
-    },
-    content: {
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
-    baseBox: {
-        transform: [{ scale: 1.1 }],
-        borderRadius: SIZES.PX * 20,
-    },
-    box: {
-        width: SIZES.PX * 200 * value,
-        height: SIZES.PX * 250 * value,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: SIZES.PX * 20,
-    },
-    waveOne: {
-        opacity: 0.8,
-        bottom: 0,
-        backgroundColor: '#79A314',
-        width: SIZES.PX * 200 * value,
-        height: SIZES.PX * 200 * value,
-        borderRadius: SIZES.PX * 88 * value,
-        top: 0,
-    },
-    waveTwo: {
-        opacity: 0.5,
-        backgroundColor: '#95C12B',
-        top: SIZES.PX * -210 * value,
-        height: SIZES.PX * 220 * value,
-    },
-    waveThree: {
-        opacity: 0.5,
-        backgroundColor: '#95C12B',
-        top: SIZES.PX * -430 * value,
-    },
-})

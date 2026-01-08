@@ -1,8 +1,8 @@
 import React from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { COLORS, SIZES } from '../../../../shared'
+import { SIZES } from '../../../../shared'
 import { MPLayout } from '../../../../shared/MpLayout'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
@@ -13,9 +13,9 @@ export const GetHistoryPieChartWithoutData = (props: Props) => {
                 <Image source={require('../assets/blured.png')} />
             </MPLayout>
             <View style={styles.textBlock}>
-                <CustomText fw="600" textAlign="center">
+                <Typography type="caption" textAlign="center">
                     НЕТ ДАННЫХ ЗА ВЫБРАННЫЙ ПЕРИОД
-                </CustomText>
+                </Typography>
             </View>
         </View>
     )

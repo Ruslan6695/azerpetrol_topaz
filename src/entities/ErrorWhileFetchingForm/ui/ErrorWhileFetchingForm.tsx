@@ -1,10 +1,10 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { ErrorGif } from '../../../shared/ErrorGif'
-import { CustomButton, ECustomButtonTypes } from '../../../shared/CustomButton'
-import { CustomText } from '../../../shared/CustomText'
-import { MPLayout } from '../../../shared/MpLayout'
 import { IMarginsPaddings, SIZES } from '../../../shared'
+import { CustomButton } from '../../../shared/CustomButton'
+import { ErrorGif } from '../../../shared/ErrorGif'
+import { MPLayout } from '../../../shared/MpLayout'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {
     message: string
@@ -12,7 +12,7 @@ type Props = {
     margins?: IMarginsPaddings
     buttonProps?: {
         text?: string
-        type?: ECustomButtonTypes
+        type?: 'primary' | 'secondary' | 'tertiary'
         width?: { type: 'px' | 'absolute'; value: string | number }
     }
 }
@@ -42,15 +42,17 @@ export const ErrorWhileFetchingForm = ({
             <MPLayout mb={-30}>
                 <ErrorGif />
             </MPLayout>
-            <CustomText fz={17} style={styles.text} textAlign="center">
+            <Typography style={styles.text} textAlign="center">
                 {message}
-            </CustomText>
+            </Typography>
 
             {onReload && (
                 <CustomButton
                     onPress={onReload}
                     styled={{
-                        type: buttonProps?.type ? buttonProps.type : 'ERROR',
+                        type: buttonProps?.type
+                            ? buttonProps.type
+                            : 'secondary',
                         width: buttonProps?.width || { type: 'px', value: 200 },
                         marginsPaddings: { mt: 20 },
                     }}

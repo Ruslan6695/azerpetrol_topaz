@@ -1,19 +1,20 @@
 import { memo } from 'react'
-import { StyleSheet } from 'react-native'
-import PersonSvg from '../assets/person.svg'
-import PersonWhiteSvg from '../assets/personWhite.svg'
 import { SIZES } from '../../../common/config/constants/sizes'
+import PersonSvg from '../assets/person.svg'
+import PersonInvertSvg from '../assets/person_invert.svg'
+import { ThemeStore } from '../../../common/model/themeStore'
+import { EColorThemes } from '../../../common/config/enums/EColorThemes'
 type Props = {
     size?: number
-    white?: boolean
     width?: number
 }
 
-export const PersonIcon = memo(({ size, white, width }: Props) => {
-    if (white) {
+export const PersonIcon = memo(({ size, width }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
+    if (colorTheme === EColorThemes.DARK) {
         return (
-            <PersonWhiteSvg
-                width={(width || size || 25) * SIZES.PX}
+            <PersonInvertSvg
+                width={(size || 25) * SIZES.PX}
                 height={(size || 25) * SIZES.PX}
             />
         )

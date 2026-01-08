@@ -1,14 +1,15 @@
 import React, { ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
-import { CustomText } from '../../CustomText'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
-import { SIZES } from '../../common/config/constants/sizes'
-import { useModal } from '../../common/config/lib/hooks/useModal'
-import { CustomSelectBottomSheet } from './CustomSelectBottomSheet'
-import { ISelectOption } from '../config/interfaces/ISelectOption'
 import { DisabledIcon } from '../../DisabledIcon'
+import { Typography } from '../../Typography'
+import { COLORS } from '../../common/config/constants/COLORS'
+import { SIZES } from '../../common/config/constants/sizes'
+import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { useModal } from '../../common/config/lib/hooks/useModal'
+import { ISelectOption } from '../config/interfaces/ISelectOption'
+import { CustomSelectBottomSheet } from './CustomSelectBottomSheet'
+import { ThemeStore } from '../../common/model/themeStore'
 
 type Props = {
     styled?: {
@@ -35,6 +36,7 @@ type Props = {
 }
 
 export const CustomSelect = (props: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
     const width = props.styled
         ? props.styled.width
@@ -42,8 +44,8 @@ export const CustomSelect = (props: Props) => {
               typeof props.styled.width.value === 'number'
                 ? props.styled.width.value * SIZES.PX
                 : props.styled.width.value
-            : SIZES.WIDTH(0.85)
-        : SIZES.WIDTH(0.85)
+            : '100%'
+        : '100%'
 
     const height = props.styled
         ? props.styled.height
@@ -70,8 +72,8 @@ export const CustomSelect = (props: Props) => {
         },
         container: {
             backgroundColor: props.disabledProps?.disabled
-                ? COLORS.GRAY_3
-                : COLORS.GRAY_2,
+                ? COLORS.BACKGROUND.Tertiary
+                : COLORS.BACKGROUND.Tertiary,
             //@ts-ignore
             width,
             //@ts-ignore
@@ -96,9 +98,9 @@ export const CustomSelect = (props: Props) => {
         <>
             <View style={styles.wrapper}>
                 {props.title && (
-                    <CustomText fw="600" marginsPaddings={{ mb: 7, ml: 5 }}>
-                        {props.title.toUpperCase()}
-                    </CustomText>
+                    <Typography marginsPaddings={{ mb: 7, ml: 5 }}>
+                        {props.title}
+                    </Typography>
                 )}
                 <CustomTouchableOpacity
                     activeOpacity={!props.disabledProps?.disabled ? 0.4 : 1}
@@ -120,14 +122,14 @@ export const CustomSelect = (props: Props) => {
                             </View>
                         </>
                     )}
-                    <CustomText secondary={props.disabledProps?.disabled}>
+                    <Typography>
                         {props.selectedOption
                             ? props.selectedOption.label
                             : props.disabledProps?.disabled &&
                               props.disabledProps.disabledText
                             ? props.disabledProps.disabledText
                             : props.placeholder}
-                    </CustomText>
+                    </Typography>
                 </CustomTouchableOpacity>
             </View>
             {

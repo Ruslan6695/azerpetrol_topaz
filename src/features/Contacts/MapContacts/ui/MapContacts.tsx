@@ -2,16 +2,23 @@ import { FlashList } from '@shopify/flash-list'
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { CustomInput, useInput } from '../../../../shared/CustomInput'
 import { ContactItem, IContactItem } from '../../../../entities/ContactItem'
-import { COLORS, ESCREENS, SIZES, getContacts } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import {
+    COLORS,
+    ESCREENS,
+    SIZES,
+    ThemeStore,
+    getContacts,
+} from '../../../../shared'
+import { CustomInput, useInput } from '../../../../shared/CustomInput'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {
     onSelectLink: ESCREENS | undefined
 }
 
 export const MapContacts = memo(({ onSelectLink }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const router = useRouter()
     const [contacts, setContacts] = useState<IContactItem[]>([])
 
@@ -48,6 +55,21 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
         setFilteredContacts(resp)
     }, [])
 
+    const styles = StyleSheet.create({
+        wrapper: {
+            height: SIZES.HEIGHT(0.8),
+        },
+        contacts: {
+            gap: 10 * SIZES.PX,
+        },
+        contactsWrapper: {
+            flex: 1,
+            backgroundColor: COLORS.BACKGROUND.Tertiary,
+            borderRadius: SIZES.PX * 11,
+            paddingVertical: SIZES.PX * 5,
+        },
+    })
+
     useEffect(() => {
         fetchContacts()
     }, [])
@@ -68,14 +90,13 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
 
             <View style={styles.contactsWrapper}>
                 {filteredContacts?.length === 0 ? (
-                    <CustomText
-                        fz={18}
-                        secondary
+                    <Typography
+                        color="secondary"
                         marginsPaddings={{ mt: 100 }}
                         textAlign="center"
                     >
                         КОНТАКТЫ НЕ НАЙДЕНЫ
-                    </CustomText>
+                    </Typography>
                 ) : (
                     <FlashList
                         contentContainerStyle={{
@@ -98,18 +119,4 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
             <View></View>
         </View>
     )
-})
-const styles = StyleSheet.create({
-    wrapper: {
-        height: SIZES.HEIGHT(0.8),
-    },
-    contacts: {
-        gap: 10 * SIZES.PX,
-    },
-    contactsWrapper: {
-        flex: 1,
-        backgroundColor: COLORS.GRAY_3,
-        borderRadius: SIZES.PX * 11,
-        paddingVertical: SIZES.PX * 5,
-    },
 })

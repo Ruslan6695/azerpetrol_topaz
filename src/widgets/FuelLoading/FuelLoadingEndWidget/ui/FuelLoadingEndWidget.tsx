@@ -1,106 +1,70 @@
-import { useRouter } from 'expo-router'
-import { memo, useEffect } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { useRouter } from "expo-router";
+import { memo, useEffect } from "react";
+import { StyleSheet, View } from "react-native";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-} from 'react-native-reanimated'
-import { FuelLoadingEndInfoItem } from '../../../../entities/FuelLoadingEndInfoItem'
-import { COLORS, ESCREENS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
-import { SuccessImage } from '../../../../shared/SuccessImage'
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+import { COLORS, SIZES, ThemeStore } from "../../../../shared";
+import { SuccessImage } from "../../../../shared/SuccessImage";
+import { Typography } from "../../../../shared/Typography";
+import { FuelLoadingEndTotals } from "../../../../entities/FuelLoading/FuelLoadingEndInfoItem";
 
 type Props = {
-    rubles: number
-    volume: number
-    balance: number
-}
+  rubles: number;
+  volume: number;
+  balance: number;
+};
 
 export const FuelLoadingEndWidget = memo(
-    ({ balance, rubles, volume }: Props) => {
-        const router = useRouter()
-        const iconTranslateX = useSharedValue(-500)
-        const infoTranslateX = useSharedValue(500)
+  ({ balance, rubles, volume }: Props) => {
+    const COLORS = ThemeStore.useCOLORS();
+    const topValue = useSharedValue(-500 * SIZES.PX);
 
-        const iconAnimStyle = useAnimatedStyle(() => {
-            return { transform: [{ translateX: iconTranslateX.value }] }
-        }, [])
-        const infoAnimStyle = useAnimatedStyle(() => {
-            return { transform: [{ translateX: infoTranslateX.value }] }
-        }, [])
+    const animStyle = useAnimatedStyle(() => {
+      return { top: topValue.value };
+    }, []);
 
-        useEffect(() => {
-            setTimeout(() => {
-                router.navigate(ESCREENS.HOME)
-            }, 6000)
-            iconTranslateX.value = withSpring(0, { damping: 12 })
-            infoTranslateX.value = withSpring(0, { damping: 12 })
-        })
-        return (
-            <View style={styles.wrapper}>
-                <View style={styles.content}>
-                    <Animated.View style={iconAnimStyle}>
-                        <SuccessImage width={200} height={125} />
-                        <CustomText
-                            textAlign="center"
-                            marginsPaddings={{ mt: 30 }}
-                            fw="700"
-                            fz={23}
-                        >
-                            НАЛИВ ЗАВЕРШЕН!
-                        </CustomText>
-                    </Animated.View>
-                </View>
-                <Animated.View
-                    style={[
-                        infoAnimStyle,
-                        { width: '100%', alignItems: 'center' },
-                    ]}
-                >
-                    <FuelLoadingEndInfoItem
-                        info={`${rubles.toFixed(2)} ₽`}
-                        title="Списано"
-                    />
-                    <FuelLoadingEndInfoItem
-                        info={`${volume.toFixed(2)} ₽`}
-                        title="Заправлено"
-                    />
-                    <FuelLoadingEndInfoItem
-                        info={`${balance.toFixed(2)} ₽`}
-                        title="Остаток"
-                    />
-                    <CustomText
-                        textAlign="center"
-                        fz={18}
-                        marginsPaddings={{ mt: 30 }}
-                        fw="500"
-                    >
-                        СПАСИБО ЗА ТО ЧТО ВЫ C НАМИ
-                    </CustomText>
-                </Animated.View>
-            </View>
-        )
-    }
-)
-
-const styles = StyleSheet.create({
-    wrapper: {
+    const styles = StyleSheet.create({
+      wrapper: {
         width: SIZES.WIDTH(1),
         height: SIZES.HEIGHT(1),
-        backgroundColor: COLORS.WHITE,
+        backgroundColor: COLORS.BACKGROUND.Primary,
         paddingVertical: SIZES.PX * 40,
         paddingHorizontal: SIZES.PX * 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    content: {
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-    },
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-})
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      content: {
+        alignItems: "center",
+        justifyContent: "center",
+        top: 0,
+      },
+
+      row: {
+        flexDirection: "row",
+        alignItems: "center",
+      },
+    });
+
+    useEffect(() => {
+      topValue.value = withSpring(0, { damping: 50 });
+    }, []);
+    return (
+      <View style={styles.wrapper}>
+        <Animated.View style={[styles.content, animStyle]}>
+          <SuccessImage />
+          <Typography marginsPaddings={{ mt: 16, mb: 8 }} type="displayMedium">
+            Автомобиль заправлен
+          </Typography>
+          <Typography marginsPaddings={{ mb: 200 }}>
+            Спасибо, что вы с нами.
+          </Typography>
+        </Animated.View>
+
+        <FuelLoadingEndTotals balance={balance} sum={rubles} liters={volume} />
+      </View>
+    );
+  }
+);

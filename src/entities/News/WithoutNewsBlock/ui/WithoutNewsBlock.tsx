@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { NewsGif } from '../../../../shared/NewsGif'
-import { CustomText } from '../../../../shared/CustomText'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
@@ -9,9 +9,7 @@ export const WithoutNewsBlock = memo((props: Props) => {
     return (
         <View style={styles.container}>
             <NewsGif />
-            <CustomText textAlign="center" fz={17} fw="300">
-                НОВОСТЕЙ ПОКА НЕТ
-            </CustomText>
+            <Typography textAlign="center">Новостей пока нет</Typography>
         </View>
     )
 })

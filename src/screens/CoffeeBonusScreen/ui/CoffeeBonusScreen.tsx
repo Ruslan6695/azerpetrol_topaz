@@ -1,9 +1,8 @@
 import { memo } from 'react'
 import { InternalPagesLayout } from '../../../layouts/InternalPagesLayout'
-import { CoffeeBonusWidget } from '../../../widgets/Coffee/CoffeeBonusWidget'
-import { useLocalSearchParams } from 'expo-router'
-import { TCoffeeBonusScreenParams } from '../../../shared'
 import { CoffeeBonus } from '../../../proccesses/CoffeeBonus'
+import { useLocalSearchParams } from 'expo-router'
+import { TCoffeeBonusScreenParams } from '../../../shared/common/config/types/routeParams/TCoffeeBonusScreenParams'
 
 type Props = {}
 

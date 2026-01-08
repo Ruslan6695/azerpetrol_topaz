@@ -1,7 +1,6 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
 import Skeleton from '../../../../shared/Skeleton/ui/Skeletons'
 
 type Props = {}

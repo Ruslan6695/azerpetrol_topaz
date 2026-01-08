@@ -10,6 +10,7 @@ import Animated, {
 import { SIZES } from '../../common/config/constants/sizes'
 import { COLORS } from '../../common/config/constants/COLORS'
 import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { ThemeStore } from '../../common/model/themeStore'
 
 type Props = {
     children: ReactNode
@@ -25,11 +26,11 @@ const BottomSheet = ({
     children,
     handleClose,
     hideDisabled,
-    bottomPx,
     isOpened,
     bgDark,
     closeOnPressOutside,
 }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const translateY = useSharedValue(0)
     const context = useSharedValue({ y: 0 })
 
@@ -79,7 +80,7 @@ const BottomSheet = ({
             position: 'absolute',
             width: SIZES.WIDTH(1),
 
-            backgroundColor: COLORS.WHITE,
+            backgroundColor: COLORS.BACKGROUND.Tertiary,
             borderTopLeftRadius: SIZES.PX * 40,
             borderTopRightRadius: SIZES.PX * 40,
 

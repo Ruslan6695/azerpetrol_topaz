@@ -1,14 +1,15 @@
 import { memo, useMemo } from 'react'
-import { StyleSheet, View, ViewBase } from 'react-native'
-import { IFuelPricesPriceBlock } from '../config/interfaces/IFuelPricesPriceBlock'
-import { CustomText } from '../../../../shared/CustomText'
-import { COLORS, SIZES } from '../../../../shared'
+import { StyleSheet, View } from 'react-native'
+import { SIZES, ThemeStore } from '../../../../shared'
 import { MPLayout } from '../../../../shared/MpLayout'
+import { Typography } from '../../../../shared/Typography'
+import { IFuelPricesPriceBlock } from '../config/interfaces/IFuelPricesPriceBlock'
 
 interface IProps extends IFuelPricesPriceBlock {}
 
 export const FuelPricesPriceBlock = memo(
     ({ id, name, price, bonus, discount }: IProps) => {
+        const COLORS = ThemeStore.useCOLORS()
         const discountPrice = useMemo(() => {
             if (discount) {
                 if (discount.type === 'percent') {
@@ -18,30 +19,44 @@ export const FuelPricesPriceBlock = memo(
                 }
             }
         }, [discount, price])
+        const styled = StyleSheet.create({
+            container: {
+                width: SIZES.WIDTH(0.42),
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
+                padding: SIZES.PX * 10,
+                borderRadius: 10 * SIZES.PX,
+            },
+            top: {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+            },
+        })
+
         return (
             <View style={styled.container}>
                 <View style={styled.top}>
-                    <CustomText>{name}</CustomText>
-                    <CustomText fz={14}>{price.toFixed(2)} ₽</CustomText>
+                    <Typography>{name}</Typography>
+                    <Typography>{price.toFixed(2)} ₽</Typography>
                 </View>
                 {discount ? (
                     <MPLayout mt={5 * SIZES.PX}>
                         <View style={styled.top}>
-                            <CustomText fz={12}>Со скидкой</CustomText>
-                            <CustomText fz={14} color={COLORS.RED} fw="600">
+                            <Typography type="caption">Со скидкой</Typography>
+                            <Typography type="bodyAccentSmall" color="error">
                                 {discountPrice} ₽
-                            </CustomText>
+                            </Typography>
                         </View>
                     </MPLayout>
                 ) : null}
                 {bonus ? (
                     <MPLayout mt={5 * SIZES.PX}>
                         <View style={styled.top}>
-                            <CustomText fz={12}>Кэшбек</CustomText>
-                            <CustomText fz={14} color={COLORS.GREEN} fw="700">
+                            <Typography type="caption">Кэшбек</Typography>
+                            <Typography type="bodyAccentSmall" color="success">
                                 {bonus.value}{' '}
                                 {bonus.type === 'rubles' ? '₽' : '%'}
-                            </CustomText>
+                            </Typography>
                         </View>
                     </MPLayout>
                 ) : null}
@@ -49,17 +64,3 @@ export const FuelPricesPriceBlock = memo(
         )
     }
 )
-
-const styled = StyleSheet.create({
-    container: {
-        width: SIZES.WIDTH(0.42),
-        backgroundColor: COLORS.GRAY_2,
-        padding: SIZES.PX * 10,
-        borderRadius: 10 * SIZES.PX,
-    },
-    top: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-})

@@ -1,14 +1,31 @@
-import { Link, useRouter } from 'expo-router'
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { COLORS, ESCREENS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import { useRouter } from 'expo-router'
+import React, { useMemo } from 'react'
+import { StyleSheet } from 'react-native'
+import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
 export const OpenPayBalanceScreen = (props: Props) => {
     const router = useRouter()
+    const COLORS = ThemeStore.useCOLORS()
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                container: {
+                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    padding: SIZES.PX * 16,
+                    borderRadius: SIZES.PX * 16,
+                    flex: 1,
+                    justifyContent: 'center',
+                    borderColor: COLORS.BRAND.Secondary,
+                    borderWidth: 0.9 * SIZES.PX,
+                },
+            }),
+        [COLORS]
+    )
+
     return (
         <CustomTouchableOpacity
             onPress={() => {
@@ -16,17 +33,7 @@ export const OpenPayBalanceScreen = (props: Props) => {
             }}
             style={styles.container}
         >
-            <CustomText fw="600">{'Пополнить\nбаланс'}</CustomText>
+            <Typography type="displaySmall">Пополнить баланс</Typography>
         </CustomTouchableOpacity>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: COLORS.GRAY_3,
-        padding: SIZES.PX * 20,
-        borderRadius: SIZES.PX * 15,
-        flex: 1,
-        justifyContent: 'center',
-    },
-})

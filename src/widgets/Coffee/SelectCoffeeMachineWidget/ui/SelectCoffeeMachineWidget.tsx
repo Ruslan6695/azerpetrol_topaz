@@ -1,7 +1,6 @@
 import { memo, useCallback, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import BottomSheet from '../../../../shared/BottomSheet/ui/BottomSheet'
-import { CustomText } from '../../../../shared/CustomText'
 import { COLORS, SIZES } from '../../../../shared'
 import {
     SelectCoffeeMachine,
@@ -17,6 +16,7 @@ import {
     SELECT_COFFEE_MACHINES_SCAN_INFO_TEXTS,
     SELECT_COFFEE_MACHINES_WIDGET_INFO_TEXTS,
 } from '../config/constants/SELECT_COFFEE_MACHINES_WIDGET_INFO_TEXTS'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {
     onSelectCoffeeMachineId: (id: number) => void
@@ -51,16 +51,11 @@ export const SelectCoffeeMachineWidget = ({
 
     return (
         <>
-            <CustomText
-                marginsPaddings={{ mb: 15 }}
-                textAlign="center"
-                fw="600"
-                fz={22}
-            >
+            <Typography marginsPaddings={{ mb: 15 }} textAlign="center">
                 {selectedType === 'scan'
                     ? 'Просканируйте QR с кофемашины'
                     : 'Выберите кофемашину'}
-            </CustomText>
+            </Typography>
             {selectedType === 'select' ? (
                 <>
                     <SelectCoffeeMachine

@@ -1,8 +1,9 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
 import { ProfileImg } from '../../../../entities/Profile/ProfileImg'
+import { Typography } from '../../../../shared/Typography'
 import { ProfileWidgetSkeleton } from './ProfileWidgetSkeleton'
+import { ChangeColorTheme } from '../../../../features/ChangeColorTheme'
 
 type Props = {
     name: string | undefined
@@ -18,12 +19,15 @@ export const ProfileWidget = memo(({ name, phone, isDataLoading }: Props) => {
                 <ProfileWidgetSkeleton />
             ) : (
                 <>
-                    <CustomText marginsPaddings={{ mt: 10 }} fz={22} fw="600">
+                    <Typography
+                        marginsPaddings={{ mb: 8 }}
+                        type="displayMedium"
+                    >
                         {name}
-                    </CustomText>
-                    <CustomText marginsPaddings={{ mb: 20 }}>
+                    </Typography>
+                    <Typography marginsPaddings={{ mb: 16 }}>
                         {phone}
-                    </CustomText>
+                    </Typography>
                 </>
             )}
         </View>

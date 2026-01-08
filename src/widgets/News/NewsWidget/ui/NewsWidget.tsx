@@ -6,6 +6,7 @@ import { SIZES, useFetchData } from '../../../../shared'
 import { newsWidgetApi } from '../api/newsWidgetApi'
 import { NewsItem, NewsItemSkeleton } from '../../../../entities/News/NewsItem'
 import { WithoutNewsBlock } from '../../../../entities/News/WithoutNewsBlock'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
@@ -28,8 +29,9 @@ export const NewsWidget = memo(({}: Props) => {
     }, [])
     return (
         <>
-            <ScreenTitle title="Новости" />
-
+            <Typography marginsPaddings={{ mb: 10 }} type="headlineSmall">
+                Новости
+            </Typography>
             {isDataLoading ? (
                 <View style={styles.container}>
                     {[1, 2, 3, 4, 5, 6].map((id) => (
@@ -38,15 +40,18 @@ export const NewsWidget = memo(({}: Props) => {
                 </View>
             ) : errorText ? (
                 <ErrorWhileFetchingForm
+                    buttonProps={{ type: 'primary' }}
                     onReload={handleReloadData}
                     message={errorText}
                 />
             ) : (
                 <View style={styles.container}>
-                    {data?.news.length === 0 ? (
+                    {data?.news?.length === 0 ? (
                         <WithoutNewsBlock />
                     ) : (
-                        data?.news.map((ne) => <NewsItem {...ne} key={ne.id} />)
+                        data?.news?.map((ne) => (
+                            <NewsItem {...ne} key={ne.id} />
+                        ))
                     )}
                 </View>
             )}

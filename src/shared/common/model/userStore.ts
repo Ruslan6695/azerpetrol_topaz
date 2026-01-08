@@ -51,6 +51,15 @@ const store = create<IUserStore>()(
                 state.user = user
             })
         },
+        setToken(token) {
+            setItemToAsyncStorage({
+                key: EAsyncStoreKeys.TOKEN,
+                value: token,
+            })
+            set((state) => {
+                if (state.user) state.user = { ...state.user, token: token }
+            })
+        },
         registrationUser(user) {
             set((state) => {
                 setItemToAsyncStorage({

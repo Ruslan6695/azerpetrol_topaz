@@ -8,6 +8,9 @@ import { profileApi } from '../api/profileApi'
 import { ProfileLinksWidget } from '../../../widgets/Profile/ProfileLinksWidget'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import { useFocusEffect } from 'expo-router'
+import { ScreenTitle } from '../../../entities/ScreenTitle'
+import { View } from 'react-native'
+import { ChangeColorTheme } from '../../../features/ChangeColorTheme'
 
 type Props = {}
 
@@ -67,6 +70,17 @@ export const Profile = memo((props: Props) => {
     )
     return (
         <>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
+                <ScreenTitle mb={32} title="Профиль" />
+                <ChangeColorTheme />
+            </View>
+
             {errorText ? (
                 <ErrorWhileFetchingForm
                     margins={{ mb: 55 }}
@@ -76,12 +90,12 @@ export const Profile = memo((props: Props) => {
             ) : (
                 <>
                     <ProfileWidget
-                        isDataLoading={isDataLoading}
+                        isDataLoading={!data && isDataLoading}
                         name={data?.name}
                         phone={data?.phone}
                     />
                     <ProfileJoinAccountsWidget
-                        isDataLoading={isDataLoading}
+                        isDataLoading={!data && isDataLoading}
                         onReloadData={handleReloadData}
                         profileId={data?.id}
                         balanceCreatorId={data?.balance_creator_id}

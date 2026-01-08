@@ -15,7 +15,7 @@ export const ScanCoffeeMachine = ({ onGoBack, onScan }: Props) => {
             <CustomButton
                 onPress={onGoBack}
                 styled={{
-                    type: 'OUTLINED',
+                    type: 'secondary',
                     width: { type: 'absolute', value: '100%' },
                     marginsPaddings: { mt: 20 },
                 }}

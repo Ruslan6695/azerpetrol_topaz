@@ -9,7 +9,10 @@ type Props = {
     onScan: (scannedText: string) => void
 }
 export function CameraScanner({ onScan }: Props) {
-   
+    const [facing, setFacing] = useState<'back' | 'front'>('back')
+    const [loadings, setLoadings] = useState({
+        isCameraPermissionLoading: false,
+    })
     const [canAskAgain, setCanAskAgain] = useState(true)
     const [hadPermissions, setHadPermissions] = useState(true)
     const [permission, requestPermission] = useCameraPermissions()
@@ -89,13 +92,3 @@ export function CameraScanner({ onScan }: Props) {
         </View>
     )
 }
-
-const styled = StyleSheet.create({
-    box: {
-        width: 50,
-        height: 50,
-        borderColor: COLORS.RED,
-        borderWidth: 1,
-        position: 'absolute',
-    },
-})

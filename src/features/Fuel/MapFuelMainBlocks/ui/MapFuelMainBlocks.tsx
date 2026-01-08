@@ -1,10 +1,13 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { SIZES } from '../../../../shared'
+import { EColorThemes, SIZES, ThemeStore } from '../../../../shared'
 import { FuelMainBlock } from '../../../../entities/Fuel/FuelMainBlock'
 import ScanSvg from '../assets/scanColumn.svg'
+import ScanDarkSvg from '../assets/scanColumnDark.svg'
 import SelectSvg from '../assets/selectColumn.svg'
+import SelectDarkSvg from '../assets/selectColumnDark.svg'
 import HelpSvg from '../assets/help.svg'
+import HelpDark from '../assets/helpDark.svg'
 type Props = {
     onSelectColumn: () => void
     onScanColumn: () => void
@@ -13,37 +16,58 @@ type Props = {
 
 export const MapFuelMainBlocks = memo(
     ({ onNeedHelp, onScanColumn, onSelectColumn }: Props) => {
+        const colorTheme = ThemeStore.useTheme()
         return (
             <View style={styles.container}>
                 <FuelMainBlock
                     onPress={onScanColumn}
-                    title={`СКАНИРУЙ\nQR-КОД\nС КОЛОНКИ`}
-                    bgColor="rgba(155, 118, 249, 0.8)"
+                    title={`Сканируйте QR-код\nс колонки`}
                     icon={
-                        <ScanSvg
-                            height={SIZES.PX * 100}
-                            width={SIZES.PX * 100}
-                        />
+                        colorTheme === EColorThemes.LIGHT ? (
+                            <ScanSvg
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        ) : (
+                            <ScanDarkSvg
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        )
                     }
                 />
                 <FuelMainBlock
-                    textDark
                     onPress={onSelectColumn}
-                    title={`ВЫБРАТЬ\nКОЛОНКУ\nИЗ СПИСКА`}
-                    bgColor="rgba(245, 245, 245, 0.8)"
+                    title={`Выбрать колонку\nиз списка`}
                     icon={
-                        <SelectSvg
-                            height={SIZES.PX * 100}
-                            width={SIZES.PX * 100}
-                        />
+                        colorTheme === EColorThemes.LIGHT ? (
+                            <SelectSvg
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        ) : (
+                            <SelectDarkSvg
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        )
                     }
                 />
                 <FuelMainBlock
                     onPress={onNeedHelp}
-                    title={`НУЖНА\nПОМОЩЬ`}
-                    bgColor="rgba(76, 81, 89, 1)"
+                    title={`Мне нужна\nпомощь`}
                     icon={
-                        <HelpSvg height={SIZES.PX * 90} width={SIZES.PX * 90} />
+                        colorTheme === EColorThemes.LIGHT ? (
+                            <HelpSvg
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        ) : (
+                            <HelpDark
+                                height={SIZES.PX * 32}
+                                width={SIZES.PX * 32}
+                            />
+                        )
                     }
                 />
             </View>
@@ -53,6 +77,6 @@ export const MapFuelMainBlocks = memo(
 
 const styles = StyleSheet.create({
     container: {
-        gap: 15 * SIZES.PX,
+        gap: 12 * SIZES.PX,
     },
 })

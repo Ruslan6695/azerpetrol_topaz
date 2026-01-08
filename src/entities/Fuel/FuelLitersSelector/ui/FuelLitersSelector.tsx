@@ -1,30 +1,31 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { StyleSheet, View, useAnimatedValue } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import { LinearGradient } from 'expo-linear-gradient'
+import React, { memo, useCallback, useEffect, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
     runOnJS,
     useAnimatedStyle,
-    useDerivedValue,
     useSharedValue,
     withSpring,
 } from 'react-native-reanimated'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import { FuelLitersSelectorTick } from './FuelLitersSelectorTick'
-import ScrollSvg from '../assets/scroll.svg'
+import { SIZES, ThemeStore } from '../../../../shared'
+import { Typography } from '../../../../shared/Typography'
 type Props = {
-    litersValue: string
     onChangeLitersValue: (value: string) => void
+    fuelPrice: number
+    litersValue: string
 }
+const SELECTOR_HEIGHT = 280
+const MAX_LITERS = 60
+
+const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient)
 
 export const FuelLitersSelector = memo(
-    ({ litersValue, onChangeLitersValue }: Props) => {
+    ({ onChangeLitersValue, fuelPrice, litersValue }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
         const rHeight = useSharedValue(0)
         const [height, setheight] = useState(0)
         const context = useSharedValue({ y: 0 })
-        const liters = useMemo(() => {
-            return [60, 50, 40, 30, 20, 10]
-        }, [])
 
         const rStyle = useAnimatedStyle(() => {
             return { height: rHeight.value }
@@ -34,14 +35,31 @@ export const FuelLitersSelector = memo(
             onChangeLitersValue(String(val))
         }, [])
         const handleSetHeight = useCallback((val: number) => {
-            setheight(Math.round((val / (SIZES.PX * 240)) * 60))
+            setheight(
+                Math.round((val / (SIZES.PX * SELECTOR_HEIGHT)) * MAX_LITERS)
+            )
         }, [])
 
-        const handlePressOnTick = useCallback((liters: number) => {
-            rHeight.value = liters * 4 * SIZES.PX
-            onChangeLitersValue(String(liters))
-            setheight(liters)
-        }, [])
+        const handlePressOnPlus = useCallback(() => {
+            if (height < MAX_LITERS) {
+                onChangeLitersValue(String(height + 1))
+                setheight((prev) => {
+                    const px = (SELECTOR_HEIGHT * SIZES.PX) / MAX_LITERS
+                    rHeight.value = withSpring(px * (prev + 1))
+                    return (prev += 1)
+                })
+            }
+        }, [MAX_LITERS, height])
+        const handlePressOnMinus = useCallback(() => {
+            if (height != 0) {
+                onChangeLitersValue(String(height - 1))
+                setheight((prev) => {
+                    const px = (SELECTOR_HEIGHT * SIZES.PX) / MAX_LITERS
+                    rHeight.value = withSpring(px * (prev - 1))
+                    return (prev -= 1)
+                })
+            }
+        }, [height])
 
         const PanGeture = Gesture.Pan()
             .onStart((event) => {
@@ -49,110 +67,103 @@ export const FuelLitersSelector = memo(
             })
             .onChange((e) => {
                 const value = -e.translationY + context.value.y
-                if (value >= 0 && value < 240 * SIZES.PX) {
+                if (value >= 0 && value < SELECTOR_HEIGHT * SIZES.PX) {
                     rHeight.value = -e.translationY + context.value.y
                     runOnJS(handleSetHeight)(value)
                 } else if (value < 0) {
                     runOnJS(handleSetHeight)(0)
-                } else if (value > 240 * SIZES.PX) {
-                    runOnJS(handleSetHeight)(240 * SIZES.PX)
+                } else if (value > SELECTOR_HEIGHT * SIZES.PX) {
+                    runOnJS(handleSetHeight)(SELECTOR_HEIGHT * SIZES.PX)
                 }
             })
             .onEnd((e) => {
                 const value = -e.translationY + context.value.y
 
-                if (value >= 0 && value < 240 * SIZES.PX) {
+                if (value >= 0 && value < SELECTOR_HEIGHT * SIZES.PX) {
                     runOnJS(handleSetLiters)(height)
                 } else if (value < 0) {
                     runOnJS(handleSetLiters)(height)
-                } else if (value > 240) {
+                } else if (value > SELECTOR_HEIGHT) {
                     runOnJS(handleSetLiters)(height)
                 }
             })
 
+        const styles = StyleSheet.create({
+            wrapper: {
+                flexDirection: 'row',
+                alignItems: 'center',
+            },
+            container: {
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
+                height: SELECTOR_HEIGHT * SIZES.PX,
+                width: 130 * SIZES.PX,
+                borderRadius: SIZES.PX * 20,
+                position: 'relative',
+                overflow: 'hidden',
+                alignItems: 'center',
+                justifyContent: 'center',
+            },
+            left: {
+                flex: 1,
+                alignItems: 'flex-end',
+                paddingRight: 16 * SIZES.PX,
+            },
+            right: {
+                flex: 1,
+                alignItems: 'flex-start',
+                paddingLeft: 16 * SIZES.PX,
+            },
+            animatedBlock: {
+                backgroundColor: COLORS.BRAND.Secondary,
+                width: '100%',
+                borderRadius: SIZES.PX * 20,
+                position: 'absolute',
+                bottom: 0,
+                alignItems: 'center',
+                justifyContent: 'center',
+            },
+        })
+
         useEffect(() => {
-            const value = +litersValue * 4
-            if (value > 240) {
-                rHeight.value = 240
-                setheight(60)
+            const px = (SELECTOR_HEIGHT * SIZES.PX) / MAX_LITERS
+
+            const value = +litersValue * px
+            if (value > SELECTOR_HEIGHT) {
+                rHeight.value = SELECTOR_HEIGHT * SIZES.PX
             } else if (value < 0) {
                 rHeight.value = 0
-                setheight(value / 4)
             } else {
                 rHeight.value = value * SIZES.PX
-                setheight(value / 4)
             }
+            setheight(+litersValue)
         }, [litersValue])
 
         return (
             <View style={styles.wrapper}>
+               
+
                 <GestureDetector gesture={PanGeture}>
                     <View style={styles.container}>
-                        <View style={styles.litersText}>
-                            {height > 0 ? (
-                                <CustomText fz={30} white>
-                                    {height}
-                                </CustomText>
-                            ) : (
-                                <ScrollSvg
-                                    width={SIZES.PX * 70}
-                                    height={SIZES.PX * 70}
-                                />
-                            )}
-                        </View>
-
-                        <Animated.View
+                        <AnimatedLinearGradient
+                            colors={[
+                                COLORS.BRAND.Tertiary,
+                                COLORS.BRAND.Primary,
+                            ]}
                             style={[styles.animatedBlock, rStyle]}
-                        ></Animated.View>
+                        ></AnimatedLinearGradient>
+                        <Typography type="bodyAccentMedium">
+                            {height}
+                        </Typography>
                     </View>
                 </GestureDetector>
-
-                <View style={styles.litersBlock}>
-                    {liters.map((liter) => (
-                        <FuelLitersSelectorTick
-                            onPress={handlePressOnTick}
-                            liters={liter}
-                            key={liter}
-                            currentHeight={30}
-                        />
-                    ))}
-                </View>
+                {/* <View style={styles.right}>
+                    <FuelLitersSelectorLitersBlock
+                        onPressOnPlus={handlePressOnPlus}
+                        onPressOnMinus={handlePressOnMinus}
+                        liters={height}
+                    />
+                </View> */}
             </View>
         )
     }
 )
-
-const styles = StyleSheet.create({
-    wrapper: {
-        flexDirection: 'row',
-    },
-    container: {
-        backgroundColor: COLORS.PURPLE_3,
-        height: 240 * SIZES.PX,
-        width: 100 * SIZES.PX,
-        borderRadius: SIZES.PX * 20,
-        position: 'relative',
-        overflow: 'hidden',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    litersBlock: {
-        justifyContent: 'space-between',
-        marginLeft: SIZES.PX * 15,
-    },
-    animatedBlock: {
-        backgroundColor: COLORS.PURPLE,
-        width: '100%',
-        borderRadius: SIZES.PX * 20,
-        position: 'absolute',
-        bottom: 0,
-    },
-    litersText: {
-        width: '100%',
-        height: '100%',
-
-        zIndex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-})

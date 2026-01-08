@@ -48,7 +48,10 @@ export const FuelSelectLitersWidget = memo(({ setRoad }: Props) => {
                 column={fuelStore.column}
                 trkType={fuelStore.trkType}
             />
-            <MapInfoBlocks infoBlocks={FUEL_SELECT_LITERS_WIDGET_INFO_TEXTS} />
+            <MapInfoBlocks
+                mt={20}
+                infoBlocks={FUEL_SELECT_LITERS_WIDGET_INFO_TEXTS}
+            />
         </>
     )
 })

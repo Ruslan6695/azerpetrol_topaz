@@ -1,11 +1,15 @@
-import { memo, useEffect } from 'react'
+import { useRouter } from 'expo-router'
+import { memo, useEffect, useMemo } from 'react'
+import { StyleSheet, View } from 'react-native'
+import {
+    ESCREENS,
+    SIZES,
+    ThemeStore
+} from '../../../../shared'
 import { CustomButton } from '../../../../shared/CustomButton'
 import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { PhoneIcon } from '../../../../shared/PhoneIcon'
-import { SumIcon } from '../../../../shared/SumIcon'
-import { PersonIcon } from '../../../../shared/Icons/PersonIcon'
-import { useRouter } from 'expo-router'
-import { ESCREENS, UserStore } from '../../../../shared'
+import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { ContactsIcon } from '../../../../shared/Icons/ContactsIcon'
 import { showError } from '../../../../shared/ToastComponent'
 
 type Props = {
@@ -15,6 +19,7 @@ type Props = {
 }
 
 export const AddJoinAccountForm = memo(({ onSubmit, name, phone }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const route = useRouter()
     const {
         handleChangeInputValue: handleChangePhoneValue,
@@ -39,40 +44,49 @@ export const AddJoinAccountForm = memo(({ onSubmit, name, phone }: Props) => {
     useEffect(() => {
         if (phone) handleChangePhoneValue(phone)
     }, [phone])
+
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                phoneContainer: {
+                    flexDirection: 'row',
+                    width: '100%',
+                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    alignItems: 'center',
+                    marginBottom: SIZES.PX * 16,
+                    borderRadius: SIZES.PX * 12,
+                    paddingRight: SIZES.PX * 14,
+                },
+            }),
+        [COLORS]
+    )
+
     return (
         <>
-            <CustomButton
-                onPress={openContacts}
-                icon={<PersonIcon white />}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    type: 'DARK',
-                }}
-            >
-                {name || 'Выбрать из контактов'}
-            </CustomButton>
-            <CustomInput
-                onSubmitEditing={handleSubmit}
-                mask="8 999 999 99 99"
-                keyboardType="numeric"
-                icon={<PhoneIcon />}
-                onChangeText={handleChangePhoneValue}
-                value={phoneValue}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    marginsPaddings: { mt: 10, mb: 10 },
-                }}
-                placeholder="Привязать по номеру"
-            />
+            <View style={styles.phoneContainer}>
+                <CustomInput
+                    onSubmitEditing={handleSubmit}
+                    mask="8 999 999 99 99"
+                    keyboardType="numeric"
+                    onChangeText={handleChangePhoneValue}
+                    value={phoneValue}
+                    styled={{
+                        width: {
+                            type: 'absolute',
+                            value: SIZES.WIDTH(1) - 83 * SIZES.PX,
+                        },
+                    }}
+                    placeholder="Пригласить по номеру"
+                />
+                <CustomTouchableOpacity
+                    style={{ padding: SIZES.PX * 5 }}
+                    onPress={openContacts}
+                >
+                    <ContactsIcon />
+                </CustomTouchableOpacity>
+            </View>
 
-            <CustomButton
-                onPress={handleSubmit}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                }}
-            >
-                ПРИВЯЗАТЬ АККАУНТ
-            </CustomButton>
+            <CustomButton onPress={handleSubmit}>Пригласить</CustomButton>
         </>
     )
 })

@@ -1,12 +1,14 @@
 import { memo, useEffect } from 'react'
-import { SIZES, useFetchData } from '../../../../shared'
-import { showMainPromotionsApi } from '../api/showMainPromotionsApi'
 import { StyleSheet } from 'react-native'
 import { PromotionsAndBonusesItem } from '../../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
+import { SIZES, useFetchData } from '../../../../shared'
+import { ShowPromotionsModalStore } from '../../../ShowPromotionsModal'
+import { showMainPromotionsApi } from '../api/showMainPromotionsApi'
 
 type Props = {}
 
 export const ShowMainPromotions = memo((props: Props) => {
+    const setModalPromotions = ShowPromotionsModalStore.useSetPromotions()
     const { data, fetchData, setData } = useFetchData({
         apiCallback: showMainPromotionsApi.getPromotions,
         errorText: 'Ошибка при получении акций',
@@ -22,6 +24,9 @@ export const ShowMainPromotions = memo((props: Props) => {
                         (prom) => prom.show_main === true
                     ),
                 })
+                setModalPromotions(
+                    data.promotions.filter((prom) => prom.show_modal === true)
+                )
             },
         })
     }, [])

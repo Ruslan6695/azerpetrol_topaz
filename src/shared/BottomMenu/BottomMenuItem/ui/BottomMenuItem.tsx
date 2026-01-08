@@ -1,78 +1,58 @@
-import { memo, useCallback, ReactNode } from 'react'
-import { IBottomMenuItem } from '../config/interfaces/IBottomMenuItem'
-import { CustomTouchableOpacity } from '../../../CustomTouchableOpacity'
-import { Link, useNavigation, useRouter } from 'expo-router'
-import { ESCREENS } from '../../../common/config/enums/EScreens'
+import { Link } from 'expo-router'
+import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { SIZES } from '../../../common/config/constants/sizes'
 import { COLORS } from '../../../common/config/constants/COLORS'
-import { CustomText } from '../../../CustomText'
+import { SIZES } from '../../../common/config/constants/sizes'
+import { Typography } from '../../../Typography'
+import { IBottomMenuItem } from '../config/interfaces/IBottomMenuItem'
 
 interface IProps extends IBottomMenuItem {
     isActive: boolean
+    isMain: boolean
 }
 export const BottomMenuItem = memo(
     ({ icon: Icon, isActive, link, title, activeIcon: ActiveIcon }: IProps) => {
         const styles = StyleSheet.create({
             container: {
                 alignItems: 'center',
-                padding: 10 * SIZES.PX,
-                borderRadius: 8,
+                padding: 5 * SIZES.PX,
                 justifyContent: 'center',
             },
-            homeIconWrapper: {
-                backgroundColor: 'white',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 10000,
+            homeEllipse: {
+                backgroundColor: COLORS.BRAND.Primary,
+                width: 8 * SIZES.PX,
+                height: 8 * SIZES.PX,
+                borderRadius: 999,
+                marginBottom: -10 * SIZES.PX,
+                marginTop: 2 * SIZES.PX,
             },
         })
         return (
             <Link href={link}>
-                {title ? (
+                <>
                     <View style={styles.container}>
                         {isActive ? (
                             <ActiveIcon
-                                width={28 * SIZES.PX}
-                                height={28 * SIZES.PX}
+                                width={24 * SIZES.PX}
+                                height={24 * SIZES.PX}
                             />
                         ) : (
                             <>
                                 <Icon
-                                    width={28 * SIZES.PX}
-                                    height={28 * SIZES.PX}
+                                    width={24 * SIZES.PX}
+                                    height={24 * SIZES.PX}
                                 />
                             </>
                         )}
-                        <CustomText
-                            color={isActive ? COLORS.GREEN : undefined}
-                            marginsPaddings={{ mb: 5 }}
-                            fz={8}
+                        <Typography
+                            color={isActive ? 'primary' : 'secondary'}
+                            marginsPaddings={{ mt: 4 }}
+                            type={'caption'}
                         >
                             {title}
-                        </CustomText>
+                        </Typography>
                     </View>
-                ) : (
-                    <View style={styles.homeIconWrapper}>
-                        <View
-                            style={[
-                                styles.container,
-                                {
-                                    backgroundColor: isActive
-                                        ? COLORS.GREEN
-                                        : COLORS.GRAY,
-                                    margin: 10,
-                                    borderRadius: 1000,
-                                },
-                            ]}
-                        >
-                            <Icon
-                                width={28 * SIZES.PX}
-                                height={28 * SIZES.PX}
-                            />
-                        </View>
-                    </View>
-                )}
+                </>
             </Link>
         )
     }

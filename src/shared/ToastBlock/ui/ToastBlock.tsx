@@ -1,14 +1,15 @@
 import { ReactElement, memo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { COLORS } from '../../common/config/constants/COLORS'
-import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
 import { SIZES } from '../../common/config/constants/sizes'
-import { CustomText } from '../../CustomText'
-import SuccessSvg from '../assets/success.svg'
+import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { WarningIcon } from '../../Icons/WarningIcon/ui/WarningIcon'
+import { MPLayout } from '../../MpLayout'
+import { Typography } from '../../Typography'
 import ErrorSvg from '../assets/error.svg'
 import InfoSvg from '../assets/info.svg'
-import WarningSvg from '../assets/warning.svg'
-import { MPLayout } from '../../MpLayout'
+import SuccessSvg from '../assets/success.svg'
+import { ThemeStore } from '../../common/model/themeStore'
 type Props = {
     type: 'error' | 'warning' | 'info' | 'success'
     text: string
@@ -29,6 +30,7 @@ type Props = {
 }
 
 export const ToastBlock = memo(({ styled, type, text, icon }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const widthh = styled
         ? styled.width
             ? (styled.width.type === 'px' || !styled.width) &&
@@ -40,14 +42,7 @@ export const ToastBlock = memo(({ styled, type, text, icon }: Props) => {
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor:
-                type === 'error'
-                    ? COLORS.TOAST_ERROR
-                    : type === 'info'
-                    ? COLORS.TOAST_INFO
-                    : type === 'success'
-                    ? COLORS.TOAST_SUCCESS
-                    : COLORS.TOAST_WARNING,
+            backgroundColor: COLORS.BRAND.Primary,
             //@ts-ignore
 
             //@ts-ignore
@@ -80,14 +75,14 @@ export const ToastBlock = memo(({ styled, type, text, icon }: Props) => {
                 ) : type === 'info' ? (
                     <InfoSvg height={25} width={25} />
                 ) : type === 'warning' ? (
-                    <WarningSvg height={25} width={25} />
+                    <WarningIcon size={25} />
                 ) : (
                     <SuccessSvg height={25} width={25} />
                 )}
             </MPLayout>
-            <CustomText style={{ width: '90%' }} white>
+            <Typography type="caption" style={{ width: '90%' }} color="invert">
                 {text}
-            </CustomText>
+            </Typography>
         </View>
     )
 })

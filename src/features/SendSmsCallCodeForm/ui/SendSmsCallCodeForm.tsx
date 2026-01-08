@@ -11,9 +11,8 @@ type Props = {
 
 export const SendSmsCallCodeForm = memo(
     ({ onSend, confirmationType, onToggleConfirmationType }: Props) => {
-      
         return (
-            <MPLayout mt={20}>
+            <>
                 {confirmationType === 'call' ? (
                     <SendPhoneCallCode
                         onSendCode={onSend}
@@ -22,7 +21,7 @@ export const SendSmsCallCodeForm = memo(
                 ) : (
                     <SendSmsCode onSubmit={onSend} />
                 )}
-            </MPLayout>
+            </>
         )
     }
 )

@@ -11,8 +11,8 @@ export const AddJoinAccountScreen = memo((props: Props) => {
     const params = useLocalSearchParams<TAddJoinAccountScreenParams>()
     return (
         <InternalPagesLayout>
-            <ScreenTitle title="Привязать пользователя" />
-            <AddJoinAccountWidget params={params}  />
+            <ScreenTitle title="Пригласить пользов." />
+            <AddJoinAccountWidget params={params} />
         </InternalPagesLayout>
     )
 })

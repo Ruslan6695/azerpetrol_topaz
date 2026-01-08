@@ -1,14 +1,14 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { SIZES } from '../../common/config/constants/sizes'
 import Calendar from 'react-native-calendar-range-picker'
 import { CloseIcon } from '../../CloseIcon'
-import { CustomText } from '../../CustomText'
-import { MPLayout } from '../../MpLayout'
+import { COLORS } from '../../common/config/constants/COLORS'
+import { SIZES } from '../../common/config/constants/sizes'
 import { CustomButton } from '../../CustomButton'
 import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { MPLayout } from '../../MpLayout'
 import { showError } from '../../ToastComponent'
+import { Typography } from '../../Typography'
 
 type Props = {
     isOpened: boolean
@@ -205,7 +205,7 @@ export const RangePickerModal = memo(
                             <CustomButton
                                 onPress={handleSave}
                                 styled={{
-                                    type: 'TEXT',
+                                    type: 'secondary',
                                     width: { type: 'px', value: 120 },
                                     height: { type: 'px', value: 40 },
                                 }}
@@ -214,12 +214,12 @@ export const RangePickerModal = memo(
                             </CustomButton>
                         </View>
                         <MPLayout mt={10} mb={20}>
-                            <CustomText marginsPaddings={{ mb: 5 }} secondary>
+                            <Typography color="secondary" type="caption">
                                 Выберите дату:
-                            </CustomText>
-                            <CustomText fz={20}>
+                            </Typography>
+                            <Typography type="bodyAccentMedium">
                                 {showedDate || 'Не выбрано'}
-                            </CustomText>
+                            </Typography>
                         </MPLayout>
                         <Calendar
                             startDate={startDate}
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     container: {
         position: 'relative',
         width: '100%',
-        backgroundColor: COLORS.WHITE,
+        backgroundColor: COLORS.BACKGROUND.Tertiary,
         height: '95%',
         padding: 20,
     },

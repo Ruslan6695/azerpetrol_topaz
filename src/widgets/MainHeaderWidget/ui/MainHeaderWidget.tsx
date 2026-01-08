@@ -21,7 +21,7 @@ export const MainHeaderWidget = (props: Props) => {
     })
     return (
         <View style={styles.container}>
-            <Logo />
+            <Logo size={50} />
             <HeaderWallet />
         </View>
     )

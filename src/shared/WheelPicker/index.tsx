@@ -17,6 +17,7 @@ import type {
 } from './types'
 import * as Haptics from 'expo-haptics'
 import { SIZES } from '../common/config/constants/sizes'
+import { Typography } from '../Typography'
 
 class WheelPickerExpo extends PureComponent<IViuPickerProps, IViuPickerState> {
     static defaultProps = {
@@ -216,7 +217,11 @@ const PickerItem = (
     renderItem: (props: RenderItemProps) => JSX.Element
 ) => {
     const gap = Math.abs(index - (indexSelected + 2))
-    const sizeText = [style.fontSize, style.fontSize / 1.5, style.fontSize / 2]
+    const sizeText = [
+        style.fontSize / 1.5,
+        style.fontSize / 2,
+        style.fontSize / 2,
+    ]
 
     const fontSize = gap > 1 ? sizeText[2] : sizeText[gap]
     const fontColor = adaptiveColor(style.backgroundColor)
