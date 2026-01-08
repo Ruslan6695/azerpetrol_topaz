@@ -1,9 +1,9 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { ICoffeeMachineItem } from '../config/interfaces/ICoffeeMachineItem'
 import { Image, StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { COLORS, SIZES } from '../../../../shared'
+import { COLORS, SIZES, ThemeStore } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
 
 interface IProps extends ICoffeeMachineItem {
     onPress: (id: number) => void
@@ -11,9 +11,31 @@ interface IProps extends ICoffeeMachineItem {
 
 export const CoffeeMachineItem = memo(
     ({ azs_name, id, img, name, onPress }: IProps) => {
+        const COLORS = ThemeStore.useCOLORS()
         const handlePress = useCallback(() => {
             onPress(id)
         }, [onPress, id])
+
+        const styles = useMemo(
+            () =>
+                StyleSheet.create({
+                    container: {
+                        alignItems: 'center',
+                        backgroundColor: COLORS.BACKGROUND.Tertiary,
+                        padding: SIZES.PX * 10,
+                        borderRadius: SIZES.PX * 15,
+                    },
+                    img: {
+                        width: SIZES.WIDTH(0.5) - 55 * SIZES.PX,
+                        height: 150,
+                        objectFit: 'contain',
+                    },
+                    text: {
+                        maxWidth: SIZES.WIDTH(0.5) - 55 * SIZES.PX,
+                    },
+                }),
+            [COLORS]
+        )
         return (
             <CustomTouchableOpacity
                 onPress={handlePress}
@@ -21,26 +43,10 @@ export const CoffeeMachineItem = memo(
                 style={styles.container}
             >
                 <Image style={styles.img} source={{ uri: img }} />
-                <CustomText fz={18} textAlign="center" style={styles.text}>
+                <Typography textAlign="center" style={styles.text}>
                     {name}
-                </CustomText>
+                </Typography>
             </CustomTouchableOpacity>
         )
     }
 )
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        backgroundColor: COLORS.GRAY_3,
-        padding: SIZES.PX * 10,
-        borderRadius: SIZES.PX * 15,
-    },
-    img: {
-        width: SIZES.WIDTH(0.5) - 55 * SIZES.PX,
-        height: 150,
-        objectFit: 'contain',
-    },
-    text: {
-        maxWidth: SIZES.WIDTH(0.5) - 55 * SIZES.PX,
-    },
-})

@@ -1,43 +1,48 @@
-import { memo } from 'react'
+import { memo, useMemo } from "react";
 import {
-    HistoryDetailsTransferBalanceItem,
-    IHistoryDetailsTransferBalanceItem,
-} from '../../../../entities/History/HistoryDetailsTransferBalanceItem'
-import { StyleSheet, View } from 'react-native'
-import { SIZES, divideNumber } from '../../../../shared'
-import { PersonIcon } from '../../../../shared/Icons/PersonIcon'
-import { PhoneIcon } from '../../../../shared/PhoneIcon'
-import { SumIcon } from '../../../../shared/SumIcon'
+  HistoryDetailsTransferBalanceItem,
+  IHistoryDetailsTransferBalanceItem,
+} from "../../../../entities/History/HistoryDetailsTransferBalanceItem";
+import { StyleSheet, View } from "react-native";
+import { COLORS, SIZES, ThemeStore, divideNumber } from "../../../../shared";
+import { PersonIcon } from "../../../../shared/Icons/PersonIcon";
+import { PhoneIcon } from "../../../../shared/PhoneIcon";
+import { SumIcon } from "../../../../shared/SumIcon";
 
 type Props = {
-    info: IHistoryDetailsTransferBalanceItem
-}
+  info: IHistoryDetailsTransferBalanceItem;
+};
 
 export const OpenHistoryDetailsTransferBalance = ({ info }: Props) => {
-    return (
-        <View style={styles.container}>
-            <HistoryDetailsTransferBalanceItem
-                icon={<PersonIcon />}
-                info={info.transfer_name}
-                title="Получатель"
-            />
-            <HistoryDetailsTransferBalanceItem
-                icon={<PhoneIcon />}
-                info={info.transfer_phone}
-                title="Телефон"
-            />
-            <HistoryDetailsTransferBalanceItem
-                icon={<SumIcon />}
-                info={`${divideNumber(info.sum)} ₽`}
-                title="Cумма"
-            />
-        </View>
-    )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        gap: SIZES.PX * 10,
-        marginTop: SIZES.PX * 20,
-    },
-})
+  const COLORS = ThemeStore.useCOLORS();
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          backgroundColor: COLORS.BACKGROUND.Tertiary,
+          padding: SIZES.PX * 20,
+          borderRadius: 16 * SIZES.PX,
+          gap: 16 * SIZES.PX,
+          marginTop: SIZES.PX * 20,
+        },
+      }),
+    [COLORS]
+  );
+  return (
+    <View style={styles.container}>
+      <HistoryDetailsTransferBalanceItem
+        info={info.transfer_name}
+        title="Получатель"
+      />
+      <HistoryDetailsTransferBalanceItem
+        info={info.transfer_phone}
+        title="Телефон"
+      />
+      <HistoryDetailsTransferBalanceItem
+        bonus
+        info={`${divideNumber(-1 * info.sum)}`}
+        title="Cумма"
+      />
+    </View>
+  );
+};

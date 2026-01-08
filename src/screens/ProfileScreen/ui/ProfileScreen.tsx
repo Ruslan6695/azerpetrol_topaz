@@ -1,5 +1,4 @@
 import React from 'react'
-import { CustomText } from '../../../shared/CustomText'
 import { Profile } from '../../../proccesses/Profile'
 
 type Props = {}

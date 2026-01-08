@@ -1,41 +1,35 @@
-import React, { ReactNode } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
-import { MPLayout } from '../../../../shared/MpLayout'
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Typography } from "../../../../shared/Typography";
+import { BonusIcon } from "../../../../shared/BonusIcon";
 
 type Props = {
-    icon: ReactNode
-    title: string
-    info: string
-}
+  title: string;
+  info: string;
+  bonus?: boolean;
+};
 
 export const HistoryDetailsTransferBalanceItem = ({
-    icon,
-    info,
-    title,
+  info,
+  title,
+  bonus,
 }: Props) => {
-    return (
-        <View style={styles.row}>
-            {icon}
-            <MPLayout ml={20}>
-                <CustomText secondary fz={14}>
-                    {title}
-                </CustomText>
-                <CustomText fw="600" fz={18}>
-                    {info}
-                </CustomText>
-            </MPLayout>
-        </View>
-    )
-}
+  return (
+    <View>
+      <Typography type="caption" color="secondary">
+        {title}
+      </Typography>
+      <View style={styles.row}>
+        <Typography>{info}</Typography>
+        {bonus && <BonusIcon mt={2} size={14} />}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: SIZES.PX * 10,
-        borderRadius: SIZES.PX * 10,
-        backgroundColor: COLORS.GRAY_3,
-    },
-})
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+});

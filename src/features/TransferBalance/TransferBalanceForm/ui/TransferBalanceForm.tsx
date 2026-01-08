@@ -1,12 +1,19 @@
-import { memo, useEffect } from 'react'
+import { useRouter } from 'expo-router'
+import { useEffect, useMemo } from 'react'
+import { StyleSheet, View } from 'react-native'
+import {
+    COLORS,
+    ESCREENS,
+    SIZES,
+    ThemeStore,
+    UserStore,
+} from '../../../../shared'
 import { CustomButton } from '../../../../shared/CustomButton'
 import { CustomInput, useInput } from '../../../../shared/CustomInput'
 import { PhoneIcon } from '../../../../shared/PhoneIcon'
-import { SumIcon } from '../../../../shared/SumIcon'
-import { useNavigation, useRouter } from 'expo-router'
-import { ESCREENS, UserStore } from '../../../../shared'
 import { showError } from '../../../../shared/ToastComponent'
-import { PersonIcon } from '../../../../shared/Icons/PersonIcon'
+import { ContactsIcon } from '../../../../shared/Icons/ContactsIcon'
+import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
 
 type Props = {
     name?: string
@@ -15,6 +22,7 @@ type Props = {
 }
 
 export const TransferBalanceForm = ({ name, phone, onTransfer }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const balance = UserStore.useBalance()
     const route = useRouter()
     const {
@@ -42,37 +50,53 @@ export const TransferBalanceForm = ({ name, phone, onTransfer }: Props) => {
         }
     }
 
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                phoneContainer: {
+                    flexDirection: 'row',
+                    width: '100%',
+                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    alignItems: 'center',
+                    marginBottom: SIZES.PX * 16,
+                    borderRadius: SIZES.PX * 12,
+                    paddingRight: SIZES.PX * 14,
+                },
+            }),
+        [COLORS]
+    )
+
     useEffect(() => {
         if (phone) handleChangePhoneValue(phone)
     }, [phone])
 
     return (
         <>
-            <CustomButton
-                onPress={openContacts}
-                icon={<PersonIcon white />}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    type: 'DARK',
-                }}
-            >
-                {name || 'Выбрать из контактов'}
-            </CustomButton>
+            <View style={styles.phoneContainer}>
+                <CustomInput
+                    mask="8 999 999 99 99"
+                    keyboardType="numeric"
+                    onChangeText={handleChangePhoneValue}
+                    value={phoneValue}
+                    styled={{
+                        width: {
+                            type: 'absolute',
+                            value: SIZES.WIDTH(1) - 83 * SIZES.PX,
+                        },
+                    }}
+                    placeholder="Введите номер телефона"
+                />
+                <CustomTouchableOpacity
+                    style={{ padding: SIZES.PX * 5 }}
+                    onPress={openContacts}
+                >
+                    <ContactsIcon />
+                </CustomTouchableOpacity>
+            </View>
+
             <CustomInput
-                mask="8 999 999 99 99"
+                onSubmitEditing={handleSubmit}
                 keyboardType="numeric"
-                icon={<PhoneIcon />}
-                onChangeText={handleChangePhoneValue}
-                value={phoneValue}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    marginsPaddings: { mt: 10, mb: 10 },
-                }}
-                placeholder="Перевести по номеру"
-            />
-            <CustomInput
-                keyboardType="numeric"
-                icon={<SumIcon />}
                 onChangeText={handleChangeSumValue}
                 value={sumValue}
                 styled={{
@@ -81,13 +105,8 @@ export const TransferBalanceForm = ({ name, phone, onTransfer }: Props) => {
                 }}
                 placeholder="Введите сумму"
             />
-            <CustomButton
-                onPress={handleSubmit}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                }}
-            >
-                ПЕРЕВЕСТИ СРЕДСТВА
+            <CustomButton onPress={handleSubmit} styled={{}}>
+                Перевести
             </CustomButton>
         </>
     )

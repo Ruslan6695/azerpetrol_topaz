@@ -1,10 +1,10 @@
 import { ReactNode, memo } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { SIZES } from '../../common/config/constants/sizes'
-import { CustomText } from '../../CustomText'
 import { CloseIcon } from '../../CloseIcon'
+import { SIZES } from '../../common/config/constants/sizes'
+import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { Typography } from '../../Typography'
+import { ThemeStore } from '../../common/model/themeStore'
 
 type Props = {
     handleClose: () => void
@@ -12,6 +12,7 @@ type Props = {
     closeOutside?: boolean
     width?: number | string
     height?: number | string
+    white?: boolean
     children: ReactNode
     animationType?: 'fade' | 'slide' | 'none'
     bgDark?: boolean
@@ -29,7 +30,10 @@ export const CustomModal = memo(
         animationType,
         bgDark,
         title,
+        white,
     }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
+
         const styles = StyleSheet.create({
             wrapper: {
                 flex: 1,
@@ -38,7 +42,7 @@ export const CustomModal = memo(
                 backgroundColor: bgDark ? 'rgba(0, 0, 0, 0.49)' : undefined,
             },
             container: {
-                backgroundColor: COLORS.WHITE,
+                backgroundColor: white ? '#ffffff' : COLORS.BACKGROUND.Tertiary,
                 borderRadius: SIZES.PX * 15,
                 width: width,
                 height: height,
@@ -69,9 +73,12 @@ export const CustomModal = memo(
                         style={styles.container}
                     >
                         <View style={styles.topRow}>
-                            <CustomText marginsPaddings={{ mr: 30 }} fw="800">
+                            <Typography
+                                type="bodyAccentSmall"
+                                marginsPaddings={{ mr: 30 }}
+                            >
                                 {title}
-                            </CustomText>
+                            </Typography>
                             <CustomTouchableOpacity
                                 onPress={handleClose}
                                 activeOpacity={0.6}

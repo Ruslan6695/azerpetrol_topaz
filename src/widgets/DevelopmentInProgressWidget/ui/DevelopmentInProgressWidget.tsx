@@ -1,8 +1,8 @@
 import React from 'react'
-import { DevelopmentInProgressGif } from '../../../shared/DevelopmentInProgressGif'
 import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../shared/CustomText'
 import { SIZES } from '../../../shared'
+import { DevelopmentInProgressGif } from '../../../shared/DevelopmentInProgressGif'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {}
 
@@ -10,14 +10,9 @@ export const DevelopmentInProgressWidget = (props: Props) => {
     return (
         <View style={styles.container}>
             <DevelopmentInProgressGif width={230} height={230} />
-            <CustomText
-                fw="300"
-                textAlign="center"
-                marginsPaddings={{ mt: 20 }}
-                fz={17}
-            >
+            <Typography textAlign="center" marginsPaddings={{ mt: 20 }}>
                 ДАННЫЙ РАЗДЕЛ ЕЩЕ В РАЗРАБОТКЕ
-            </CustomText>
+            </Typography>
         </View>
     )
 }

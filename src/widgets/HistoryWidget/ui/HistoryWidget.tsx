@@ -12,6 +12,7 @@ import { RangePicker, useRangePicker } from '../../../shared/RangePicker'
 import { historyWidgetApi } from '../api/historyWidgetApi'
 import { IHistoryWidgetGetItemsData } from '../config/IHistoryWidgetGetItemsData'
 import { HistoryWidgetSkeleton } from './HistoryWidgetSkeleton'
+import { ScreenTitle } from '../../../entities/ScreenTitle'
 
 type Props = {}
 
@@ -101,6 +102,7 @@ export const HistoryWidget = memo(({}: Props) => {
 
     return (
         <InternalPagesLayout onScrollToEnd={handleScrollToEnd}>
+            <ScreenTitle title="История операций" />
             {(isHistoryItemsLoading && !historyItemsData) ||
             isPieChartDataLoading ? (
                 <HistoryWidgetSkeleton />
@@ -118,8 +120,8 @@ export const HistoryWidget = memo(({}: Props) => {
                             dates={dates}
                             onChangeDates={handleChangeDates}
                             styled={{
-                                width: { type: 'px', value: 320 },
-                                marginsPaddings: { mb: 10 },
+                                width: { type: 'absolute', value: '100%' },
+                                marginsPaddings: { mb: 16 },
                             }}
                         />
 
@@ -133,7 +135,5 @@ export const HistoryWidget = memo(({}: Props) => {
 })
 
 const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-    },
+    container: {},
 })

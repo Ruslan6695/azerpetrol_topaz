@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react'
-import { CameraScanner } from '../../../../shared/CameraScanner'
 import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { FuelStore, SIZES, UserStore, useSendFetch } from '../../../../shared'
-import { fuelScanBarcodeWidgetApi } from '../api/fuelScanBarcodeWidgetApi'
 import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
+import { FuelStore, SIZES, UserStore, useSendFetch } from '../../../../shared'
+import { CameraScanner } from '../../../../shared/CameraScanner'
+import { CustomButton } from '../../../../shared/CustomButton'
+import { Typography } from '../../../../shared/Typography'
+import { fuelScanBarcodeWidgetApi } from '../api/fuelScanBarcodeWidgetApi'
 import { FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS'
 
 type Props = {
@@ -47,9 +47,12 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
     return (
         <>
             <View style={styles.container}>
-                <CustomText fw="600" fz={20} marginsPaddings={{ mb: 10 }}>
+                <Typography
+                    type="bodyAccentMedium"
+                    marginsPaddings={{ mb: 10 }}
+                >
                     Просканируйте QR-код с колонки
-                </CustomText>
+                </Typography>
                 <View style={styles.cameraContainer}>
                     <CameraScanner onScan={handleSubmit} />
                 </View>
@@ -57,12 +60,12 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
                 <CustomButton
                     onPress={onGoBack}
                     styled={{
-                        type: 'OUTLINED',
+                        type: 'secondary',
                         width: { type: 'absolute', value: '100%' },
-                        marginsPaddings: { mt: 20 },
+                        marginsPaddings: { mt: 30 },
                     }}
                 >
-                    ВЕРНУТЬСЯ НАЗАД
+                    Вернуться назад
                 </CustomButton>
             </View>
             <MapInfoBlocks infoBlocks={FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS} />

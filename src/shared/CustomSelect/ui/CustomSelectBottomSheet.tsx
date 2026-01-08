@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
 import { CustomButton } from '../../CustomButton'
-import { CustomText } from '../../CustomText'
 import { MPLayout } from '../../MpLayout'
+import { Typography } from '../../Typography'
+import WheelPickerExpo from '../../WheelPicker'
 import { COLORS } from '../../common/config/constants/COLORS'
 import { SIZES } from '../../common/config/constants/sizes'
 import { ISelectOption } from '../config/interfaces/ISelectOption'
-import WheelPickerExpo from '../../WheelPicker'
+import { ThemeStore } from '../../common/model/themeStore'
+import { EColorThemes } from '../../common/config/enums/EColorThemes'
 
 type Props = {
     handleClose: () => void
@@ -25,9 +27,9 @@ export const CustomSelectBottomSheet = ({
     selectedOption,
     onChangeOption,
 }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
     const [initialSelectedIndex, setInitialSelectedIndex] = useState<number>()
     const [selected, setSelected] = useState<ISelectOption | null>(null)
-
     const handleSubmit = () => {
         onChangeOption(selected)
         handleClose()
@@ -60,23 +62,22 @@ export const CustomSelectBottomSheet = ({
             <View style={styles.wrapper}>
                 <View style={styles.container}>
                     <View style={styles.title}>
-                        <CustomText
+                        <Typography
+                            customColor="#0A2033"
+                            type="bodyAccentMedium"
                             marginsPaddings={{ pt: 20 }}
-                            fw="600"
-                            fz={20}
                         >
                             {title.toUpperCase()}
-                        </CustomText>
+                        </Typography>
                     </View>
 
                     <View style={styles.top}>
                         <CustomButton
                             onPress={handleClose}
                             styled={{
-                                type: 'OUTLINED',
+                                type: 'secondary',
                                 width: { type: 'px', value: 110 },
                                 height: { type: 'px', value: 45 },
-                                fz: 13,
                             }}
                         >
                             Отменить
@@ -84,10 +85,8 @@ export const CustomSelectBottomSheet = ({
                         <CustomButton
                             onPress={handleSubmit}
                             styled={{
-                                type: 'DARK',
-                                width: { type: 'px', value: 110 },
+                                width: { type: 'px', value: 130 },
                                 height: { type: 'px', value: 45 },
-                                fz: 13,
                             }}
                         >
                             Подтвердить
@@ -100,7 +99,7 @@ export const CustomSelectBottomSheet = ({
                             height={300 * SIZES.PX}
                             haptics
                             selectedStyle={{
-                                borderColor: COLORS.GRAY_2,
+                                borderColor: COLORS.BACKGROUND.Secondary,
                                 borderWidth: 1,
                             }}
                             items={options}
@@ -126,14 +125,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         position: 'relative',
         width: '100%',
-        backgroundColor: COLORS.WHITE,
+        backgroundColor: COLORS.BACKGROUND.Tertiary,
         borderTopLeftRadius: SIZES.PX * 30,
         borderTopRightRadius: SIZES.PX * 30,
     },
     title: {
         position: 'absolute',
         zIndex: 1,
-        backgroundColor: COLORS.WHITE,
+        backgroundColor: COLORS.BACKGROUND.Tertiary,
         paddingBottom: SIZES.PX * 50,
         width: '100%',
         alignItems: 'center',
@@ -146,6 +145,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         zIndex: 1,
         marginTop: 60 * SIZES.PX,
-        backgroundColor: COLORS.WHITE,
+        backgroundColor: COLORS.BACKGROUND.Tertiary,
     },
 })

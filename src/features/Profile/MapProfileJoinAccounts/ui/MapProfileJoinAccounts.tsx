@@ -4,6 +4,7 @@ import {
     ProfileJoinAccountItem,
 } from '../../../../entities/Profile/ProfileJoinAccountItem'
 import { FlatList, StyleSheet } from 'react-native'
+import { SIZES } from '../../../../shared'
 
 type Props = {
     joinAccounts: IProfileJoinAccountItem[]
@@ -16,6 +17,7 @@ export const MapProfileJoinAccounts = memo(
     ({ joinAccounts, onDeleteAccount, balanceCreatorId, profileId }: Props) => {
         return (
             <FlatList
+                style={{ marginTop: SIZES.PX * 12 }}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.container}
                 horizontal

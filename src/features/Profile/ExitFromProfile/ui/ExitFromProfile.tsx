@@ -1,41 +1,47 @@
+import Ionicons from '@expo/vector-icons/Ionicons'
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES, UserStore } from '../../../../shared'
-import Ionicons from '@expo/vector-icons/Ionicons'
-import { CustomText } from '../../../../shared/CustomText'
+import { SIZES, ThemeStore, UserStore } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { ArrowIcon } from '../../../../shared/Icons/ArrowIcon'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
 export const ExitFromProfile = memo((props: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const logout = UserStore.useLogout()
     const onPress = useCallback(() => {
         logout()
     }, [])
+
+    const styles = StyleSheet.create({
+        exitContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingVertical: SIZES.PX * 16,
+            paddingHorizontal: SIZES.PX * 12,
+            borderBottomColor: COLORS.BACKGROUND.Tertiary,
+            borderBottomWidth: 2 * SIZES.PX,
+        },
+        left: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+    })
     return (
         <CustomTouchableOpacity
             activeOpacity={0.6}
             onPress={onPress}
             style={styles.exitContainer}
         >
-            <Ionicons
-                name="exit-outline"
-                size={25 * SIZES.PX}
-                color={COLORS.RED}
-            />
-            <CustomText color={COLORS.RED} marginsPaddings={{ ml: 20 }}>
-                Выйти из аккаунта
-            </CustomText>
+            <View style={styles.left}>
+                <Typography type="bodyAccentSmall" marginsPaddings={{ ml: 12 }}>
+                    Выйти из аккаунта
+                </Typography>
+            </View>
+            <ArrowIcon />
         </CustomTouchableOpacity>
     )
-})
-
-const styles = StyleSheet.create({
-    exitContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: SIZES.PX * 10,
-        borderTopColor: COLORS.GRAY_2,
-        borderTopWidth: 1 * SIZES.PX,
-    },
 })

@@ -1,12 +1,12 @@
 import { useRouter } from 'expo-router'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 import { TransferBalanceConfirmInfoItem } from '../../../../entities/TransferBalanceConfirmInfoItem'
 import {
-    COLORS,
     ESCREENS,
     SIZES,
+    ThemeStore,
     useFetchData,
     useSendFetch,
 } from '../../../../shared'
@@ -24,6 +24,7 @@ type Props = {
 }
 
 export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const [userName, setUserName] = useState(name || '')
     const router = useRouter()
     const { data, errorText, fetchData, isDataLoading } = useFetchData<
@@ -63,6 +64,18 @@ export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
         }
     }, [data])
 
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                container: {
+                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    padding: SIZES.PX * 20,
+                    borderRadius: 16 * SIZES.PX,
+                },
+            }),
+        [COLORS]
+    )
+
     useEffect(() => {
         fetchData({
             args: { phone: phone },
@@ -83,7 +96,7 @@ export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
                     <CustomButton
                         onPress={onGoBack}
                         styled={{
-                            type: 'OUTLINED',
+                            type: 'secondary',
                             width: {
                                 value: '100%',
                                 type: 'absolute',
@@ -103,7 +116,7 @@ export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
                         ) : (
                             <>
                                 <TransferBalanceConfirmInfoItem
-                                    title="Получатель"
+                                    title="Пользователь"
                                     info={userName}
                                 />
                                 <TransferBalanceConfirmInfoItem
@@ -130,12 +143,12 @@ export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
                                     marginsPaddings: { mt: 20 },
                                 }}
                             >
-                                ПРИВЯЗАТЬ АККАУНТ
+                                Пригласить
                             </CustomButton>
                             <CustomButton
                                 onPress={onGoBack}
                                 styled={{
-                                    type: 'OUTLINED',
+                                    type: 'secondary',
                                     width: {
                                         value: '100%',
                                         type: 'absolute',
@@ -153,11 +166,3 @@ export const AddJoinAccountConfirm = ({ onGoBack, phone, name }: Props) => {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: COLORS.GRAY_3,
-        padding: SIZES.PX * 20,
-        borderRadius: 10 * SIZES.PX,
-    },
-})

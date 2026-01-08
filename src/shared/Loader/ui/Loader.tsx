@@ -1,20 +1,25 @@
 import { memo } from 'react'
 import { ActivityIndicator } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { MPLayout } from '../../MpLayout'
 import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { ThemeStore } from '../../common/model/themeStore'
+import { MPLayout } from '../../MpLayout'
 
 type Props = {
     small?: boolean
     marginsPaddings?: IMarginsPaddings
-    color?: string
+    color?: 'primary' | 'invert'
 }
 
 export const Loader = memo(({ small, marginsPaddings, color }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     return (
         <MPLayout {...marginsPaddings}>
             <ActivityIndicator
-                color={color || COLORS.GRAY}
+                color={
+                    color === 'invert'
+                        ? COLORS.Icon.Invert
+                        : COLORS.Icon.Primary
+                }
                 size={small ? 'small' : 'large'}
             />
         </MPLayout>

@@ -1,12 +1,15 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
-import JoinSvg from '../assets/join.svg'
-import { MapProfileJoinAccounts } from '../../../../features/Profile/MapProfileJoinAccounts'
 import { IProfileJoinAccountItem } from '../../../../entities/Profile/ProfileJoinAccountItem'
 import { AddProfileJoinAccount } from '../../../../features/Profile/AddProfileJoinAccount'
 import { LeaveFromProfileJoinAccounts } from '../../../../features/Profile/LeaveFromProfileJoinAccounts'
+import { MapProfileJoinAccounts } from '../../../../features/Profile/MapProfileJoinAccounts'
+import { EColorThemes, SIZES, ThemeStore } from '../../../../shared'
+import { MPLayout } from '../../../../shared/MpLayout'
+import { Typography } from '../../../../shared/Typography'
+import JoinSvg from '../assets/join.svg'
+import JoinDarkSvg from '../assets/join_dark.svg'
+
 import { ProfileJoinAccountsWidgetSkeleton } from './ProfileJoinAccountsWidgetSkeleton'
 type Props = {
     join_accounts: IProfileJoinAccountItem[] | undefined
@@ -26,31 +29,75 @@ export const ProfileJoinAccountsWidget = memo(
         onReloadData,
         isDataLoading,
     }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
+        const colorTheme = ThemeStore.useTheme()
+        const styles = StyleSheet.create({
+            container: {
+                width: '100%',
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
+                borderRadius: SIZES.PX * 16,
+                padding: SIZES.PX * 16,
+                justifyContent: 'center',
+            },
+            row: {
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                justifyContent: 'space-between',
+            },
+        })
+
         if (isDataLoading) {
             return <ProfileJoinAccountsWidgetSkeleton />
         }
         return (
             <View style={styles.container}>
-                <CustomText marginsPaddings={{ mb: 10 }} fz={14}>
-                    Привязанные аккаунты
-                </CustomText>
+                <Typography type="displaySmall">Связанные аккаунты</Typography>
                 {join_accounts && join_accounts?.length > 1 ? (
-                    <MapProfileJoinAccounts
-                        profileId={profileId}
-                        balanceCreatorId={balanceCreatorId}
-                        onDeleteAccount={onDeleteAccount}
-                        joinAccounts={join_accounts}
-                    />
+                    balanceCreatorId !== profileId ? (
+                        <View style={styles.row}>
+                            <Typography type="caption" color="secondary">
+                                Ваш аккаунт привязан к счету
+                            </Typography>
+                            <MPLayout mt={-30}>
+                                {colorTheme === EColorThemes.LIGHT ? (
+                                    <JoinSvg
+                                        width={SIZES.PX * 55}
+                                        height={SIZES.PX * 55}
+                                    />
+                                ) : (
+                                    <JoinDarkSvg
+                                        width={SIZES.PX * 55}
+                                        height={SIZES.PX * 55}
+                                    />
+                                )}
+                            </MPLayout>
+                        </View>
+                    ) : (
+                        <MapProfileJoinAccounts
+                            profileId={profileId}
+                            balanceCreatorId={balanceCreatorId}
+                            onDeleteAccount={onDeleteAccount}
+                            joinAccounts={join_accounts}
+                        />
+                    )
                 ) : (
-                    <View style={styles.center}>
-                        <JoinSvg />
-                        <CustomText
-                            secondary
-                            marginsPaddings={{ mt: 10 }}
-                            fz={15}
-                        >
-                            Нет привязанных аккаунтов
-                        </CustomText>
+                    <View style={styles.row}>
+                        <Typography type="caption" color="secondary">
+                            У вас пока нет связанных аккаунтов
+                        </Typography>
+                        <MPLayout mt={-30}>
+                            {colorTheme === EColorThemes.LIGHT ? (
+                                <JoinSvg
+                                    width={SIZES.PX * 55}
+                                    height={SIZES.PX * 55}
+                                />
+                            ) : (
+                                <JoinDarkSvg
+                                    width={SIZES.PX * 55}
+                                    height={SIZES.PX * 55}
+                                />
+                            )}
+                        </MPLayout>
                     </View>
                 )}
                 {balanceCreatorId === profileId && <AddProfileJoinAccount />}
@@ -61,19 +108,3 @@ export const ProfileJoinAccountsWidget = memo(
         )
     }
 )
-
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        backgroundColor: COLORS.GRAY_3,
-        borderRadius: SIZES.PX * 25,
-        padding: SIZES.PX * 15,
-        justifyContent: 'center',
-    },
-    center: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: SIZES.PX * 20,
-        marginBottom: SIZES.PX * 10,
-    },
-})

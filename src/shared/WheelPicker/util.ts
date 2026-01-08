@@ -1,9 +1,9 @@
 export const setAlphaColor = (color: string, opacity: number = 1): string => {
     let newColor = color
 
-    if (!newColor.startsWith('#') || newColor.length !== 7) {
-        newColor = '#FFFFFF'
-    }
+  if (!newColor.startsWith('#') || newColor.length !== 7) {
+    newColor = '#FFFFFF';
+  }
 
     if (opacity === 1) return newColor
 

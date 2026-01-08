@@ -1,0 +1,24 @@
+<svg 
+    width="100" 
+    height="100" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    stroke="black" 
+    stroke-width="2" 
+    stroke-linecap="round" 
+    stroke-linejoin="round">
+    
+    <!-- Megaphone Body -->
+    <path d="M2 9v6a2 2 0 0 0 2 2h2l5 3V4L6 7H4a2 2 0 0 0-2 2Z" />
+    
+    <!-- Sound Lines -->
+    <path d="M15 9.5v5" />
+    <path d="M18 7v10" />
+    <path d="M21 5v14" />
+    
+    <!-- Discount Symbol -->
+    <circle cx="9" cy="12" r="1.5" />
+    <path d="M8 14l2-4" />
+    
+</svg>

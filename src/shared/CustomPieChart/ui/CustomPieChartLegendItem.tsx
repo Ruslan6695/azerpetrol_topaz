@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../CustomText'
+import { Typography } from '../../Typography'
 import { ICustomPieChartData } from '../config/interfaces/ICustomPieChartData'
 
 type Props = {
@@ -24,9 +24,9 @@ export const CustomPieChartLegendItem = memo(
         return (
             <View style={styles.container}>
                 <View style={styles.colorBlock}></View>
-                <CustomText marginsPaddings={{ ml: 10 }} fz={13}>
+                <Typography type="caption" marginsPaddings={{ ml: 10 }}>
                     {text}
-                </CustomText>
+                </Typography>
             </View>
         )
     }

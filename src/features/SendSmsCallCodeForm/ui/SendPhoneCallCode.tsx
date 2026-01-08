@@ -1,12 +1,10 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { CustomInput, useInput } from '../../../shared/CustomInput'
+import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
 import { CustomButton } from '../../../shared/CustomButton'
-import { CustomText } from '../../../shared/CustomText'
-import { COLORS, SIZES } from '../../../shared'
-import { StyleSheet, View } from 'react-native'
-import { PhoneIcon } from '../../../shared/PhoneIcon'
-import { showError } from '../../../shared/ToastComponent'
+import { CustomInput, useInput } from '../../../shared/CustomInput'
 import { DisabledIcon } from '../../../shared/DisabledIcon'
+import { showError } from '../../../shared/ToastComponent'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {
     sendSms: () => void
@@ -39,19 +37,13 @@ export const SendPhoneCallCode = memo(({ sendSms, onSendCode }: Props) => {
     }, [])
     return (
         <>
-            <CustomText
-                textAlign="center"
-                fz={17}
-                marginsPaddings={{ mb: 20 }}
-                style={{ width: SIZES.WIDTH(0.85) }}
-            >
+            <Typography textAlign="center" marginsPaddings={{ mb: 20 }}>
                 На ваш телефон сейчас поступит звонок. Введите последние 4 цифры
                 звонившего номера.
-            </CustomText>
+            </Typography>
 
             <CustomInput
                 mask="9999"
-                icon={<PhoneIcon />}
                 onSubmitEditing={handleSubmit}
                 onChangeText={handleChangeInputValue}
                 keyboardType="numeric"
@@ -60,15 +52,16 @@ export const SendPhoneCallCode = memo(({ sendSms, onSendCode }: Props) => {
             />
             <CustomButton
                 onPress={handleSubmit}
-                styled={{ marginsPaddings: { mt: 20, mb: 10 } }}
+                styled={{ marginsPaddings: { mt: 16 } }}
             >
                 ПОДТВЕРДИТЬ
             </CustomButton>
+            <ButtonsSeparator />
             <CustomButton
+                styled={{ type: 'secondary' }}
                 icon={timerToSms > 0 && <DisabledIcon />}
                 disabled={timerToSms > 0}
                 onPress={sendSms}
-                styled={{ type: 'OUTLINED' }}
             >
                 {timerToSms > 0
                     ? `${timerToSms}      Отправить смс-код`
@@ -76,14 +69,4 @@ export const SendPhoneCallCode = memo(({ sendSms, onSendCode }: Props) => {
             </CustomButton>
         </>
     )
-})
-
-const styles = StyleSheet.create({
-    container: {
-        width: SIZES.WIDTH(0.85),
-        backgroundColor: COLORS.GRAY,
-        padding: 15 * SIZES.PX,
-        borderRadius: SIZES.PX * 10,
-        marginBottom: SIZES.PX * 10,
-    },
 })

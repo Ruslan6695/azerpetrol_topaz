@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { CustomText } from '../../../shared/CustomText'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {
     title: string
@@ -9,15 +9,14 @@ type Props = {
 
 export const ScreenTitle = memo(({ title, mb, ml }: Props) => {
     return (
-        <CustomText
+        <Typography
             marginsPaddings={{
                 mb: mb !== undefined ? mb : 10,
                 ml: ml !== undefined ? ml : 10,
             }}
-            fw="700"
-            fz={20}
+            type="displayMedium"
         >
-            {title.toUpperCase()}
-        </CustomText>
+            {title}
+        </Typography>
     )
 })

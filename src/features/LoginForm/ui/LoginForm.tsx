@@ -1,9 +1,12 @@
 import { useRouter } from 'expo-router'
 import { memo } from 'react'
-import { ESCREENS } from '../../../shared'
+import { COLORS, ESCREENS, SIZES } from '../../../shared'
 import { CustomButton } from '../../../shared/CustomButton'
 import { CustomInput } from '../../../shared/CustomInput'
 import { PhoneIcon } from '../../../shared/PhoneIcon'
+import { StyleSheet, View } from 'react-native'
+import { Typography } from '../../../shared/Typography'
+import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
 
 type Props = {
     onChangePhoneValue: (value: string) => void
@@ -23,30 +26,34 @@ export const LoginForm = memo(
                     mask="8 999 999 99 99"
                     value={phoneValue}
                     onChangeText={onChangePhoneValue}
-                    placeholder="Номер телефона"
+                    placeholder="Ваш номер телефона"
                     styled={{
-                        marginsPaddings: { mt: 20 },
+                        width: { type: 'absolute', value: '100%' },
                     }}
-                    icon={<PhoneIcon />}
                 />
                 <CustomButton
                     onPress={onSubmit}
                     styled={{
-                        marginsPaddings: { mb: 10, mt: 20 },
+                        borderRadius: 1000,
+                        marginsPaddings: { mt: 16 },
+                        width: { type: 'absolute', value: '100%' },
                     }}
                 >
-                    Вход
+                    Войти
                 </CustomButton>
-
+                <ButtonsSeparator />
                 <CustomButton
                     onPress={() => {
                         router.navigate(ESCREENS.REGISTRATION)
                     }}
                     styled={{
-                        type: 'DARK',
+                        borderRadius: 1000,
+
+                        type: 'secondary',
+                        width: { type: 'absolute', value: '100%' },
                     }}
                 >
-                    Регистрация
+                    Зарегистрироваться
                 </CustomButton>
             </>
         )

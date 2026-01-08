@@ -1,5 +1,4 @@
 import React from 'react'
-import { CustomText } from '../../../../shared/CustomText'
 import { IInfoBlock, InfoBlock } from '../../../../entities/InfoBlock'
 
 type Props = {

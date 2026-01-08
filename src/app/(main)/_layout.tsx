@@ -1,23 +1,38 @@
 import { Slot } from 'expo-router'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { AppStore, COLORS, SIZES } from '../../shared'
+import { AppStore, SIZES, ThemeStore } from '../../shared'
 import { BottomMenu } from '../../shared/BottomMenu'
-import { MainHeaderWidget } from '../../widgets/MainHeaderWidget'
 import { CheckNetworkWidget } from '../../widgets/CheckNetworkWidget'
-import { changePushToken } from '../../features/ChangePushToken'
+import { MainHeaderWidget } from '../../widgets/MainHeaderWidget'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { BackgroundImage } from '../../shared/BackgroundImage'
 
 type Props = {}
 
 const Layout = (props: Props) => {
     const isHasNet = AppStore.useIsHasNet()
-    useEffect(() => {
-        changePushToken()
-    }, [])
+    const COLORS = ThemeStore.useCOLORS()
+    const styles = StyleSheet.create({
+        wrapper: {
+            flex: 1,
+            backgroundColor: COLORS.BACKGROUND.Primary,
+            position: 'relative',
+        },
+        main: {
+            flex: 1,
+            paddingHorizontal: SIZES.PX * 20,
+        },
+    })
     return (
-        <>
+        <SafeAreaView
+            style={{ flex: 1, backgroundColor: COLORS.BACKGROUND.Tertiary }}
+            edges={['bottom', 'right', 'left']}
+        >
             <View style={styles.wrapper}>
+                <BackgroundImage bottom={50} right={1} />
+
                 <MainHeaderWidget />
                 <KeyboardAwareScrollView
                     showsHorizontalScrollIndicator={false}
@@ -30,19 +45,8 @@ const Layout = (props: Props) => {
                 </KeyboardAwareScrollView>
                 <BottomMenu />
             </View>
-        </>
+        </SafeAreaView>
     )
 }
 
-const styles = StyleSheet.create({
-    wrapper: {
-        flex: 1,
-        backgroundColor: COLORS.WHITE,
-        position: 'relative',
-    },
-    main: {
-        flex: 1,
-        paddingHorizontal: SIZES.PX * 20,
-    },
-})
 export default Layout

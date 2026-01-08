@@ -1,25 +1,32 @@
 import { memo } from 'react'
-import CarSvg from '../assets/car.svg'
+import OsagoSvg from '../assets/car.svg'
+import OsagoDarkSvg from '../assets/car_dark.svg'
 import { HomeMainBlock } from '../../../../entities/HomeMainBlock'
-import { ESCREENS, SIZES } from '../../../../shared'
+import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
 type Props = {
     big_text: string
     small_text: string
 }
 
 export const OpenOsagoScreen = memo(({ big_text, small_text }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
     return (
         <HomeMainBlock
             link={ESCREENS.PRODUCTS}
             bgColor="rgba(255, 149, 0, 0.8)"
-            mainText={{
-                color: '#AF6600',
-                text: big_text,
-                fz: 21,
-            }}
+            mainText={big_text}
             desciptionText={small_text}
-            title={'ОФОРМИТЬ ОСАГО'}
-            icon={<CarSvg width={100 * SIZES.PX} height={90 * SIZES.PX} />}
+            title={'Оформить осаго'}
+            icon={
+                colorTheme === 'light' ? (
+                    <OsagoSvg height={56 * SIZES.PX} width={56 * SIZES.PX} />
+                ) : (
+                    <OsagoDarkSvg
+                        height={56 * SIZES.PX}
+                        width={56 * SIZES.PX}
+                    />
+                )
+            }
         />
     )
 })

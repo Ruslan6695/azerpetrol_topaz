@@ -8,8 +8,6 @@ import {
     TContactsScreenParams,
     useGetContactsPermission,
 } from '../../../shared'
-import { GivePermissionModal } from '../../../features/GivePermissionModal'
-import { CustomText } from '../../../shared/CustomText'
 
 type Props = {
     params: Partial<TContactsScreenParams>
@@ -20,10 +18,6 @@ export const ContactsWidget = memo(({ params }: Props) => {
         contactsPermission,
         fetchContactsPermissionOnPress,
         fetchContactsPermission,
-        isShowPermissionModal,
-        handleAbortAsyncStPermission,
-        handleSubmitAsyncStPermission,
-        contactsPermissionAsyncSt,
     } = useGetContactsPermission()
 
     useEffect(() => {
@@ -33,10 +27,8 @@ export const ContactsWidget = memo(({ params }: Props) => {
     }, [contactsPermission])
     return (
         <>
-            <ScreenTitle title="Выберите пользователя" />
-            <CustomText>{contactsPermissionAsyncSt}</CustomText>
-            {contactsPermission?.status == PermissionStatus.DENIED ||
-            !contactsPermissionAsyncSt ? (
+            <ScreenTitle title="Выберите" />
+            {contactsPermission?.status == PermissionStatus.DENIED ? (
                 <>
                     <GetContactsPermission
                         fetchPermission={fetchContactsPermission}
@@ -46,13 +38,6 @@ export const ContactsWidget = memo(({ params }: Props) => {
             ) : (
                 <MapContacts onSelectLink={params.onSelectLink} />
             )}
-            <GivePermissionModal
-                onSubmit={handleSubmitAsyncStPermission}
-                handleClose={handleAbortAsyncStPermission}
-                description={`Приложение Азерпетрол запрашивает разрешение на использование и передачу контактов на наш сервер для определения зарегистрированных в приложении пользователей.\nВаши контакты используются только во время работы приложения и не хранятся на нашем сервере.`}
-                isModalOpened={isShowPermissionModal}
-                title="Разрешение на использование контактов"
-            />
         </>
     )
 })

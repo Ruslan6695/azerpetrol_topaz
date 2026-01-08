@@ -4,11 +4,12 @@ import { MPLayout } from '../../../shared/MpLayout'
 
 type Props = {
     infoBlocks: IInfoBlock[]
+    mt?: number
 }
 
-export const MapInfoBlocks = ({ infoBlocks }: Props) => {
+export const MapInfoBlocks = ({ infoBlocks, mt }: Props) => {
     return (
-        <MPLayout mt={15}>
+        <MPLayout mt={mt || 32}>
             {infoBlocks.map((block) => (
                 <InfoBlock
                     marginsPaddings={{ mt: 7, mb: 7 }}

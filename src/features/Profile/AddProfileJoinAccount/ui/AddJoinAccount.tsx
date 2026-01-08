@@ -1,10 +1,9 @@
-import { memo, useCallback } from 'react'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { ESCREENS, SIZES } from '../../../../shared'
-import { StyleSheet } from 'react-native'
-import { PlusIcon } from '../../../../shared/Icons/PlusIcon'
-import { CustomText } from '../../../../shared/CustomText'
 import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
+import { StyleSheet } from 'react-native'
+import { ESCREENS, SIZES } from '../../../../shared'
+import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
@@ -19,13 +18,9 @@ export const AddProfileJoinAccount = memo((props: Props) => {
             activeOpacity={0.6}
             style={styles.container}
         >
-            <PlusIcon size={15} />
-            <CustomText
-                style={{ textDecorationLine: 'underline' }}
-                marginsPaddings={{ ml: 10 }}
-            >
-                Привязать нового пользователя
-            </CustomText>
+            <Typography color="link" type="bodyAccentSmall">
+                Пригласить пользователя
+            </Typography>
         </CustomTouchableOpacity>
     )
 })

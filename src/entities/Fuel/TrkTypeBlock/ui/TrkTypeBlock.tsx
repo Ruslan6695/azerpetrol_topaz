@@ -1,8 +1,10 @@
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, ITrkType, SIZES, divideNumber } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
+import { ITrkType, SIZES, ThemeStore, divideNumber } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
+import { BonusIcon } from '../../../../shared/BonusIcon'
+import { MPLayout } from '../../../../shared/MpLayout'
 
 interface IProps extends ITrkType {
     onPress: (trkType: ITrkType) => void
@@ -20,18 +22,28 @@ export const TrkTypeBlock = memo(
         art,
         petrol_id,
     }: IProps) => {
+        const COLORS = ThemeStore.useCOLORS()
         const handlePress = useCallback(() => {
             onPress({ id, name, price, nozzle_id, art, petrol_id })
         }, [onPress, id, name, price])
 
         const styles = StyleSheet.create({
             container: {
-                backgroundColor: isSelected ? COLORS.GREEN_2 : COLORS.GRAY,
+                backgroundColor: isSelected
+                    ? COLORS.BRAND.Primary
+                    : COLORS.BACKGROUND.Tertiary,
                 width: '100%',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                padding: SIZES.PX * 12,
-                borderRadius: SIZES.PX * 10,
+                paddingHorizontal: SIZES.PX * 16,
+                paddingVertical: SIZES.PX * 18,
+                borderRadius: SIZES.PX * 16,
+                borderColor: COLORS.BRAND.Secondary,
+                borderWidth: 0.9 * SIZES.PX,
+            },
+            row: {
+                alignItems: 'center',
+                flexDirection: 'row',
             },
         })
         return (
@@ -40,12 +52,25 @@ export const TrkTypeBlock = memo(
                 onPress={handlePress}
                 style={styles.container}
             >
-                <CustomText fz={22} white>
+                <Typography
+                    color={isSelected ? 'invert' : undefined}
+                    type="displaySmall"
+                >
                     {name.toUpperCase()}
-                </CustomText>
-                <CustomText fz={22} white>
-                    {divideNumber(price)} ₽
-                </CustomText>
+                </Typography>
+                <View style={styles.row}>
+                    <Typography
+                        color={isSelected ? 'invert' : undefined}
+                        type="displaySmall"
+                    >
+                        {divideNumber(price)}
+                    </Typography>
+                    <MPLayout mt={2}>
+                        <BonusIcon
+                            color={isSelected ? COLORS.TEXT.Invert : undefined}
+                        />
+                    </MPLayout>
+                </View>
             </CustomTouchableOpacity>
         )
     }

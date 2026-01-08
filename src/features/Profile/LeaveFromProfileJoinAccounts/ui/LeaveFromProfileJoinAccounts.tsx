@@ -1,9 +1,8 @@
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { CloseIcon } from '../../../../shared/CloseIcon'
-import { CustomText } from '../../../../shared/CustomText'
-import { COLORS, SIZES, useModal } from '../../../../shared'
+import { StyleSheet } from 'react-native'
+import { useModal } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
 import { LeaveFromProfileJoinAccountsModal } from './LeaveFromProfileJoinAccountsModal'
 
 type Props = {
@@ -19,12 +18,11 @@ export const LeaveFromProfileJoinAccounts = ({ onLeave }: Props) => {
                 activeOpacity={0.6}
                 style={styles.container}
             >
-                <CloseIcon size={20} red />
-                <CustomText marginsPaddings={{ ml: 10 }} color={COLORS.RED}>
+                <Typography color="error" type="bodyAccentSmall">
                     Покинуть группу
-                </CustomText>
+                </Typography>
             </CustomTouchableOpacity>
-            
+
             <LeaveFromProfileJoinAccountsModal
                 onLeave={onLeave}
                 handleClose={handleCloseModal}
@@ -38,8 +36,6 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: SIZES.PX * 5,
         paddingBottom: 0,
-        marginTop: SIZES.PX * 5,
     },
 })

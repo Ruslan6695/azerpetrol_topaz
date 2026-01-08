@@ -10,12 +10,12 @@ export const AddJoinAccountConfirmSkeleton = (props: Props) => {
             <Skeleton
                 margins={{ mb: 10 }}
                 width={300 * SIZES.PX}
-                height={56 * SIZES.PX}
+                height={45 * SIZES.PX}
             />
             <Skeleton
                 margins={{ mb: 10 }}
                 width={300 * SIZES.PX}
-                height={56 * SIZES.PX}
+                height={45 * SIZES.PX}
             />
         </>
     )

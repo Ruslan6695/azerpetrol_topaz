@@ -1,20 +1,14 @@
 import { memo, useCallback, useEffect, useState } from 'react'
-import {
-    TabBarWithBackground,
-    useTabBar,
-} from '../../../shared/TabBarWithBackground'
+
+import { useFocusEffect } from 'expo-router'
+import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
+import { CoffeeMachinesStore } from '../../../features/Coffee/SelectCoffeeMachine'
+import { TCoffeeScreenParams } from '../../../shared'
 import { BuyCoffeeWidget } from '../../../widgets/Coffee/BuyCoffeeWidget'
 import { MyCoffeeWidget } from '../../../widgets/Coffee/MyCoffeeWidget'
-import {
-    TCoffeeScreenParams,
-    useFetchData,
-    useFetchStoreData,
-} from '../../../shared'
 import { SelectCoffeeMachineWidget } from '../../../widgets/Coffee/SelectCoffeeMachineWidget'
-import { useFocusEffect } from 'expo-router'
-import { CoffeeMachinesStore } from '../../../features/Coffee/SelectCoffeeMachine'
-import { CustomText } from '../../../shared/CustomText'
-import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
+import { useTabBar } from '../../../shared/TabBar'
+import { TabBarWithBackground } from '../../../shared/TabBarWithBackground'
 
 type Props = {
     params: Partial<TCoffeeScreenParams>

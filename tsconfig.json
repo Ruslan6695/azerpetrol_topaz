@@ -1,14 +1,13 @@
 {
-    "extends": "expo/tsconfig.base",
-    "compilerOptions": {
-        "strict": true,
-        "jsx": "react-jsx"
-    },
-    "include": [
-        "**/*.ts",
-        "**/*.tsx",
-        "src/features/Fuel/SelectAzsAndColumnForm/api/selectAzsAndColumnApi.ts",
-        ".expo/types/**/*.ts",
-        "expo-env.d.ts"
-    ]
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "src/features/Fuel/SelectAzsAndColumnForm/api/selectAzsAndColumnApi.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ]
 }

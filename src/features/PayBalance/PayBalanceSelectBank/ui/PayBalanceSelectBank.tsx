@@ -3,6 +3,7 @@ import { WebView } from 'react-native-webview'
 import { SIZES } from '../../../../shared'
 import { Linking, View } from 'react-native'
 import { showError } from '../../../../shared/ToastComponent'
+import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 
 type Props = {
     link: string
@@ -10,6 +11,11 @@ type Props = {
 }
 
 export const PayBalanceSelectBank = memo(({ link, onSelectBank }: Props) => {
+    if (!link) {
+        return (
+            <ErrorWhileFetchingForm message="Не удалось сгенерировать ссылку  на оплату" />
+        )
+    }
     return (
         <View style={{ height: SIZES.HEIGHT(0.7), width: SIZES.WIDTH(0.9) }}>
             <WebView

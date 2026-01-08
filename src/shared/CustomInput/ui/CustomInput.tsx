@@ -1,10 +1,9 @@
-import React, { ReactNode, forwardRef, useState } from 'react'
-import { StyleSheet, TextInput, TextInputProps, View } from 'react-native'
+import React, { ReactNode, forwardRef } from 'react'
+import { StyleSheet, TextInputProps, View } from 'react-native'
 import { TextInputMask } from 'react-native-masked-text'
 import { SIZES } from '../../common/config/constants/sizes'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { MPLayout } from '../../MpLayout'
 import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { ThemeStore } from '../../common/model/themeStore'
 
 interface IProps extends TextInputProps {
     onChangeText:
@@ -21,6 +20,7 @@ interface IProps extends TextInputProps {
     onSubmitEnding?: () => void
     ref?: any
     icon?: ReactNode
+
     styled?: {
         marginsPaddings?: IMarginsPaddings
         width?: {
@@ -36,14 +36,16 @@ interface IProps extends TextInputProps {
     mask?: string
 }
 export const CustomInput = forwardRef((props: IProps, ref: any) => {
+    const COLORS = ThemeStore.useCOLORS()
+
     const width = props.styled
         ? props.styled.width
             ? (props.styled.width.type === 'px' || !props.styled.width) &&
               typeof props.styled.width.value === 'number'
                 ? props.styled.width.value * SIZES.PX
                 : props.styled.width.value
-            : SIZES.WIDTH(0.85)
-        : SIZES.WIDTH(0.85)
+            : '100%'
+        : '100%'
 
     const height = props.styled
         ? props.styled.height
@@ -56,12 +58,12 @@ export const CustomInput = forwardRef((props: IProps, ref: any) => {
 
     const styles = StyleSheet.create({
         container: {
-            backgroundColor: COLORS.GRAY_2,
+            backgroundColor: COLORS.BACKGROUND.Tertiary,
             //@ts-ignore
             width,
             //@ts-ignore
             height,
-            borderRadius: SIZES.PX * 10,
+            borderRadius: SIZES.PX * 12,
             fontSize: SIZES.PX * 15,
             flexDirection: 'row',
             alignItems: 'center',
@@ -83,7 +85,8 @@ export const CustomInput = forwardRef((props: IProps, ref: any) => {
             height: '100%',
             paddingHorizontal: props.icon ? SIZES.PX * 10 : SIZES.PX * 21,
             fontSize: SIZES.PX * 16,
-            color: COLORS.TEXT,
+            color: COLORS.TEXT.Primary,
+            fontFamily: 'Manrope-SemiBold',
         },
         iconContainer: {
             width: 25 * SIZES.PX,
@@ -99,7 +102,7 @@ export const CustomInput = forwardRef((props: IProps, ref: any) => {
                 <View style={styles.iconContainer}>{props.icon}</View>
             )}
             <TextInputMask
-                placeholderTextColor={COLORS.TEXT_2}
+                placeholderTextColor={COLORS.TEXT.Secondary}
                 type={props.type ? props.type : 'custom'}
                 options={{
                     mask: props.mask

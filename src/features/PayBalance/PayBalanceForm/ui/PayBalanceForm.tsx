@@ -1,12 +1,12 @@
 import { memo, useCallback } from 'react'
-import { useSendFetch } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
 import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { Loader } from '../../../../shared/Loader'
 import { SumIcon } from '../../../../shared/SumIcon'
-import { showError } from '../../../../shared/ToastComponent'
+import { CustomButton } from '../../../../shared/CustomButton'
+import { SIZES, useSendFetch } from '../../../../shared'
 import { payBalanceFormApi } from '../api/payBalanceFormApi'
 import { IPayBalanceFormData } from '../config/interfaces/IPayBalanceFormData'
+import { Loader } from '../../../../shared/Loader'
+import { showError } from '../../../../shared/ToastComponent'
 
 type Props = {
     onPay: (order: IPayBalanceFormData) => void
@@ -33,7 +33,7 @@ export const PayBalanceForm = memo(({ onPay, sum }: Props) => {
                 },
             })
         } else {
-            showError({ text: 'Введите сумму' })
+            showError({text:'Введите сумму'})
         }
     }, [onPay, inputValue])
     return (
@@ -48,7 +48,6 @@ export const PayBalanceForm = memo(({ onPay, sum }: Props) => {
                         keyboardType="numeric"
                         onSubmitEditing={handleSubmit}
                         placeholder="Введите сумму"
-                        icon={<SumIcon />}
                         value={inputValue}
                         onChangeText={handleChangeInputValue}
                     />
@@ -60,7 +59,7 @@ export const PayBalanceForm = memo(({ onPay, sum }: Props) => {
                             width: { type: 'absolute', value: '100%' },
                         }}
                     >
-                        ПЕРЕЙТИ К ОПЛАТЕ
+                        Подтвердить
                     </CustomButton>
                 </>
             )}

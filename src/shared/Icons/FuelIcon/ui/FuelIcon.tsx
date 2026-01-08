@@ -1,16 +1,18 @@
 import { memo } from 'react'
 import FuelSvg from '../assets/fuel.svg'
-import FuelGreenSvg from '../assets/fuel_green.svg'
+import FuelInvertSvg from '../assets/fuel_invert.svg'
 import { SIZES } from '../../../common/config/constants/sizes'
+import { ThemeStore } from '../../../common/model/themeStore'
+import { EColorThemes } from '../../../common/config/enums/EColorThemes'
 type Props = {
     size?: number
-    green?: boolean
 }
 
-export const FuelIcon = memo(({ size, green }: Props) => {
-    if (green) {
+export const FuelIcon = memo(({ size }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
+    if (colorTheme === EColorThemes.DARK) {
         return (
-            <FuelGreenSvg
+            <FuelInvertSvg
                 width={(size || 22) * SIZES.PX}
                 height={(size || 22) * SIZES.PX}
             />

@@ -1,11 +1,10 @@
 import { memo, useCallback } from 'react'
-import { CustomModal } from '../../../../shared/CustomModal'
 import { StyleSheet, View } from 'react-native'
 import { SIZES, useSendFetch } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
 import { CustomButton } from '../../../../shared/CustomButton'
-import { leaveFromProfileJoinAccountsApi } from '../api/leaveFromProfileJoinAccountsApi'
+import { CustomModal } from '../../../../shared/CustomModal'
 import { Loader } from '../../../../shared/Loader'
+import { leaveFromProfileJoinAccountsApi } from '../api/leaveFromProfileJoinAccountsApi'
 
 type Props = {
     handleClose: () => void
@@ -33,7 +32,7 @@ export const LeaveFromProfileJoinAccountsModal = memo(
         }, [onLeave])
         return (
             <CustomModal
-                title="ПОДТВЕРДИТЕ ВЫХОД ИЗ ГРУППЫ"
+                title="Подтвердите выход из группы"
                 bgDark
                 handleClose={handleClose}
                 isModalOpened={isOpened}
@@ -46,7 +45,6 @@ export const LeaveFromProfileJoinAccountsModal = memo(
                             <CustomButton
                                 onPress={handleSubmit}
                                 styled={{
-                                    type: 'DARK',
                                     width: { type: 'absolute', value: '100%' },
                                 }}
                             >
@@ -55,7 +53,7 @@ export const LeaveFromProfileJoinAccountsModal = memo(
                             <CustomButton
                                 onPress={handleClose}
                                 styled={{
-                                    type: 'OUTLINED',
+                                    type: 'secondary',
                                     marginsPaddings: { mt: 10 },
                                     width: { type: 'absolute', value: '100%' },
                                 }}

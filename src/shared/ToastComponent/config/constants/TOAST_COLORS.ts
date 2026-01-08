@@ -1,5 +1,5 @@
 export const TOAST_COLORS = {
-    ERROR: '#D84646',
-    SUCCESS: '#00CF35',
-    WARNING: '#F68A1C',
+    ERROR: '#F44336',
+    SUCCESS: '#4CAF50',
+    WARNING: '#FFC107',
 }

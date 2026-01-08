@@ -15,6 +15,7 @@ type Props = {
 export const QrCodeModal = memo(({ handleClose, isOpened, value }: Props) => {
     return (
         <CustomModal
+            white={true}
             closeOutside
             bgDark
             handleClose={handleClose}

@@ -151,8 +151,7 @@ export const SelectAzsAndColumn = memo(
                             styled={{
                                 marginsPaddings: { mt: 10 },
 
-                                type: 'OUTLINED',
-                                width: { type: 'absolute', value: '100%' },
+                                type: 'secondary',
                             }}
                         >
                             ВЕРНУТЬСЯ НАЗАД
@@ -169,7 +168,7 @@ export const SelectAzsAndColumn = memo(
                             selectedOption={selectedAzs}
                             options={azsOptions ? azsOptions : []}
                             placeholder="Выберите Азс"
-                            title="ВЫБОР АЗС"
+                            title="Выбор азс"
                         />
                         {isColumnsDataLoading ? (
                             <Skeleton
@@ -184,35 +183,28 @@ export const SelectAzsAndColumn = memo(
                                     disabledText: 'Сначала выберите Азс',
                                 }}
                                 styled={{
-                                    marginsPaddings: { mt: 20, mb: 30 },
-                                    width: { type: 'absolute', value: '100%' },
+                                    marginsPaddings: { mt: 20, mb: 20 },
                                 }}
                                 icon={<FuelIcon />}
                                 onChangeOption={handleChangeColumn}
                                 selectedOption={selectedColumn}
                                 options={columnOptions ? columnOptions : []}
                                 placeholder="Выберите колонку"
-                                title="ВЫБОР КОЛОНКИ"
+                                title="Выбор колонки"
                             />
                         )}
 
-                        <CustomButton
-                            onPress={handleSubmit}
-                            styled={{
-                                width: { type: 'absolute', value: '100%' },
-                            }}
-                        >
-                            ПЕРЕЙТИ ДАЛЕЕ
+                        <CustomButton onPress={handleSubmit}>
+                            Перейти далее
                         </CustomButton>
                         <CustomButton
                             onPress={onGoBack}
                             styled={{
                                 marginsPaddings: { mt: 10 },
-                                type: 'OUTLINED',
-                                width: { type: 'absolute', value: '100%' },
+                                type: 'secondary',
                             }}
                         >
-                            ВЕРНУТЬСЯ НАЗАД
+                            Вернуться назад
                         </CustomButton>
                     </>
                 )}

@@ -1,15 +1,30 @@
-import React from 'react'
-import { COLORS, ESCREENS, SIZES } from '../../../../shared'
-import { StyleSheet, View } from 'react-native'
-import { CustomText } from '../../../../shared/CustomText'
-import { Link, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
+import React, { useMemo } from 'react'
+import { StyleSheet } from 'react-native'
+import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
 import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { Typography } from '../../../../shared/Typography'
 
 type Props = {}
 
 export const OpenTransferBalanceScreen = (props: Props) => {
     const router = useRouter()
-
+    const COLORS = ThemeStore.useCOLORS()
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                container: {
+                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                    padding: SIZES.PX * 16,
+                    borderRadius: SIZES.PX * 16,
+                    flex: 1,
+                    justifyContent: 'center',
+                    borderColor: COLORS.BRAND.Secondary,
+                    borderWidth: 0.9 * SIZES.PX,
+                },
+            }),
+        [COLORS]
+    )
     return (
         <CustomTouchableOpacity
             onPress={() => {
@@ -17,15 +32,7 @@ export const OpenTransferBalanceScreen = (props: Props) => {
             }}
             style={styles.container}
         >
-            <CustomText fw="600">{'Перевод\nсредств'}</CustomText>
+            <Typography type="displaySmall">Перевести средства</Typography>
         </CustomTouchableOpacity>
     )
 }
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: COLORS.GRAY_3,
-        padding: SIZES.PX * 20,
-        borderRadius: SIZES.PX * 15,
-        justifyContent: 'center',
-    },
-})

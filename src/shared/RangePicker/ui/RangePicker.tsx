@@ -1,14 +1,13 @@
-import { ReactNode, memo, useCallback, useMemo, useState } from 'react'
-import { CustomButton } from '../../CustomButton'
-import { useModal } from '../../common/config/lib/hooks/useModal'
-import { RangePickerModal } from './RangePickerModal'
-import { StyleSheet, View } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
-import { SIZES } from '../../common/config/constants/sizes'
-import { CustomText } from '../../CustomText'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
 import AntDesign from '@expo/vector-icons/AntDesign'
+import { memo, useMemo } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { SIZES } from '../../common/config/constants/sizes'
+import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { useModal } from '../../common/config/lib/hooks/useModal'
+import { ThemeStore } from '../../common/model/themeStore'
+import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { Typography } from '../../Typography'
+import { RangePickerModal } from './RangePickerModal'
 
 type Props = {
     styled?: {
@@ -32,6 +31,7 @@ type Props = {
 
 export const RangePicker = memo(
     ({ styled, dates, onChangeDates, onResetDate }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
         const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
 
         const showedDates = useMemo<string>(() => {
@@ -182,7 +182,7 @@ export const RangePicker = memo(
                 alignItems: 'flex-end',
             },
             picker: {
-                backgroundColor: COLORS.GRAY_2,
+                backgroundColor: COLORS.BACKGROUND.Tertiary,
                 marginTop: styled?.marginsPaddings?.mt
                     ? styled?.marginsPaddings?.mt * SIZES.PX
                     : 0,
@@ -219,9 +219,7 @@ export const RangePicker = memo(
             <View style={styles.wrapper}>
                 {onResetDate && dates.endDate && dates.startDate && (
                     <CustomTouchableOpacity onPress={onResetDate}>
-                        <CustomText marginsPaddings={{ mb: 10 }}>
-                            Cбросить
-                        </CustomText>
+                        <Typography type="caption">Cбросить</Typography>
                     </CustomTouchableOpacity>
                 )}
 
@@ -240,9 +238,9 @@ export const RangePicker = memo(
                     </>
 
                     <View>
-                        <CustomText>
+                        <Typography type="caption">
                             {showedDates || 'Даты не выбраны'}
-                        </CustomText>
+                        </Typography>
                     </View>
                 </CustomTouchableOpacity>
                 <RangePickerModal

@@ -1,14 +1,14 @@
-import { memo, useCallback, useEffect } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { COLORS, ESCREENS, SIZES, TSuccessScreenParams } from '../../../shared'
-import { CustomText } from '../../../shared/CustomText'
 import { useFocusEffect, useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
+import { StyleSheet, View } from 'react-native'
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withSpring,
 } from 'react-native-reanimated'
+import { ESCREENS, SIZES, TSuccessScreenParams } from '../../../shared'
 import { SuccessImage } from '../../../shared/SuccessImage'
+import { Typography } from '../../../shared/Typography'
 type Props = {
     params: Partial<TSuccessScreenParams>
 }
@@ -29,10 +29,10 @@ export const SuccessWidget = memo(({ params }: Props) => {
         useCallback(() => {
             setTimeout(() => {
                 router.navigate(params.link || ESCREENS.HOME)
-            }, 2000)
+            }, 3000)
 
-            iconTranslateX.value = withSpring(0, { damping: 12 })
-            textTranslateX.value = withSpring(0, { damping: 12 })
+            iconTranslateX.value = withSpring(0, { damping: 50 })
+            textTranslateX.value = withSpring(0, { damping: 50 })
         }, [])
     )
     return (
@@ -41,16 +41,15 @@ export const SuccessWidget = memo(({ params }: Props) => {
                 <SuccessImage />
             </Animated.View>
             <Animated.View style={textAnimStyle}>
-                <CustomText
+                <Typography
+                    type="headlineSmall"
                     style={styles.text}
                     marginsPaddings={{ mt: 30 }}
-                    fw="700"
                     textAlign="center"
-                    color={COLORS.GREEN}
-                    fz={30}
+                    color="success"
                 >
                     {params.text?.toUpperCase()}
-                </CustomText>
+                </Typography>
             </Animated.View>
         </View>
     )

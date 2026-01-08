@@ -1,9 +1,7 @@
 import React, { useCallback } from 'react'
 import { CustomButton } from '../../../shared/CustomButton'
 import { CustomInput, useInput } from '../../../shared/CustomInput'
-import { SmsIcon } from '../../../shared/Icons/SmsIcon'
-import { CustomText } from '../../../shared/CustomText'
-import { SIZES } from '../../../shared'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {
     onSubmit: (smsCode: string) => void
@@ -17,24 +15,19 @@ export const SendSmsCode = ({ onSubmit }: Props) => {
     }, [onSubmit, inputValue])
     return (
         <>
-            <CustomText
-                textAlign="center"
-                fz={17}
-                style={{ width: SIZES.WIDTH(0.85) }}
-            >
+            <Typography textAlign="center">
                 Мы отправили СМС на ваш номер телефона. Введите код из СМС.
-            </CustomText>
+            </Typography>
             <CustomInput
                 onSubmitEditing={handleSubmit}
                 keyboardType="numeric"
                 maxLength={4}
                 styled={{
-                    marginsPaddings: { mt: 20, mb: 20 },
+                    marginsPaddings: { mt: 20, mb: 16 },
                 }}
                 value={inputValue}
                 onChangeText={handleChangeInputValue}
                 placeholder="Код из СМС"
-                icon={<SmsIcon />}
             />
             <CustomButton onPress={handleSubmit}>Подтвердить</CustomButton>
         </>

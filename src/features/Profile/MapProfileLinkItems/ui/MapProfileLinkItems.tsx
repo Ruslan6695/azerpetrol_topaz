@@ -3,7 +3,7 @@ import {
     IProfileLinkItem,
     ProfileLinkItem,
 } from '../../../../entities/Profile/ProfileLinkItem'
-import { ESCREENS } from '../../../../shared'
+import { COLORS, ESCREENS, SIZES } from '../../../../shared'
 import AboutAppSvg from '../assets/about_app.svg'
 import AboutCompanySvg from '../assets/about_company.svg'
 import HistorySvg from '../assets/history.svg'
@@ -11,6 +11,7 @@ import NewsSvg from '../assets/news.svg'
 import SettingsSvg from '../assets/settings.svg'
 import SupportSvg from '../assets/support.svg'
 import DeleteAccSvg from '../assets/delete_acc.svg'
+import { StyleSheet, View } from 'react-native'
 type Props = {
     onDeleteAccount: () => void
 }
@@ -57,7 +58,7 @@ export const MapProfileLinkItems = memo(({ onDeleteAccount }: Props) => {
     }, [onDeleteAccount])
 
     return (
-        <>
+        < >
             {items.map((item) => (
                 <ProfileLinkItem {...item} key={item.link} />
             ))}

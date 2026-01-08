@@ -4,13 +4,12 @@ import { SIZES, UserStore, useSendFetch } from '../../../shared'
 import BottomSheet from '../../../shared/BottomSheet/ui/BottomSheet'
 import { CloseIcon } from '../../../shared/CloseIcon'
 import { CustomButton } from '../../../shared/CustomButton'
-import { CustomText } from '../../../shared/CustomText'
 import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
-import { MPLayout } from '../../../shared/MpLayout'
-import { SendSmsCallCodeForm } from '../../SendSmsCallCodeForm'
-import { deleteAccountApi } from '../api/deleteAccountApi'
 import { Loader } from '../../../shared/Loader'
 import { showToast } from '../../../shared/ToastComponent'
+import { Typography } from '../../../shared/Typography'
+import { SendSmsCallCodeForm } from '../../SendSmsCallCodeForm'
+import { deleteAccountApi } from '../api/deleteAccountApi'
 
 type Props = {
     isOpened: boolean
@@ -72,12 +71,7 @@ export const DeleteAccountModal = ({ handleClose, isOpened }: Props) => {
     }, [])
 
     return (
-        <BottomSheet
-            bottomPx={150}
-            bgDark
-            isOpened={isOpened}
-            handleClose={handleClose}
-        >
+        <BottomSheet bgDark isOpened={isOpened} handleClose={handleClose}>
             <View style={styles.container}>
                 <CustomTouchableOpacity
                     onPress={handleClose}
@@ -90,14 +84,16 @@ export const DeleteAccountModal = ({ handleClose, isOpened }: Props) => {
                     <Loader marginsPaddings={{ mt: 150 }} />
                 ) : road === 'confirm' ? (
                     <>
-                        <CustomText marginsPaddings={{ mt: 50 }} fz={20}>
+                        <Typography
+                            marginsPaddings={{ mt: 50 }}
+                            type="bodyAccentMedium"
+                        >
                             Вы точно хотите удалить аккаунт?
-                        </CustomText>
+                        </Typography>
                         <CustomButton
                             onPress={handleDelete}
                             styled={{
-                                type: 'ERROR',
-                                marginsPaddings: { mt: 20, mb: 20 },
+                                marginsPaddings: { mt: 20, mb: 16 },
                             }}
                         >
                             ПОДТВЕРДИТЬ
@@ -106,19 +102,17 @@ export const DeleteAccountModal = ({ handleClose, isOpened }: Props) => {
                             onPress={() => {
                                 handleClose()
                             }}
-                            styled={{ type: 'OUTLINED' }}
+                            styled={{ type: 'secondary' }}
                         >
                             ОТМЕНИТЬ
                         </CustomButton>
                     </>
                 ) : (
-                    <MPLayout mt={10}>
-                        <SendSmsCallCodeForm
-                            onToggleConfirmationType={handleToggleCallSmsType}
-                            onSend={handleConfirm}
-                            confirmationType={callSmsType}
-                        />
-                    </MPLayout>
+                    <SendSmsCallCodeForm
+                        onToggleConfirmationType={handleToggleCallSmsType}
+                        onSend={handleConfirm}
+                        confirmationType={callSmsType}
+                    />
                 )}
             </View>
         </BottomSheet>
@@ -129,6 +123,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         padding: SIZES.PX * 20,
+        marginBottom: 40,
     },
     closeIcon: {
         padding: SIZES.PX * 10,

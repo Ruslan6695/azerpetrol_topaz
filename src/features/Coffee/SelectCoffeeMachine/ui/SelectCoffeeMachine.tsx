@@ -1,14 +1,9 @@
 import React from 'react'
-import BottomSheet from '../../../../shared/BottomSheet/ui/BottomSheet'
 import { StyleSheet, View } from 'react-native'
-import {
-    CoffeeMachineItem,
-    ICoffeeMachineItem,
-} from '../../../../entities/Coffee/CoffeeMachineItem'
-import { CoffeeMachinesStore } from '../model/coffeeMachinesStore'
+import { CoffeeMachineItem } from '../../../../entities/Coffee/CoffeeMachineItem'
 import { SIZES } from '../../../../shared'
-import { CustomText } from '../../../../shared/CustomText'
 import { CustomButton } from '../../../../shared/CustomButton'
+import { CoffeeMachinesStore } from '../model/coffeeMachinesStore'
 
 type Props = {
     onGoBack: () => void
@@ -26,7 +21,7 @@ export const SelectCoffeeMachine = ({ onGoBack, onSelect }: Props) => {
                 <CustomButton
                     onPress={onGoBack}
                     styled={{
-                        type: 'OUTLINED',
+                        type: 'secondary',
                         width: { type: 'absolute', value: '100%' },
                     }}
                 >

@@ -1,12 +1,12 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../shared'
-import { CustomText } from '../../../shared/CustomText'
+import { SIZES } from '../../../shared'
 import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
-import { Logo } from '../../../shared/Logo'
-import { MPLayout } from '../../../shared/MpLayout'
-import { IContactItem } from '../config/interfaces/IContactItem'
 import { PersonIcon } from '../../../shared/Icons/PersonIcon'
+import { Logo, LogoFull } from '../../../shared/Logo'
+import { MPLayout } from '../../../shared/MpLayout'
+import { Typography } from '../../../shared/Typography'
+import { IContactItem } from '../config/interfaces/IContactItem'
 
 interface IProps extends IContactItem {
     onPress: (contact: IContactItem) => void
@@ -23,13 +23,15 @@ export const ContactItem = ({ id, name, phone, onPress }: IProps) => {
             style={styles.container}
         >
             <View style={styles.left}>
-                <PersonIcon size={25} />
+                <PersonIcon size={24} />
                 <MPLayout ml={10}>
-                    <CustomText>{name}</CustomText>
-                    <CustomText secondary>{phone}</CustomText>
+                    <Typography type="bodySmall">{name}</Typography>
+                    <Typography color="secondary" type="caption">
+                        {phone}
+                    </Typography>
                 </MPLayout>
             </View>
-            <Logo size={25} />
+            <Logo size={20} />
         </CustomTouchableOpacity>
     )
 }
@@ -39,9 +41,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottomColor: COLORS.GRAY_2,
         paddingVertical: SIZES.PX * 5,
-        borderBottomWidth: 1,
     },
     left: {
         flexDirection: 'row',

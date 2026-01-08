@@ -21,7 +21,6 @@ export const fuelLoadingStartApi = {
         sumRub: number
     }) => {
         const token = await getToken()
-
         const resp = await axiosIntsanse.get('fuelling/start/', {
             params: {
                 token,

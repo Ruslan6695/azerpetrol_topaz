@@ -1,9 +1,8 @@
 import { memo, useCallback } from 'react'
-import { CustomText } from '../../../../shared/CustomText'
-import { SelectAzsAndColumn } from '../../../../features/Fuel/SelectAzsAndColumnForm'
 import { GetLocationOfAzs } from '../../../../features/Fuel/GetLocationOfAzs'
-import { FuelStore, IAzs, IColumn } from '../../../../shared'
+import { SelectAzsAndColumn } from '../../../../features/Fuel/SelectAzsAndColumnForm'
 import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
+import { FuelStore, IAzs, IColumn } from '../../../../shared'
 import { FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS'
 
 type Props = {

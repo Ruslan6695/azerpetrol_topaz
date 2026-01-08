@@ -2,23 +2,31 @@ import { memo } from 'react'
 import { CustomButton } from '../../../../shared/CustomButton'
 import { FuelMainBlock } from '../../../../entities/Fuel/FuelMainBlock'
 import SelectCoffeeSvg from '../assets/select.svg'
-import { SIZES } from '../../../../shared'
+import SelectCoffeeDarkSvg from '../assets/selectDark.svg'
+import { EColorThemes, SIZES, ThemeStore } from '../../../../shared'
 type Props = {
     onPress: () => void
 }
 
 export const SelectCoffeeMachineButton = memo(({ onPress }: Props) => {
+    const colorTheme = ThemeStore.useTheme()
     return (
         <FuelMainBlock
             onPress={onPress}
             icon={
-                <SelectCoffeeSvg
-                    height={SIZES.PX * 100}
-                    width={SIZES.PX * 100}
-                />
+                colorTheme === EColorThemes.DARK ? (
+                    <SelectCoffeeDarkSvg
+                        height={SIZES.PX * 27}
+                        width={SIZES.PX * 27}
+                    />
+                ) : (
+                    <SelectCoffeeSvg
+                        height={SIZES.PX * 27}
+                        width={SIZES.PX * 27}
+                    />
+                )
             }
-            bgColor="rgba(76, 81, 89, 1)"
-            title={`ВЫБЕРИ\nКОФЕМАШИНУ\nИЗ СПИСКА`}
+            title={`Выберите кофемашину из списка`}
         />
     )
 })
