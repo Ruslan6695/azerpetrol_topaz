@@ -26,4 +26,5 @@ export enum ESCREENS {
     ABOUT_APP = '/about_app',
     ABOUT_COMPANY = '/about_company',
     SETTINGS = '/settings',
+    FUEL_PRICES = '/fuel_prices'
 }

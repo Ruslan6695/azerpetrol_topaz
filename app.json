@@ -1,0 +1,50 @@
+{
+    "expo": {
+        "name": "Азерпетрол",
+        "slug": "azerpetrol",
+        "version": "1.2.9",
+        "scheme": "azerpetrol",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "automatic",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#95C12B"
+        },
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.azscontrol.azerpetrol",
+            "infoPlist": {
+                "NSCameraUsageDescription": "This application uses a camera to read the qr code of the gas station address.",
+                "NSContactsUsageDescription": "This application sends contacts to the server without saving there to check if the contact is available for fuel transfer.",
+                "NSLocationWhenInUseUsageDescription": "This application uses the location to determine which gas station the user is at.",
+                "NSLocationAlwaysUsageDescription": "This application uses the location to determine which gas station the user is at.",
+                "NSLocationAlwaysAndWhenInUseUsageDescription": "This application uses the location to determine which gas station the user is at.",
+                "ITSAppUsesNonExemptEncryption": false
+            }
+        },
+        "android": {
+            "googleServicesFile": "./google-services.json",
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "versionCode": 19,
+            "package": "com.vek21.azerpetrol"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "extra": {
+            "eas": {
+                "projectId": "a3d75821-e7ca-4d01-88f1-c483c7abd763"
+            }
+        },
+        "plugins": ["expo-router"],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "newArchEnabled": true
+    }
+}
