@@ -7,9 +7,5 @@ import { Redirect } from 'expo-router'
 type Props = {}
 
 export const LoginScreen = (props: Props) => {
-    return (
-        <LoginRegistrationLayout>
-            <LoginWidget />
-        </LoginRegistrationLayout>
-    )
+    return <LoginWidget />
 }
