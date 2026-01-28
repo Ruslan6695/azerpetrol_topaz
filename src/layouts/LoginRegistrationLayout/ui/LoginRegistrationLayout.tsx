@@ -9,9 +9,10 @@ import { OpenUseTerms } from '../../../features/OpenUseTerms'
 import BackgroundSvg from '../assets/background.svg'
 type Props = {
     children: ReactNode
+    hideLogo?: boolean
 }
 
-export const LoginRegistrationLayout = memo(({ children }: Props) => {
+export const LoginRegistrationLayout = memo(({ children, hideLogo }: Props) => {
     const COLORS = ThemeStore.useCOLORS()
     const styles = StyleSheet.create({
         wrapper: {
@@ -70,14 +71,18 @@ export const LoginRegistrationLayout = memo(({ children }: Props) => {
             renderToHardwareTextureAndroid
         >
             <View style={styles.wrapper}>
-                <BackgroundSvg style={styles.backgroundImage} />
+                {hideLogo ? null : (
+                    <BackgroundSvg style={styles.backgroundImage} />
+                )}
 
                 <View style={styles.black}></View>
 
                 <View style={styles.childrenWrapper}>
-                    <View style={styles.logo}>
-                        <LogoFull width={250} height={160} />
-                    </View>
+                    {hideLogo ? null : (
+                        <View style={styles.logo}>
+                            <LogoFull width={250} height={160} />
+                        </View>
+                    )}
                     <View style={styles.children}>
                         {children}
                         <MPLayout mb={16} mt={16}>

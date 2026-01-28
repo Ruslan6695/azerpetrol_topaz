@@ -12,7 +12,7 @@ type Props = {
     nameValue: string
     onChangeSurnameValue: (value: string) => void
     surnameValue: string
-    onSubmitRegistration: () => Promise<void>
+    onSubmitRegistration: () =>void
 }
 
 export const RegistrationForm = memo(

@@ -1,21 +1,25 @@
 import { memo, useCallback, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { RegistrationForm } from '../../../features/RegistrationForm'
 import { SendSmsCallCodeForm } from '../../../features/SendSmsCallCodeForm'
-import { IUser, UserStore, useSendFetch } from '../../../shared'
+import { IUser, useFetchData, UserStore, useSendFetch } from '../../../shared'
 import { useInput } from '../../../shared/CustomInput'
 import { Loader } from '../../../shared/Loader'
-import { LogoFull } from '../../../shared/Logo'
 import { showError } from '../../../shared/ToastComponent'
 import { registrationWidgetApi } from '../api/registrationWidgetApi'
+import { GetCaptcha } from '../../../features/GetCaptcha'
+import { LoginRegistrationLayout } from '../../../layouts/LoginRegistrationLayout'
+import { useFocusEffect } from 'expo-router'
 
 type Props = {}
 
 export const RegistrationWidget = memo((props: Props) => {
-    const [road, setRoad] = useState<'input' | 'confirm'>('input')
+    const [road, setRoad] = useState<'input' | 'confirm' | 'captcha'>('input')
     const [confirmationType, setConfirmationType] = useState<'sms' | 'call'>(
         'call'
     )
+    const [captchaValue, setCaptchaValue] = useState('')
+    const [regSession, setRegSession] = useState<string | null>(null)
 
     const {
         handleChangeInputValue: handleChangePhoneValue,
@@ -29,6 +33,12 @@ export const RegistrationWidget = memo((props: Props) => {
         handleChangeInputValue: handleChangeSurnameValue,
         inputValue: surnameValue,
     } = useInput()
+
+    const { data: captchaEnabledData, fetchData: fetchCaptchaEnabledData } =
+        useFetchData({
+            apiCallback: registrationWidgetApi.checkCaptchaEnabled,
+            errorText: 'Произошла ошибка',
+        })
 
     const {
         isSendFetchLoading: isRegisterLoading,
@@ -45,8 +55,17 @@ export const RegistrationWidget = memo((props: Props) => {
 
     const setUser = UserStore.useSetUser()
 
-    const handleSubmitRegistration = useCallback(
-        async (confType?: 'sms' | 'call') => {
+    const handleSubmitCaptcha = useCallback(
+        async ({
+            confType,
+            captchaToken,
+            regSession,
+        }: {
+            confType?: 'sms' | 'call'
+            captchaToken?: string
+            regSession?: string | null
+        }) => {
+            if (captchaToken) setCaptchaValue(captchaToken)
             if (phoneValue.length > 0) {
                 await sendRegisterFetch({
                     args: {
@@ -56,12 +75,20 @@ export const RegistrationWidget = memo((props: Props) => {
                                 ? 1
                                 : 0
                             : confirmationType === 'call'
-                            ? 0
-                            : 1,
+                              ? 0
+                              : 1,
                         name: nameValue,
                         surname: surnameValue,
+                        captchaToken,
+                        regSession,
+                    },
+                    onErrorCallback(error) {
+                        setRoad('input')
                     },
                     afterDataCallback(data) {
+                        if (data?.reg_session) {
+                            setRegSession(data.reg_session)
+                        } 
                         if (confType === 'sms') {
                             setConfirmationType('sms')
                         } else {
@@ -77,13 +104,21 @@ export const RegistrationWidget = memo((props: Props) => {
         [phoneValue, confirmationType, nameValue, surnameValue]
     )
 
+    const handleSubmitRegistration = useCallback(() => {
+        setRoad('captcha')
+    }, [phoneValue, confirmationType, nameValue, surnameValue])
+
     const handleToggleConfirmationType = useCallback(() => {
         if (confirmationType === 'call') {
-            handleSubmitRegistration('sms')
+            handleSubmitCaptcha({
+                confType: 'sms',
+                captchaToken: captchaValue,
+                regSession: regSession,
+            })
         } else {
             setConfirmationType('call')
         }
-    }, [confirmationType, handleSubmitRegistration])
+    }, [confirmationType, handleSubmitCaptcha, captchaValue, regSession])
 
     const handleSubmitCode = useCallback(
         async (code: string) => {
@@ -97,13 +132,28 @@ export const RegistrationWidget = memo((props: Props) => {
         [phoneValue]
     )
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchCaptchaEnabledData({
+                args: undefined,
+                hideToastOnError: true,
+                afterDataCallback(data) {},
+            })
+        }, [])
+    )
+
     return (
-        <>
+        <LoginRegistrationLayout hideLogo={road === 'captcha'}>
             {isSendCodeLoading || isRegisterLoading ? (
                 <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
             ) : road === 'input' ? (
                 <RegistrationForm
-                    onSubmitRegistration={handleSubmitRegistration}
+                    onSubmitRegistration={
+                        captchaEnabledData &&
+                        captchaEnabledData?.show_captcha === false
+                            ? handleSubmitCaptcha
+                            : handleSubmitRegistration
+                    }
                     onChangeSurnameValue={handleChangeSurnameValue}
                     surnameValue={surnameValue}
                     onChangeNameValue={handleChangeNameValue}
@@ -111,6 +161,8 @@ export const RegistrationWidget = memo((props: Props) => {
                     onChangePhoneValue={handleChangePhoneValue}
                     phoneValue={phoneValue}
                 />
+            ) : road === 'captcha' ? (
+                <GetCaptcha onSubmitCaptcha={handleSubmitCaptcha} />
             ) : (
                 <SendSmsCallCodeForm
                     confirmationType={confirmationType}
@@ -118,7 +170,7 @@ export const RegistrationWidget = memo((props: Props) => {
                     onSend={handleSubmitCode}
                 />
             )}
-        </>
+        </LoginRegistrationLayout>
     )
 })
 
