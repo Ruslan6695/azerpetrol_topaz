@@ -3,7 +3,7 @@ import { ExpoConfig } from '@expo/config'
 const config: ExpoConfig = {
     name: 'Азерпетрол',
     slug: 'azerpetrol',
-    version: '1.3.1',
+    version: '1.3.3',
     scheme: 'azerpetrol',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -42,7 +42,7 @@ const config: ExpoConfig = {
             backgroundColor: '#FFFFFF',
         },
 
-        versionCode: 21,
+        versionCode: 23,
         package: 'com.vek21.azerpetrol',
     },
     web: {

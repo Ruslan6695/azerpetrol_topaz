@@ -1,5 +1,5 @@
 import { useFocusEffect } from 'expo-router'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 import { OpenCoffeeBonusScreenFromCoffee } from '../../../../features/Coffee/OpenCoffeeBonusScreen'
@@ -40,17 +40,18 @@ export const HomeMainWidget = (props: Props) => {
             setData: HomeStore.useSetData(),
             errorText: 'Ошибка при загрузке данных',
         })
-    const { fetchData: refreshToken, errorText:refreshTokenErrorText } = useFetchData({
-        apiCallback: homeMainWidgetApi.refreshToken,
-        errorText: 'Произошла ошибка',
-    })
+    const { fetchData: refreshToken, errorText: refreshTokenErrorText } =
+        useFetchData({
+            apiCallback: homeMainWidgetApi.refreshToken,
+            errorText: 'Произошла ошибка',
+        })
 
     const texts = HomeStore.useTexts()
     const reloadData = async () => {
         if (!isTokenRefreshed) {
             refreshToken({
                 args: undefined,
-                hideToastOnError:true,
+                hideToastOnError: true,
                 afterDataCallback(data) {
                     toggleTokenIsRefreshed(true)
                     setToken(data.token)
@@ -80,6 +81,9 @@ export const HomeMainWidget = (props: Props) => {
         }, [])
     )
 
+    useEffect(() => {
+    }, [isTokenRefreshed])
+
     if (errorText || refreshTokenErrorText) {
         return (
             <ErrorWhileFetchingForm
@@ -92,7 +96,7 @@ export const HomeMainWidget = (props: Props) => {
     return (
         <>
             <View style={styles.container}>
-                <ShowPromotionsModal />
+                {isTokenRefreshed && <ShowPromotionsModal />}
                 <View style={styles.row}>
                     <OpenFuelScreen
                         big_text={texts[ESCREENS.FUEL]?.big_text}
