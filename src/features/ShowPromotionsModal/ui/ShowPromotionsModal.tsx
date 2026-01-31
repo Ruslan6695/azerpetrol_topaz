@@ -2,6 +2,7 @@ import React, { useCallback, useEffect } from 'react'
 import { CustomModal } from '../../../shared/CustomModal'
 import { Image, Modal, ScrollView, StyleSheet, View } from 'react-native'
 import {
+    AppStore,
     COLORS,
     COLORS_DARK,
     SIZES,
@@ -22,6 +23,8 @@ export const ShowPromotionsModal = (props: Props) => {
     const isOpened = ShowPromotionsModalStore.useIsOpened()
     const promotions = ShowPromotionsModalStore.usePromotions()
     const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
+    const isTokenRefreshed = AppStore.useIsTokenRefreshed()
+
     /*   const COLORS = ThemeStore.useCOLORS() */
     const styles = StyleSheet.create({
         wrapper: {
@@ -50,7 +53,7 @@ export const ShowPromotionsModal = (props: Props) => {
     })
 
     useEffect(() => {
-        if (promotions.length > 0 && !isOpened) {
+        if (promotions.length > 0 && !isOpened ) {
             handleOpenModal()
             toggleIsOpened()
         }

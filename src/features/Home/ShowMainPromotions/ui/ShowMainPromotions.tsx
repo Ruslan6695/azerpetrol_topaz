@@ -1,7 +1,7 @@
 import { memo, useEffect } from 'react'
 import { StyleSheet } from 'react-native'
 import { PromotionsAndBonusesItem } from '../../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
-import { SIZES, useFetchData } from '../../../../shared'
+import { AppStore, SIZES, useFetchData } from '../../../../shared'
 import { ShowPromotionsModalStore } from '../../../ShowPromotionsModal'
 import { showMainPromotionsApi } from '../api/showMainPromotionsApi'
 
@@ -14,22 +14,27 @@ export const ShowMainPromotions = memo((props: Props) => {
         errorText: 'Ошибка при получении акций',
     })
 
+    const isTokenRefreshed = AppStore.useIsTokenRefreshed()
+
     useEffect(() => {
-        fetchData({
-            args: undefined,
-            hideToastOnError: true,
-            afterDataCallback(data) {
-                setData({
-                    promotions: data.promotions.filter(
-                        (prom) => prom.show_main === true
-                    ),
-                })
-                setModalPromotions(
-                    data.promotions.filter((prom) => prom.show_modal === true)
-                )
-            },
-        })
-    }, [])
+        if (isTokenRefreshed)
+            fetchData({
+                args: undefined,
+                hideToastOnError: true,
+                afterDataCallback(data) {
+                    setData({
+                        promotions: data.promotions.filter(
+                            (prom) => prom.show_main === true
+                        ),
+                    })
+                    setModalPromotions(
+                        data.promotions.filter(
+                            (prom) => prom.show_modal === true
+                        )
+                    )
+                },
+            })
+    }, [isTokenRefreshed])
     return (
         <>
             {data?.promotions?.map((pr) => (
