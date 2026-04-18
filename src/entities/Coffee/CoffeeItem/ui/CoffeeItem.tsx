@@ -80,7 +80,7 @@ export const CoffeeItem = memo(
 
 const styles = StyleSheet.create({
     container: {
-        width: SIZES.WIDTH(1 / 2) - SIZES.PX * 30,
+        width: SIZES.WIDTH(1 / 2) - SIZES.PX * 40,
     },
     imageContainer: {
         flex: 1,

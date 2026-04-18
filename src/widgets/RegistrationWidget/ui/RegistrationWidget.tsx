@@ -1,8 +1,16 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
 import { RegistrationForm } from '../../../features/RegistrationForm'
 import { SendSmsCallCodeForm } from '../../../features/SendSmsCallCodeForm'
-import { IUser, useFetchData, UserStore, useSendFetch } from '../../../shared'
+import { SendCallcheckWait } from '../../../features/SendCallcheckWait'
+import {
+    authMethodsApi,
+    EAuthMethod,
+    IUser,
+    useFetchData,
+    UserStore,
+    useSendFetch,
+} from '../../../shared'
 import { useInput } from '../../../shared/CustomInput'
 import { Loader } from '../../../shared/Loader'
 import { showError } from '../../../shared/ToastComponent'
@@ -13,11 +21,15 @@ import { useFocusEffect } from 'expo-router'
 
 type Props = {}
 
+const DEFAULT_METHODS: EAuthMethod[] = [EAuthMethod.Call, EAuthMethod.Sms]
+
 export const RegistrationWidget = memo((props: Props) => {
     const [road, setRoad] = useState<'input' | 'confirm' | 'captcha'>('input')
-    const [confirmationType, setConfirmationType] = useState<'sms' | 'call'>(
-        'call'
+    const [methods, setMethods] = useState<EAuthMethod[]>(DEFAULT_METHODS)
+    const [currentMethod, setCurrentMethod] = useState<EAuthMethod>(
+        EAuthMethod.Call
     )
+    const [methodsLoading, setMethodsLoading] = useState(true)
     const [captchaValue, setCaptchaValue] = useState('')
     const [regSession, setRegSession] = useState<string | null>(null)
 
@@ -33,6 +45,35 @@ export const RegistrationWidget = memo((props: Props) => {
         handleChangeInputValue: handleChangeSurnameValue,
         inputValue: surnameValue,
     } = useInput()
+
+    useEffect(() => {
+        let cancelled = false
+        authMethodsApi
+            .getAuthMethods()
+            .then((data) => {
+                if (cancelled) return
+                const next =
+                    data?.methods && data.methods.length > 0
+                        ? data.methods
+                        : DEFAULT_METHODS
+                setMethods(next)
+                setCurrentMethod(next[0])
+            })
+            .catch(() => {
+                if (cancelled) return
+                setMethods(DEFAULT_METHODS)
+                setCurrentMethod(DEFAULT_METHODS[0])
+            })
+            .finally(() => {
+                if (cancelled) return
+                setMethodsLoading(false)
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [])
+
+    const fallbackMethod = methods.find((m) => m !== currentMethod)
 
     const { data: captchaEnabledData, fetchData: fetchCaptchaEnabledData } =
         useFetchData({
@@ -57,68 +98,100 @@ export const RegistrationWidget = memo((props: Props) => {
 
     const handleSubmitCaptcha = useCallback(
         async ({
-            confType,
+            method,
             captchaToken,
             regSession,
         }: {
-            confType?: 'sms' | 'call'
+            method?: EAuthMethod
             captchaToken?: string
             regSession?: string | null
         }) => {
             if (captchaToken) setCaptchaValue(captchaToken)
-            if (phoneValue.length > 0) {
-                await sendRegisterFetch({
-                    args: {
-                        phone: phoneValue,
-                        type: confType
-                            ? confType === 'sms'
-                                ? 1
-                                : 0
-                            : confirmationType === 'call'
-                              ? 0
-                              : 1,
-                        name: nameValue,
-                        surname: surnameValue,
-                        captchaToken,
-                        regSession,
-                    },
-                    onErrorCallback(error) {
-                        setRoad('input')
-                    },
-                    afterDataCallback(data) {
-                        if (data?.reg_session) {
-                            setRegSession(data.reg_session)
-                        } 
-                        if (confType === 'sms') {
-                            setConfirmationType('sms')
-                        } else {
-                            setConfirmationType('call')
-                        }
-                        setRoad('confirm')
-                    },
-                })
-            } else {
+            if (phoneValue.length === 0) {
                 showError({ text: 'Введите номер телефона' })
+                return
             }
+
+            const targetMethod = method ?? currentMethod
+
+            if (targetMethod === EAuthMethod.Callcheck) {
+                setCurrentMethod(EAuthMethod.Callcheck)
+                setRoad('confirm')
+                return
+            }
+
+            await sendRegisterFetch({
+                args: {
+                    phone: phoneValue,
+                    type: targetMethod === EAuthMethod.Sms ? 1 : 0,
+                    name: nameValue,
+                    surname: surnameValue,
+                    captchaToken,
+                    regSession,
+                },
+                onErrorCallback(error) {
+                    setRoad('input')
+                },
+                afterDataCallback(data) {
+                    if (data?.reg_session) {
+                        setRegSession(data.reg_session)
+                    }
+                    setCurrentMethod(targetMethod)
+                    setRoad('confirm')
+                },
+            })
         },
-        [phoneValue, confirmationType, nameValue, surnameValue]
+        [phoneValue, currentMethod, nameValue, surnameValue]
     )
 
     const handleSubmitRegistration = useCallback(() => {
         setRoad('captcha')
-    }, [phoneValue, confirmationType, nameValue, surnameValue])
+    }, [])
 
     const handleToggleConfirmationType = useCallback(() => {
-        if (confirmationType === 'call') {
+        if (currentMethod === EAuthMethod.Call) {
             handleSubmitCaptcha({
-                confType: 'sms',
+                method: EAuthMethod.Sms,
                 captchaToken: captchaValue,
-                regSession: regSession,
+                regSession,
             })
         } else {
-            setConfirmationType('call')
+            setCurrentMethod(EAuthMethod.Call)
         }
-    }, [confirmationType, handleSubmitCaptcha, captchaValue, regSession])
+    }, [currentMethod, handleSubmitCaptcha, captchaValue, regSession])
+
+    const handleCallcheckFallback = useCallback(
+        (nextMethod: EAuthMethod) => {
+            handleSubmitCaptcha({
+                method: nextMethod,
+                captchaToken: captchaValue,
+                regSession,
+            })
+        },
+        [handleSubmitCaptcha, captchaValue, regSession]
+    )
+
+    const handleCallcheckCancel = useCallback(() => {
+        setRoad('input')
+    }, [])
+
+    const handleCallcheckRetry = useCallback(() => {
+        setCaptchaValue('')
+        const captchaDisabled =
+            captchaEnabledData?.show_captcha === false
+        if (captchaDisabled) {
+            handleSubmitCaptcha({ method: EAuthMethod.Callcheck })
+        } else {
+            setRoad('captcha')
+        }
+    }, [captchaEnabledData, handleSubmitCaptcha])
+
+    const handleCallcheckSuccess = useCallback(
+        (user: IUser) => {
+            setUser(user)
+        },
+        [setUser]
+    )
 
     const handleSubmitCode = useCallback(
         async (code: string) => {
@@ -142,16 +215,20 @@ export const RegistrationWidget = memo((props: Props) => {
         }, [])
     )
 
+    const isLoading = isSendCodeLoading || isRegisterLoading || methodsLoading
+
     return (
         <LoginRegistrationLayout hideLogo={road === 'captcha'}>
-            {isSendCodeLoading || isRegisterLoading ? (
+            {isLoading ? (
                 <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
             ) : road === 'input' ? (
                 <RegistrationForm
                     onSubmitRegistration={
                         captchaEnabledData &&
                         captchaEnabledData?.show_captcha === false
-                            ? handleSubmitCaptcha
+                            ? () => {
+                                  handleSubmitCaptcha({})
+                              }
                             : handleSubmitRegistration
                     }
                     onChangeSurnameValue={handleChangeSurnameValue}
@@ -162,10 +239,29 @@ export const RegistrationWidget = memo((props: Props) => {
                     phoneValue={phoneValue}
                 />
             ) : road === 'captcha' ? (
-                <GetCaptcha onSubmitCaptcha={handleSubmitCaptcha} />
+                <GetCaptcha
+                    onSubmitCaptcha={({ captchaToken }) => {
+                        handleSubmitCaptcha({ captchaToken })
+                    }}
+                />
+            ) : currentMethod === EAuthMethod.Callcheck ? (
+                <SendCallcheckWait
+                    mode="registration"
+                    phone={phoneValue}
+                    captchaToken={captchaValue}
+                    name={nameValue}
+                    surname={surnameValue}
+                    fallbackMethod={fallbackMethod}
+                    onSuccess={handleCallcheckSuccess}
+                    onFallback={handleCallcheckFallback}
+                    onCancel={handleCallcheckCancel}
+                    onRetry={handleCallcheckRetry}
+                />
             ) : (
                 <SendSmsCallCodeForm
-                    confirmationType={confirmationType}
+                    confirmationType={
+                        currentMethod === EAuthMethod.Sms ? 'sms' : 'call'
+                    }
                     onToggleConfirmationType={handleToggleConfirmationType}
                     onSend={handleSubmitCode}
                 />
