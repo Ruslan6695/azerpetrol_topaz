@@ -1,9 +1,11 @@
 export * from "./common/config/constants/COLORS";
 export * from "./common/api/axiosInstanse";
+export * from "./common/api/authMethodsApi";
 export * from "./common/config/constants/sizes";
 export type { IMarginsPaddings } from "./common/config/interfaces/IMarginsPaddings";
 export * from "./common/config/constants/USE_TERMS_LINK";
 export * from "./common/config/enums/EScreens";
+export * from "./common/config/enums/EAuthMethod";
 export * from "./common/config/constants/APP_VERSION";
 export * from "./common/config/lib/asyncStorage/getItemFromAsyncStorage";
 export * from "./common/config/lib/asyncStorage/getToken";

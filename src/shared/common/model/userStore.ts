@@ -39,6 +39,7 @@ const store = create<IUserStore>()(
             }
         },
         setUser(user) {
+            console.info('USER', user)
             set((state) => {
                 setItemToAsyncStorage({
                     key: EAsyncStoreKeys.NAME,
