@@ -2,12 +2,12 @@ import { Slot } from 'expo-router'
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { AppStore, SIZES, ThemeStore } from '../../shared'
+import { AppStore, SIZES, SPACING, ThemeStore } from '../../shared'
 import { BottomMenu } from '../../shared/BottomMenu'
 import { CheckNetworkWidget } from '../../widgets/CheckNetworkWidget'
 import { MainHeaderWidget } from '../../widgets/MainHeaderWidget'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { BackgroundImage } from '../../shared/BackgroundImage'
+import { AmbientBackground } from '../../shared/AmbientBackground'
 
 type Props = {}
 
@@ -27,17 +27,22 @@ const Layout = (props: Props) => {
     })
     return (
         <SafeAreaView
-            style={{ flex: 1, backgroundColor: COLORS.BACKGROUND.Tertiary }}
-            edges={['bottom', 'right', 'left']}
+            style={{ flex: 1, backgroundColor: COLORS.BACKGROUND.Primary }}
+            // Низ не в safe-area: контент уходит под плавающий таб-бар,
+            // а его собственный отступ даёт TABBAR_CLEARANCE ниже.
+            edges={['top', 'right', 'left']}
         >
             <View style={styles.wrapper}>
-                <BackgroundImage bottom={50} right={1} />
+                <AmbientBackground />
 
                 <MainHeaderWidget />
                 <KeyboardAwareScrollView
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}
                     style={styles.main}
+                    contentContainerStyle={{
+                        paddingBottom: SPACING.TABBAR_CLEARANCE * SIZES.PX,
+                    }}
                     keyboardShouldPersistTaps="handled"
                     enableOnAndroid
                 >

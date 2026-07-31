@@ -3,7 +3,9 @@ import { ITabWithBackground } from '../config/interfaces/ITabWithBackground'
 import { StyleSheet, View } from 'react-native'
 import { TabWithBackground } from './TabWithBackground'
 import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
+import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { ThemeStore } from '../../common/model/themeStore'
 
 type Props = {
     tabs: ITabWithBackground[]
@@ -25,6 +27,7 @@ type Props = {
 
 export const TabBarWithBackground = memo(
     ({ tabs, styled, onChangeSelectedTab, selectedTab }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
         const widthh = styled
             ? styled.width
                 ? (styled.width.type === 'px' || !styled.width) &&
@@ -39,6 +42,12 @@ export const TabBarWithBackground = memo(
                 alignItems: 'center',
                 //@ts-ignore
                 width: widthh,
+                // Трек сегмент-контрола из макета: стеклянная пилюля с padding 4.
+                padding: 4 * SIZES.PX,
+                borderRadius: RADII.PILL,
+                backgroundColor: COLORS.GLASS.Primary,
+                borderWidth: 1,
+                borderColor: COLORS.GLASS.Border,
                 marginTop: styled?.marginsPaddings?.mt
                     ? styled?.marginsPaddings?.mt * SIZES.PX
                     : 0,

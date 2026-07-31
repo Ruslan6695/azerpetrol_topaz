@@ -1,5 +1,4 @@
 import { memo, useCallback, useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import { RegistrationForm } from '../../../features/RegistrationForm'
 import { SendSmsCallCodeForm } from '../../../features/SendSmsCallCodeForm'
 import { SendCallcheckWait } from '../../../features/SendCallcheckWait'
@@ -7,23 +6,25 @@ import {
     authMethodsApi,
     EAuthMethod,
     IUser,
+    TAuthStep,
     useFetchData,
     UserStore,
     useSendFetch,
 } from '../../../shared'
 import { useInput } from '../../../shared/CustomInput'
-import { Loader } from '../../../shared/Loader'
 import { showError } from '../../../shared/ToastComponent'
 import { registrationWidgetApi } from '../api/registrationWidgetApi'
 import { GetCaptcha } from '../../../features/GetCaptcha'
-import { LoginRegistrationLayout } from '../../../layouts/LoginRegistrationLayout'
 import { useFocusEffect } from 'expo-router'
 
-type Props = {}
+type Props = {
+    /** Экран решает по шагу, показывать ли шапку с вордмарком */
+    onStepChange?: (step: TAuthStep) => void
+}
 
 const DEFAULT_METHODS: EAuthMethod[] = [EAuthMethod.Call, EAuthMethod.Sms]
 
-export const RegistrationWidget = memo((props: Props) => {
+export const RegistrationWidget = memo(({ onStepChange }: Props) => {
     const [road, setRoad] = useState<'input' | 'confirm' | 'captcha'>('input')
     const [methods, setMethods] = useState<EAuthMethod[]>(DEFAULT_METHODS)
     const [currentMethod, setCurrentMethod] = useState<EAuthMethod>(
@@ -177,8 +178,7 @@ export const RegistrationWidget = memo((props: Props) => {
 
     const handleCallcheckRetry = useCallback(() => {
         setCaptchaValue('')
-        const captchaDisabled =
-            captchaEnabledData?.show_captcha === false
+        const captchaDisabled = captchaEnabledData?.show_captcha === false
         if (captchaDisabled) {
             handleSubmitCaptcha({ method: EAuthMethod.Callcheck })
         } else {
@@ -215,64 +215,72 @@ export const RegistrationWidget = memo((props: Props) => {
         }, [])
     )
 
-    const isLoading = isSendCodeLoading || isRegisterLoading || methodsLoading
+    // Индикатор загрузки живёт в кнопке формы, а не подменяет весь шит.
+    // methodsLoading идёт отдельным disabled — без спиннера на холодном старте.
+    const isLoading = isSendCodeLoading || isRegisterLoading
+
+    useEffect(() => {
+        onStepChange?.(road === 'input' ? 'form' : road)
+    }, [road, onStepChange])
+
+    if (road === 'captcha') {
+        return (
+            <GetCaptcha
+                onSubmitCaptcha={({ captchaToken }) => {
+                    handleSubmitCaptcha({ captchaToken })
+                }}
+            />
+        )
+    }
+
+    if (road === 'input') {
+        return (
+            <RegistrationForm
+                isLoading={isLoading}
+                disabled={methodsLoading}
+                onSubmitRegistration={
+                    captchaEnabledData &&
+                    captchaEnabledData?.show_captcha === false
+                        ? () => {
+                              handleSubmitCaptcha({})
+                          }
+                        : handleSubmitRegistration
+                }
+                onChangeSurnameValue={handleChangeSurnameValue}
+                surnameValue={surnameValue}
+                onChangeNameValue={handleChangeNameValue}
+                nameValue={nameValue}
+                onChangePhoneValue={handleChangePhoneValue}
+                phoneValue={phoneValue}
+            />
+        )
+    }
+
+    if (currentMethod === EAuthMethod.Callcheck) {
+        return (
+            <SendCallcheckWait
+                mode="registration"
+                phone={phoneValue}
+                captchaToken={captchaValue}
+                name={nameValue}
+                surname={surnameValue}
+                fallbackMethod={fallbackMethod}
+                onSuccess={handleCallcheckSuccess}
+                onFallback={handleCallcheckFallback}
+                onCancel={handleCallcheckCancel}
+                onRetry={handleCallcheckRetry}
+            />
+        )
+    }
 
     return (
-        <LoginRegistrationLayout hideLogo={road === 'captcha'}>
-            {isLoading ? (
-                <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
-            ) : road === 'input' ? (
-                <RegistrationForm
-                    onSubmitRegistration={
-                        captchaEnabledData &&
-                        captchaEnabledData?.show_captcha === false
-                            ? () => {
-                                  handleSubmitCaptcha({})
-                              }
-                            : handleSubmitRegistration
-                    }
-                    onChangeSurnameValue={handleChangeSurnameValue}
-                    surnameValue={surnameValue}
-                    onChangeNameValue={handleChangeNameValue}
-                    nameValue={nameValue}
-                    onChangePhoneValue={handleChangePhoneValue}
-                    phoneValue={phoneValue}
-                />
-            ) : road === 'captcha' ? (
-                <GetCaptcha
-                    onSubmitCaptcha={({ captchaToken }) => {
-                        handleSubmitCaptcha({ captchaToken })
-                    }}
-                />
-            ) : currentMethod === EAuthMethod.Callcheck ? (
-                <SendCallcheckWait
-                    mode="registration"
-                    phone={phoneValue}
-                    captchaToken={captchaValue}
-                    name={nameValue}
-                    surname={surnameValue}
-                    fallbackMethod={fallbackMethod}
-                    onSuccess={handleCallcheckSuccess}
-                    onFallback={handleCallcheckFallback}
-                    onCancel={handleCallcheckCancel}
-                    onRetry={handleCallcheckRetry}
-                />
-            ) : (
-                <SendSmsCallCodeForm
-                    confirmationType={
-                        currentMethod === EAuthMethod.Sms ? 'sms' : 'call'
-                    }
-                    onToggleConfirmationType={handleToggleConfirmationType}
-                    onSend={handleSubmitCode}
-                />
-            )}
-        </LoginRegistrationLayout>
+        <SendSmsCallCodeForm
+            isLoading={isLoading}
+            confirmationType={
+                currentMethod === EAuthMethod.Sms ? 'sms' : 'call'
+            }
+            onToggleConfirmationType={handleToggleConfirmationType}
+            onSend={handleSubmitCode}
+        />
     )
-})
-
-const styles = StyleSheet.create({
-    logo: {
-        top: '-60%',
-        position: 'absolute',
-    },
 })

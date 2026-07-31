@@ -42,7 +42,10 @@ export const CustomModal = memo(
                 backgroundColor: bgDark ? 'rgba(0, 0, 0, 0.49)' : undefined,
             },
             container: {
-                backgroundColor: white ? '#ffffff' : COLORS.BACKGROUND.Tertiary,
+                // Модалка лежит над затемнённым бэкдропом, поэтому поверхность
+                // обязана быть непрозрачной. Проп white оставлен для совместимости
+                // сигнатуры, но белым в тёмной теме больше не мигает.
+                backgroundColor: COLORS.GLASS.Surface,
                 borderRadius: SIZES.PX * 15,
                 width: width,
                 height: height,

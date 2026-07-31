@@ -1,9 +1,9 @@
-import { ReactNode } from 'react'
-import { SvgProps } from 'react-native-svg'
+import { TIconName } from '../../../../Icons'
 
 export interface IBottomMenuItem {
-    icon: React.FC<SvgProps> 
-    activeIcon: React.FC<SvgProps>
+    // Иконки набора «21 Век» нормализованы на currentColor, поэтому
+    // отдельные *_active и *_dark файлы больше не нужны — цвет приходит пропом.
+    name: TIconName
     link: string
-    title?: string
+    title: string
 }

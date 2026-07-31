@@ -1,88 +1,113 @@
 import { ReactElement, memo } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
+import { DimensionValue, StyleSheet, View } from 'react-native'
+import { RADII } from '../../common/config/constants/RADII'
+import { SPACING } from '../../common/config/constants/SPACING'
 import { SIZES } from '../../common/config/constants/sizes'
 import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
-import { WarningIcon } from '../../Icons/WarningIcon/ui/WarningIcon'
-import { MPLayout } from '../../MpLayout'
-import { Typography } from '../../Typography'
-import ErrorSvg from '../assets/error.svg'
-import InfoSvg from '../assets/info.svg'
-import SuccessSvg from '../assets/success.svg'
 import { ThemeStore } from '../../common/model/themeStore'
+import { Glass } from '../../GlassCard'
+import { Typography } from '../../Typography'
+
+type TBlockTypes = 'error' | 'warning' | 'info' | 'success'
+
 type Props = {
-    type: 'error' | 'warning' | 'info' | 'success'
+    type: TBlockTypes
     text: string
     icon?: ReactElement
     styled?: {
         marginsPaddings?: IMarginsPaddings
-
-        fz?: number
         width?: {
-            value: number | string
-            type?: 'px' | 'absolute'
-        }
-        height?: {
-            value: number | string
+            /** Число — единицы макета (домножаются на SIZES.PX), строка — процент */
+            value: number | `${number}%`
             type?: 'px' | 'absolute'
         }
     }
 }
 
+const GLYPHS: Record<TBlockTypes, string> = {
+    success: '✓',
+    error: '!',
+    warning: '!',
+    info: 'i',
+}
+
+// Встроенный статус-баннер: то же стекло и тот же кружок статуса, что у тоста
+// (shared/ToastComponent), но в потоке страницы, а не поверх неё.
 export const ToastBlock = memo(({ styled, type, text, icon }: Props) => {
     const COLORS = ThemeStore.useCOLORS()
-    const widthh = styled
-        ? styled.width
-            ? (styled.width.type === 'px' || !styled.width) &&
-              typeof styled.width.value === 'number'
-                ? styled.width.value * SIZES.PX
-                : styled.width.value
-            : SIZES.WIDTH(0.85)
-        : SIZES.WIDTH(0.85)
+
+    const accent =
+        type === 'success'
+            ? COLORS.STATE.Positive
+            : type === 'warning'
+              ? COLORS.STATE.Warning
+              : type === 'info'
+                ? COLORS.ACCENT.Primary
+                : COLORS.STATE.Destructive
+
+    const accentSoft =
+        type === 'success'
+            ? COLORS.STATE.PositiveSoft
+            : type === 'warning'
+              ? COLORS.STATE.WarningSoft
+              : type === 'info'
+                ? COLORS.GLASS.Secondary
+                : COLORS.STATE.DestructiveSoft
+
+    const width: DimensionValue =
+        styled?.width === undefined
+            ? SIZES.WIDTH(0.85)
+            : typeof styled.width.value === 'number'
+              ? styled.width.value * SIZES.PX
+              : styled.width.value
+
+    const mp = styled?.marginsPaddings
 
     const styles = StyleSheet.create({
-        container: {
-            backgroundColor: COLORS.BRAND.Primary,
-            //@ts-ignore
-
-            //@ts-ignore
-            width: styled?.width ? widthh : 'auto',
-            marginTop: styled?.marginsPaddings?.mt
-                ? styled?.marginsPaddings?.mt * SIZES.PX
-                : 0,
-            marginBottom: styled?.marginsPaddings?.mb
-                ? styled?.marginsPaddings?.mb * SIZES.PX
-                : 0,
-            marginRight: styled?.marginsPaddings?.mr
-                ? styled?.marginsPaddings?.mr * SIZES.PX
-                : 0,
-            marginLeft: styled?.marginsPaddings?.ml
-                ? styled?.marginsPaddings?.ml * SIZES.PX
-                : 0,
-            borderRadius: 12 * SIZES.PX,
-            padding: 15 * SIZES.PX,
+        wrapper: {
+            width,
+            marginTop: (mp?.mt ?? 0) * SIZES.PX,
+            marginBottom: (mp?.mb ?? 0) * SIZES.PX,
+            marginRight: (mp?.mr ?? 0) * SIZES.PX,
+            marginLeft: (mp?.ml ?? 0) * SIZES.PX,
+        },
+        row: {
             flexDirection: 'row',
             alignItems: 'center',
+            gap: SPACING.MD * SIZES.PX,
+            paddingVertical: SPACING.LG * SIZES.PX,
+            paddingHorizontal: SPACING.XL * SIZES.PX,
+        },
+        circle: {
+            width: 28 * SIZES.PX,
+            height: 28 * SIZES.PX,
+            borderRadius: RADII.PILL,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: accentSoft,
+        },
+        text: {
+            flex: 1,
         },
     })
+
     return (
-        <View style={styles.container}>
-            <MPLayout pr={15}>
-                {icon ? (
-                    icon
-                ) : type === 'error' ? (
-                    <ErrorSvg height={25} width={25} />
-                ) : type === 'info' ? (
-                    <InfoSvg height={25} width={25} />
-                ) : type === 'warning' ? (
-                    <WarningIcon size={25} />
-                ) : (
-                    <SuccessSvg height={25} width={25} />
-                )}
-            </MPLayout>
-            <Typography type="caption" style={{ width: '90%' }} color="invert">
-                {text}
-            </Typography>
+        <View style={styles.wrapper}>
+            <Glass level="primary" radius={RADII.ROW * SIZES.PX}>
+                <View style={styles.row}>
+                    <View style={styles.circle}>
+                        {icon ?? (
+                            <Typography type="label13" customColor={accent}>
+                                {GLYPHS[type]}
+                            </Typography>
+                        )}
+                    </View>
+
+                    <View style={styles.text}>
+                        <Typography type="body14">{text}</Typography>
+                    </View>
+                </View>
+            </Glass>
         </View>
     )
 })

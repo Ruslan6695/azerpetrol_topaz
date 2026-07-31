@@ -7,10 +7,10 @@ import {
 } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { AppStore, COLORS, SIZES, ThemeStore } from '../../../shared'
+import { AppStore, SIZES, ThemeStore } from '../../../shared'
 import { CheckNetworkWidget } from '../../../widgets/CheckNetworkWidget'
 import { InternalPagesHeader } from '../../../widgets/InternalPagesHeader'
-import { BackgroundImage } from '../../../shared/BackgroundImage'
+import { AmbientBackground } from '../../../shared/AmbientBackground'
 
 type Props = {
     children: ReactNode
@@ -55,11 +55,14 @@ export const InternalPagesLayout = ({
     return (
         <GestureHandlerRootView>
             <View style={styles.container}>
-                <BackgroundImage bottom={-10} right={1} />
-                {!hideHeader && <InternalPagesHeader />}{' '}
+                <AmbientBackground />
+                {!hideHeader && <InternalPagesHeader />}
                 <KeyboardAwareScrollView
                     onMomentumScrollEnd={handleScrollToEnd}
                     showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{
+                        paddingBottom: 40 * SIZES.PX,
+                    }}
                     scrollEnabled={!hideScroll}
                     viewIsInsideTabBar // чтобы на андроиде не добавлялся снизу серый блок
                     keyboardShouldPersistTaps="handled"

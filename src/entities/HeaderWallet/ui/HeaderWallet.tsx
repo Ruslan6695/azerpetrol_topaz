@@ -4,15 +4,18 @@ import { StyleSheet, View } from 'react-native'
 import {
     divideNumber,
     ESCREENS,
+    PRESS_SCALE,
+    RADII,
     SIZES,
     ThemeStore,
     UserStore,
 } from '../../../shared'
 import { BonusIcon } from '../../../shared/BonusIcon'
-import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
-import { MPLayout } from '../../../shared/MpLayout'
+import { Glass } from '../../../shared/GlassCard'
+import { Icon } from '../../../shared/Icons'
+import { PressableScale } from '../../../shared/PressableScale'
 import { Typography } from '../../../shared/Typography'
-import { WalletIcon } from '../../../shared/WalletIcon'
+
 type Props = {}
 
 export const HeaderWallet = memo((props: Props) => {
@@ -21,39 +24,34 @@ export const HeaderWallet = memo((props: Props) => {
     const COLORS = ThemeStore.useCOLORS()
     const handlePress = useCallback(() => {
         router.navigate(ESCREENS.BALANCE)
-    }, [])
+    }, [router])
+
     const styles = StyleSheet.create({
-        container: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: COLORS.BACKGROUND.Tertiary,
-            paddingHorizontal: SIZES.PX * 15,
-            paddingVertical: SIZES.PX * 5,
-            borderRadius: 9999,
-            borderColor: COLORS.BRAND.Secondary,
-            borderWidth: 0.9 * SIZES.PX,
-        },
         row: {
-            alignItems: 'center',
             flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6 * SIZES.PX,
+            paddingHorizontal: 14 * SIZES.PX,
+            paddingVertical: 7 * SIZES.PX,
         },
     })
 
     return (
-        <CustomTouchableOpacity
-            onPress={handlePress}
-            activeOpacity={0.6}
-            style={styles.container}
-        >
-            <WalletIcon />
-            <View style={styles.row}>
-                <Typography marginsPaddings={{ ml: 5 }} type="bodyAccentSmall">
-                    {balance ? divideNumber(balance) : 0}
-                </Typography>
-                <MPLayout mt={2}>
-                    <BonusIcon bold size={20} />
-                </MPLayout>
-            </View>
-        </CustomTouchableOpacity>
+        <PressableScale onPress={handlePress} scaleTo={PRESS_SCALE.CHIP}>
+            <Glass level="secondary" radius={RADII.PILL}>
+                <View style={styles.row}>
+                    <Icon
+                        name="wallet"
+                        size={18}
+                        color={COLORS.Icon.Primary}
+                        opacity={0.8}
+                    />
+                    <Typography type="label14">
+                        {balance ? divideNumber(balance) : 0}
+                    </Typography>
+                    <BonusIcon bold size={16} />
+                </View>
+            </Glass>
+        </PressableScale>
     )
 })

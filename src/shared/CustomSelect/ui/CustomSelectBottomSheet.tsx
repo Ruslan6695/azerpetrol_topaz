@@ -4,11 +4,9 @@ import { CustomButton } from '../../CustomButton'
 import { MPLayout } from '../../MpLayout'
 import { Typography } from '../../Typography'
 import WheelPickerExpo from '../../WheelPicker'
-import { COLORS } from '../../common/config/constants/COLORS'
 import { SIZES } from '../../common/config/constants/sizes'
 import { ISelectOption } from '../config/interfaces/ISelectOption'
 import { ThemeStore } from '../../common/model/themeStore'
-import { EColorThemes } from '../../common/config/enums/EColorThemes'
 
 type Props = {
     handleClose: () => void
@@ -27,7 +25,7 @@ export const CustomSelectBottomSheet = ({
     selectedOption,
     onChangeOption,
 }: Props) => {
-    const colorTheme = ThemeStore.useTheme()
+    const COLORS = ThemeStore.useCOLORS()
     const [initialSelectedIndex, setInitialSelectedIndex] = useState<number>()
     const [selected, setSelected] = useState<ISelectOption | null>(null)
     const handleSubmit = () => {
@@ -52,6 +50,42 @@ export const CustomSelectBottomSheet = ({
         }
     }, [selectedOption, options])
 
+    // Шит лежит над затемнённым бэкдропом — поверхность должна быть непрозрачной.
+    const styles = StyleSheet.create({
+        wrapper: {
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.49)',
+        },
+        container: {
+            alignItems: 'center',
+            position: 'relative',
+            width: '100%',
+            backgroundColor: COLORS.GLASS.Surface,
+            borderTopLeftRadius: SIZES.PX * 30,
+            borderTopRightRadius: SIZES.PX * 30,
+        },
+        title: {
+            position: 'absolute',
+            zIndex: 1,
+            backgroundColor: COLORS.GLASS.Surface,
+            paddingBottom: SIZES.PX * 50,
+            width: '100%',
+            alignItems: 'center',
+        },
+        top: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            paddingHorizontal: SIZES.PX * 20,
+            position: 'absolute',
+            zIndex: 1,
+            marginTop: 60 * SIZES.PX,
+            backgroundColor: COLORS.GLASS.Surface,
+        },
+    })
+
     return (
         <Modal
             transparent
@@ -63,7 +97,6 @@ export const CustomSelectBottomSheet = ({
                 <View style={styles.container}>
                     <View style={styles.title}>
                         <Typography
-                            customColor="#0A2033"
                             type="bodyAccentMedium"
                             marginsPaddings={{ pt: 20 }}
                         >
@@ -98,6 +131,7 @@ export const CustomSelectBottomSheet = ({
                             width={SIZES.WIDTH(1)}
                             height={300 * SIZES.PX}
                             haptics
+                            backgroundColor={COLORS.GLASS.Surface}
                             selectedStyle={{
                                 borderColor: COLORS.BACKGROUND.Secondary,
                                 borderWidth: 1,
@@ -113,38 +147,3 @@ export const CustomSelectBottomSheet = ({
         </Modal>
     )
 }
-
-const styles = StyleSheet.create({
-    wrapper: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.49)',
-    },
-    container: {
-        alignItems: 'center',
-        position: 'relative',
-        width: '100%',
-        backgroundColor: COLORS.BACKGROUND.Tertiary,
-        borderTopLeftRadius: SIZES.PX * 30,
-        borderTopRightRadius: SIZES.PX * 30,
-    },
-    title: {
-        position: 'absolute',
-        zIndex: 1,
-        backgroundColor: COLORS.BACKGROUND.Tertiary,
-        paddingBottom: SIZES.PX * 50,
-        width: '100%',
-        alignItems: 'center',
-    },
-    top: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        paddingHorizontal: SIZES.PX * 20,
-        position: 'absolute',
-        zIndex: 1,
-        marginTop: 60 * SIZES.PX,
-        backgroundColor: COLORS.BACKGROUND.Tertiary,
-    },
-})

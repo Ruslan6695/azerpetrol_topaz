@@ -80,7 +80,8 @@ const BottomSheet = ({
             position: 'absolute',
             width: SIZES.WIDTH(1),
 
-            backgroundColor: COLORS.BACKGROUND.Tertiary,
+            // Всплывающая панель над бэкдропом — только непрозрачная поверхность.
+            backgroundColor: COLORS.GLASS.Surface,
             borderTopLeftRadius: SIZES.PX * 40,
             borderTopRightRadius: SIZES.PX * 40,
 

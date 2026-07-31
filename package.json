@@ -16,6 +16,7 @@
     "auto-zustand-selectors-hook": "^2.0.0",
     "axios": "^1.6.8",
     "expo": "^54.0.0",
+    "expo-blur": "~15.0.8",
     "expo-camera": "~17.0.9",
     "expo-constants": "~18.0.10",
     "expo-contacts": "~15.0.10",

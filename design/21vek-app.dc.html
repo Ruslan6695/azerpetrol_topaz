@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics="">
+<style>
+@font-face{font-family:'Manrope';src:url('assets/fonts/Manrope-Medium.ttf');font-weight:500}
+@font-face{font-family:'Manrope';src:url('assets/fonts/Manrope-SemiBold.ttf');font-weight:600}
+@font-face{font-family:'Manrope';src:url('assets/fonts/Manrope-Bold.ttf');font-weight:700}
+@font-face{font-family:'Manrope';src:url('assets/fonts/Manrope-ExtraBold.ttf');font-weight:800}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#12160f;font-family:'Manrope',system-ui,sans-serif;
+--bg:#0A0E0B;--tx:#F2F6EE;--tx2:rgba(242,246,238,.55);--glass:rgba(255,255,255,.06);--glass2:rgba(255,255,255,.11);--bord:rgba(255,255,255,.10);--acc:#00C12A;--lime:#B8F53C;--icf:brightness(0) invert(1);--blur:20px}
+body[data-theme="light"]{background:#c9cec1;--bg:#E4E9DD;--tx:#0A2033;--tx2:rgba(10,32,51,.55);--glass:rgba(255,255,255,.55);--glass2:rgba(255,255,255,.85);--bord:rgba(10,32,51,.08);--icf:none}
+a{color:#00C12A;text-decoration:none}a:hover{color:#8fd41f}
+@keyframes screenIn{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes shimmer{from{background-position:-360px 0}to{background-position:360px 0}}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(24px,-18px) scale(1.12)}}
+@keyframes scanline{0%,100%{top:6%}50%{top:92%}}
+</style>
+</helmet>
+<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:30px">
+<div style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;background:var(--bg);box-shadow:0 20px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;transition:background .4s">
+  <div style="position:absolute;top:-120px;left:-80px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(0,193,42,.30),transparent 70%);filter:blur(30px);animation:drift 9s ease-in-out infinite"></div>
+  <div style="position:absolute;top:180px;right:-120px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(184,245,60,.18),transparent 70%);filter:blur(34px);animation:drift 11s ease-in-out infinite reverse"></div>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;animation:screenIn .4s ease">
+      <div style="position:absolute;top:150px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:18px">
+        <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><img src="assets/logo-21vek-lime.svg" style="width:240px" alt="21 ВЕК"></sc-if>
+        <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><img src="assets/logo-21vek-dark.svg" style="width:240px" alt="21 ВЕК"></sc-if>
+        <div style="font:600 14px 'Manrope';color:var(--tx2);text-align:center;max-width:280px">Топливо, кофе и бонусы — в одном приложении</div>
+      </div>
+      <div style="position:relative;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:36px 36px 0 0;padding:26px 20px 34px;display:flex;flex-direction:column;gap:12px">
+        <div style="height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 18px"><img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt=""><span style="font:600 15px 'Manrope';color:var(--tx2)">Ваш номер телефона</span></div>
+        <div onClick="{{ doLogin }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Войти</div>
+        <div onClick="{{ goRegister }}" style="height:54px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 15px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Зарегистрироваться</div>
+        <div style="text-align:center;font:600 12px 'Manrope';color:var(--tx2)">Условия использования</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isRegister }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;animation:screenIn .4s ease">
+      <div style="position:absolute;top:130px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <img src="assets/logo-21vek-lime.svg" style="width:200px" alt="21 ВЕК">
+        <div style="font:800 22px 'Manrope';color:var(--tx)">Создать аккаунт</div>
+      </div>
+      <div style="position:relative;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:36px 36px 0 0;padding:26px 20px 34px;display:flex;flex-direction:column;gap:12px">
+        <div style="height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 18px"><img src="assets/icons/person.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt=""><span style="font:600 15px 'Manrope';color:var(--tx2)">Ваше имя</span></div>
+        <div style="height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 18px"><img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt=""><span style="font:600 15px 'Manrope';color:var(--tx2)">Номер телефона</span></div>
+        <div onClick="{{ doLogin }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Получить код</div>
+        <div onClick="{{ goLogin }}" style="text-align:center;font:700 13px 'Manrope';color:var(--acc);cursor:pointer">У меня уже есть аккаунт</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ true }}">
+  <div style="position:relative;display:flex;justify-content:space-between;padding:18px 28px 6px;font:600 13px 'Manrope';color:var(--tx);flex:none"><span>9:41</span><span style="letter-spacing:2px">▪▪▪</span></div>
+
+  <sc-if value="{{ isPush }}" hint-placeholder-val="{{ false }}">
+    <div style="position:relative;display:flex;align-items:center;gap:12px;padding:10px 20px 12px;flex:none">
+      <div onClick="{{ goBack }}" style="width:38px;height:38px;border-radius:50%;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));display:flex;align-items:center;justify-content:center;font:700 16px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.9)">←</div>
+      <span style="font:800 18px 'Manrope';color:var(--tx)">{{ pushTitle }}</span>
+    </div>
+  </sc-if>
+  <sc-if value="{{ isMainHeader }}" hint-placeholder-val="{{ true }}">
+    <div style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:14px 20px 14px;flex:none">
+      <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><img src="assets/logo-21vek-lime.svg" style="height:15px" alt="21 ВЕК"></sc-if>
+      <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><img src="assets/logo-21vek-dark.svg" style="height:15px" alt="21 ВЕК"></sc-if>
+      <div onClick="{{ goBalance }}" style="display:flex;align-items:center;gap:6px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:999px;padding:7px 14px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)">
+        <img src="assets/icons/wallet_gray.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.8" alt="">
+        <span style="font:700 14px 'Manrope';color:var(--tx)">{{ balText }}</span>
+        <img src="assets/icons/bonus.svg" style="width:16px;height:16px" alt="">
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="position:relative;flex:1;overflow-y:auto;padding:0 16px 120px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box">
+
+    <sc-if value="{{ showSkeleton }}" hint-placeholder-val="{{ false }}">
+      <div style="height:170px;border-radius:28px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+      <div style="height:104px;border-radius:28px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="height:118px;border-radius:24px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+        <div style="height:118px;border-radius:24px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+        <div style="height:118px;border-radius:24px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+        <div style="height:118px;border-radius:24px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 40%,var(--glass) 55%) 0 0/720px 100%;animation:shimmer 1.1s linear infinite"></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showHome }}" hint-placeholder-val="{{ true }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:22px 20px 18px">
+          <div style="font:600 12px 'Manrope';color:var(--tx2);letter-spacing:.4px;text-transform:uppercase">Баланс</div>
+          <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px"><span style="font:800 40px 'Manrope';color:var(--tx);letter-spacing:-1px">{{ balText }}</span><span style="font:700 18px 'Manrope';color:var(--acc)">бонусов</span></div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <div onClick="{{ goPay }}" style="flex:1;height:46px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)">Пополнить</div>
+            <div onClick="{{ goTransfer }}" style="flex:1;height:46px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)">Перевести</div>
+          </div>
+        </div>
+        <div onClick="{{ goFuel }}" style="position:relative;border-radius:28px;overflow:hidden;border:1px solid rgba(184,245,60,.28);background:linear-gradient(135deg,rgba(0,193,42,.28),rgba(184,245,60,.10) 60%,var(--glass));backdrop-filter:blur(var(--blur));padding:22px 20px;min-height:104px;box-sizing:border-box;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+          <div style="font:800 24px 'Manrope';color:var(--tx)">Заправить авто</div>
+          <div style="font:600 13px 'Manrope';color:var(--tx2);margin-top:4px">QR-код с колонки или выбор из списка</div>
+          <div style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 18px 'Manrope';color:#0A0E0B">→</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div onClick="{{ goCoffee }}" style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)"><img src="assets/icons/home_coffee.svg" style="width:34px;height:34px;filter:var(--icf);opacity:.9" alt=""><div style="font:700 15px 'Manrope';color:var(--tx);margin-top:12px">Купить кофе</div><div style="font:600 11.5px 'Manrope';color:var(--tx2);margin-top:2px">6-й — бесплатно</div></div>
+          <div onClick="{{ goHistory }}" style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)"><img src="assets/icons/home_history.svg" style="width:34px;height:34px;filter:var(--icf);opacity:.9" alt=""><div style="font:700 15px 'Manrope';color:var(--tx);margin-top:12px">История</div><div style="font:600 11.5px 'Manrope';color:var(--tx2);margin-top:2px">Все операции</div></div>
+          <div onClick="{{ goPromo }}" style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)"><img src="assets/icons/home_bonuses.svg" style="width:34px;height:34px;filter:var(--icf);opacity:.9" alt=""><div style="font:700 15px 'Manrope';color:var(--tx);margin-top:12px">Акции</div><div style="font:600 11.5px 'Manrope';color:var(--tx2);margin-top:2px">И бонусы</div></div>
+          <div onClick="{{ goPrices }}" style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)"><img src="assets/icons/home_prices.svg" style="width:34px;height:34px;filter:var(--icf);opacity:.9" alt=""><div style="font:700 15px 'Manrope';color:var(--tx);margin-top:12px">Цены</div><div style="font:600 11.5px 'Manrope';color:var(--tx2);margin-top:2px">На топливо</div></div>
+        </div>
+        <div onClick="{{ goPromo }}" style="border-radius:24px;overflow:hidden;border:1px solid rgba(184,245,60,.28);background:linear-gradient(135deg,rgba(184,245,60,.22),var(--glass));backdrop-filter:blur(var(--blur));padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+          <img src="assets/icons/home_bonuses.svg" style="width:30px;height:30px;filter:var(--icf)" alt="">
+          <div style="flex:1"><div style="font:700 14px 'Manrope';color:var(--acc);text-transform:uppercase;letter-spacing:.4px;font-size:11px">Акция</div><div style="font:700 15px 'Manrope';color:var(--tx);margin-top:2px">Кешбэк 5% бонусами за заправку</div></div>
+          <span style="font:800 15px 'Manrope';color:var(--tx2)">→</span>
+        </div>
+        <div onClick="{{ goPromo }}" style="position:relative;border-radius:24px;overflow:hidden;height:150px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+          <img src="assets/img/fuel.jpeg" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" alt="">
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,11,.05),rgba(10,14,11,.85))"></div>
+          <div style="position:absolute;left:16px;right:16px;bottom:14px">
+            <div style="font:700 11px 'Manrope';color:var(--lime);text-transform:uppercase;letter-spacing:.4px">Летнее предложение</div>
+            <div style="font:800 19px 'Manrope';color:#FFF;margin-top:2px">Каждый 6-й кофе — бесплатно</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:4px 4px 0">
+          <div style="font:800 18px 'Manrope';color:var(--tx)">Новости</div>
+          <div onClick="{{ goNews }}" style="font:700 12.5px 'Manrope';color:var(--tx2);cursor:pointer">Все →</div>
+        </div>
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:2px">
+          <sc-for list="{{ homeNews }}" as="n" hint-placeholder-count="3">
+            <div onClick="{{ goNews }}" style="flex:0 0 200px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:14px;cursor:pointer">
+              <div style="font:600 10.5px 'Manrope';color:var(--tx2)">{{ n.date }}</div>
+              <div style="font:700 13.5px 'Manrope';color:var(--tx);margin-top:4px;line-height:1.3">{{ n.title }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showFuel }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="font:800 26px 'Manrope';color:var(--tx);margin:4px 4px 2px">Выберите метод</div>
+        <div onClick="{{ goSelectFuel }}" style="position:relative;border-radius:28px;overflow:hidden;border:1px solid rgba(184,245,60,.28);background:linear-gradient(135deg,rgba(0,193,42,.28),rgba(184,245,60,.10) 60%,var(--glass));backdrop-filter:blur(var(--blur));padding:22px 20px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+          <img src="assets/icons/fuel_select.svg" style="width:38px;height:38px;filter:var(--icf)" alt="">
+          <div style="font:800 19px 'Manrope';color:var(--tx);margin-top:14px">Выбрать колонку</div>
+          <div style="font:600 12.5px 'Manrope';color:var(--tx2);margin-top:2px">Вручную из списка АЗС</div>
+          <div style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 17px 'Manrope';color:#0A0E0B">→</div>
+        </div>
+        <div style="display:flex;gap:12px">
+          <div onClick="{{ goScanFuel }}" style="flex:1;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:22px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)">
+            <img src="assets/icons/fuel_scan.svg" style="width:28px;height:28px;filter:var(--icf)" alt="">
+            <div style="font:700 14px 'Manrope';color:var(--tx);margin-top:10px">Сканировать QR</div>
+            <div style="font:600 11px 'Manrope';color:var(--tx2);margin-top:2px">С колонки</div>
+          </div>
+          <div onClick="{{ goHelp }}" style="flex:1;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:22px;padding:16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.95)">
+            <img src="assets/icons/fuel_help.svg" style="width:28px;height:28px;filter:var(--icf)" alt="">
+            <div style="font:700 14px 'Manrope';color:var(--tx);margin-top:10px">Нужна помощь</div>
+            <div style="font:600 11px 'Manrope';color:var(--tx2);margin-top:2px">Подсказки, контакты</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Сканируйте QR-код с колонки</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Просканируйте QR-код, наклеенный на колонке — АЗС и номер колонки определятся автоматически.</div></div>
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Или выберите из списка</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Вручную выберите нужную АЗС и номер колонки.</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showBalance }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="font:800 26px 'Manrope';color:var(--tx);margin:4px 4px 2px">Ваш уникальный код</div>
+        <div style="display:flex;justify-content:center">
+          <div style="padding:26px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:32px">
+            <div style="width:190px;height:190px;background:repeating-conic-gradient(var(--tx) 0 25%,transparent 0 50%) 0 0/16px 16px;position:relative;opacity:.92">
+              <div style="position:absolute;top:0;left:0;width:46px;height:46px;border:8px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+              <div style="position:absolute;top:0;right:0;width:46px;height:46px;border:8px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+              <div style="position:absolute;bottom:0;left:0;width:46px;height:46px;border:8px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;font:600 12.5px 'Manrope';color:var(--tx2)">Покажите код на кассе для списания и начисления бонусов</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Покажите код на кассе</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Кассир отсканирует ваш код для начисления и списания бонусов при покупке.</div></div>
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Пополняйте баланс</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Оплачивайте топливо, кофе и другие товары с внутреннего счёта без карты.</div></div>
+        </div>
+        <div onClick="{{ goPay }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Пополнить счёт</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showCoffee }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="font:800 26px 'Manrope';color:var(--tx);margin:4px 4px 2px">Кофе</div>
+        <div style="display:flex;background:var(--glass);border:1px solid var(--bord);border-radius:999px;padding:4px">
+          <div onClick="{{ setCoffeeTabMy }}" style="flex:1;text-align:center;padding:10px 0;border-radius:999px;background:{{ coffeeTabMyBg }};font:700 13px 'Manrope';color:{{ coffeeTabMyC }};cursor:pointer;transition:background .2s">Мой кофе</div>
+          <div onClick="{{ setCoffeeTabBuy }}" style="flex:1;text-align:center;padding:10px 0;border-radius:999px;background:{{ coffeeTabBuyBg }};font:700 13px 'Manrope';color:{{ coffeeTabBuyC }};cursor:pointer;transition:background .2s">Купить</div>
+        </div>
+
+        <sc-if value="{{ isCoffeeTabMy }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ hasMyCoffee }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;justify-content:center;padding:6px 0">
+              <div style="padding:22px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px">
+                <div style="width:150px;height:150px;background:repeating-conic-gradient(var(--tx) 0 25%,transparent 0 50%) 0 0/14px 14px;position:relative;opacity:.92">
+                  <div style="position:absolute;top:0;left:0;width:38px;height:38px;border:7px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+                  <div style="position:absolute;top:0;right:0;width:38px;height:38px;border:7px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+                  <div style="position:absolute;bottom:0;left:0;width:38px;height:38px;border:7px solid var(--tx);background:var(--bg);box-sizing:border-box"></div>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;font:600 12px 'Manrope';color:var(--tx2)">Покажите QR на кофемашине, чтобы налить «{{ selMyCoffee.name }}»</div>
+            <div style="display:flex;flex-direction:column;gap:8px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+              <sc-for list="{{ myCoffee }}" as="m" hint-placeholder-count="2">
+                <div onClick="{{ m.select }}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bord);cursor:pointer;background:{{ m.bg }}">
+                  <div style="display:flex;align-items:center;gap:12px"><img src="assets/icons/home_coffee.svg" style="width:26px;height:26px;filter:var(--icf);opacity:.85" alt=""><div><div style="font:700 14px 'Manrope';color:var(--tx)">{{ m.name }}</div><div style="font:600 11px 'Manrope';color:var(--tx2);margin-top:2px">{{ m.machine }}</div></div></div>
+                  <span style="font:600 12px 'Manrope';color:var(--tx2)">{{ m.date }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{ isCoffeeTabBuy }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ goCoffeeMenu }}" style="background:linear-gradient(135deg,rgba(184,245,60,.22),var(--glass));border:1px solid rgba(184,245,60,.28);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px;display:flex;align-items:center;gap:14px;cursor:pointer">
+            <img src="assets/icons/gift.svg" style="width:36px;height:36px;filter:var(--icf)" alt="">
+            <div style="flex:1"><div style="font:700 15px 'Manrope';color:var(--tx)">Бесплатный кофе: 2</div><div style="font:600 12px 'Manrope';color:var(--tx2)">Заберите бонус на любой АЗС</div></div>
+            <span style="font:800 15px 'Manrope';color:var(--acc)">→</span>
+          </div>
+          <div onClick="{{ goScanCoffee }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)"><div><div style="font:700 16px 'Manrope';color:var(--tx)">Сканировать кофемашину</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">QR-код на кофемашине</div></div><img src="assets/icons/coffee_scan.svg" style="width:32px;height:32px;filter:var(--icf)" alt=""></div>
+          <div onClick="{{ goSelectCoffee }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)"><div><div style="font:700 16px 'Manrope';color:var(--tx)">Выбрать из списка</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">АЗС и кофемашина вручную</div></div><img src="assets/icons/coffee_select.svg" style="width:32px;height:32px;filter:var(--icf)" alt=""></div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showProfile }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:6px">
+          <div style="width:86px;height:86px;border-radius:50%;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));display:flex;align-items:center;justify-content:center"><img src="assets/icons/person.svg" style="width:40px;height:40px;filter:var(--icf)" alt=""></div>
+          <div style="font:800 24px 'Manrope';color:var(--tx)">Александр</div>
+          <div style="font:600 14px 'Manrope';color:var(--tx2)">8 900 123 45 67</div>
+        </div>
+        <div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:14px 18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+          <div style="display:flex;align-items:center;gap:10px"><sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><img src="assets/icons/moon.svg" style="width:20px;height:20px;filter:var(--icf)" alt=""></sc-if><sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><img src="assets/icons/sun.svg" style="width:20px;height:20px;filter:var(--icf)" alt=""></sc-if><span style="font:700 15px 'Manrope';color:var(--tx)">{{ themeLabel }}</span></div>
+          <div style="width:48px;height:28px;border-radius:99px;background:{{ switchBg }};position:relative;transition:background .3s"><div style="position:absolute;top:3px;left:{{ switchLeft }};width:22px;height:22px;border-radius:50%;background:#FFF;transition:left .25s cubic-bezier(.3,1.4,.5,1)"></div></div>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px 18px">
+          <div style="font:700 15px 'Manrope';color:var(--tx)">Связанные аккаунты</div>
+          <sc-if value="{{ hasJoinAccounts }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:10px;overflow-x:auto;margin-top:12px;padding-bottom:2px">
+              <sc-for list="{{ joinAccounts }}" as="j" hint-placeholder-count="2">
+                <div style="position:relative;flex:0 0 100px;background:{{ j.bg }};border-radius:16px;padding:12px;box-sizing:border-box">
+                  <sc-if value="{{ j.canDelete }}" hint-placeholder-val="{{ false }}">
+                    <div onClick="{{ j.remove }}" style="position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font:700 11px 'Manrope';color:{{ j.textColor }};cursor:pointer">✕</div>
+                  </sc-if>
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center"><img src="assets/icons/person.svg" style="width:18px;height:18px;filter:{{ j.iconF }}" alt=""></div>
+                  <div style="font:700 12.5px 'Manrope';color:{{ j.textColor }};margin-top:10px">{{ j.name }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <div onClick="{{ goInvite }}" style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer"><img src="assets/icons/plus.svg" style="width:16px;height:16px" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Пригласить пользователя</span></div>
+          </sc-if>
+          <sc-if value="{{ hasNoJoinAccounts }}" hint-placeholder-val="{{ false }}">
+            <div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">У вас пока нет связанных аккаунтов</div>
+            <div onClick="{{ goInvite }}" style="display:flex;align-items:center;gap:8px;margin-top:10px;cursor:pointer"><img src="assets/icons/plus.svg" style="width:16px;height:16px" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Пригласить пользователя</span></div>
+          </sc-if>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <div onClick="{{ goHistory }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord);cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">История операций</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div onClick="{{ goNews }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord);cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">Новости компании</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div onClick="{{ goAboutApp }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord);cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">О приложении</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div onClick="{{ goAbout }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord);cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">О компании</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div onClick="{{ goSettings }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord);cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">Настройки</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div onClick="{{ goHelp }}" style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;cursor:pointer"><span style="font:700 14px 'Manrope';color:var(--tx)">Помощь</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+        </div>
+        <div onClick="{{ doLogout }}" style="text-align:center;font:700 14px 'Manrope';color:#FF6B54;padding:6px;cursor:pointer">Выйти</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showHistory }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;gap:10px">
+          <div style="flex:1;height:44px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+            <span style="font:600 13px 'Manrope';color:var(--tx2);pointer-events:none;position:relative;z-index:0">{{ dateFromLabel }}</span>
+            <input type="date" ref="{{ dateFromRef }}" value="{{ dateFrom }}" onInput="{{ onDateFrom }}" onClick="{{ openDateFrom }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;border:none;padding:0;margin:0;cursor:pointer;z-index:1">
+          </div>
+          <div style="flex:1;height:44px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:14px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+            <span style="font:600 13px 'Manrope';color:var(--tx2);pointer-events:none;position:relative;z-index:0">{{ dateToLabel }}</span>
+            <input type="date" ref="{{ dateToRef }}" value="{{ dateTo }}" onInput="{{ onDateTo }}" onClick="{{ openDateTo }}" style="position:absolute;left:0;top:0;width:100%;height:100%;opacity:0;border:none;padding:0;margin:0;cursor:pointer;z-index:1">
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center;padding:6px 0">
+          <div style="width:160px;height:160px;border-radius:50%;background:conic-gradient(var(--acc) 0 62%,#B8F53C 62% 84%,rgba(255,255,255,.18) 84% 100%);display:flex;align-items:center;justify-content:center"><div style="width:106px;height:106px;border-radius:50%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background .4s"><span style="font:800 20px 'Manrope';color:var(--tx)">8 540</span><span style="font:600 11px 'Manrope';color:var(--tx2)">за период</span></div></div>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="4">
+            <div onClick="{{ h.open }}" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--bord);cursor:pointer">
+              <div style="flex:1"><div style="font:600 13px 'Manrope';color:{{ h.color }}">{{ h.title }}</div><div style="font:600 11.5px 'Manrope';color:var(--tx2)">{{ h.date }}</div></div>
+              <div style="display:flex;align-items:center;gap:6px;background:var(--glass2);border-radius:12px;padding:6px 10px"><sc-if value="{{ h.isFuel }}" hint-placeholder-val="{{ true }}"><img src="assets/icons/tab_fuel.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.8" alt=""></sc-if><sc-if value="{{ h.isWallet }}" hint-placeholder-val="{{ false }}"><img src="assets/icons/wallet_gray.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.8" alt=""></sc-if><sc-if value="{{ h.isCoffee }}" hint-placeholder-val="{{ false }}"><img src="assets/icons/tab_coffee.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.8" alt=""></sc-if><sc-if value="{{ h.isPerson }}" hint-placeholder-val="{{ false }}"><img src="assets/icons/person.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.8" alt=""></sc-if><span style="font:700 12.5px 'Manrope';color:var(--tx)">{{ h.sum }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showHistoryDetail }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:14px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0">
+          <div style="font:600 12px 'Manrope';color:{{ selHist.color }};border:1px solid {{ selHist.color }};border-radius:999px;padding:6px 16px">{{ selHist.title }}</div>
+          <div style="font:800 32px 'Manrope';color:var(--tx)">{{ selHist.sum }}</div>
+          <div style="font:600 12px 'Manrope';color:var(--tx2)">{{ selHist.date }}</div>
+        </div>
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <sc-for list="{{ selHist.rows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">{{ r.k }}</span><span style="font:700 14px 'Manrope';color:var(--tx)">{{ r.v }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPay }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:22px 20px">
+          <div style="font:600 12px 'Manrope';color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Сумма пополнения</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 40px 'Manrope';color:var(--tx)">1 000</span><span style="font:700 20px 'Manrope';color:var(--tx2)">₽</span></div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <div style="border-radius:999px;background:var(--glass);border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:var(--tx);cursor:pointer">500</div>
+            <div style="border-radius:999px;background:var(--lime);padding:9px 16px;font:700 13px 'Manrope';color:#0A0E0B;cursor:pointer">1 000</div>
+            <div style="border-radius:999px;background:var(--glass);border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:var(--tx);cursor:pointer">2 000</div>
+            <div style="border-radius:999px;background:var(--glass);border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:var(--tx);cursor:pointer">5 000</div>
+          </div>
+        </div>
+        <div onClick="{{ goSuccess }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Перейти к оплате</div>
+        <div style="padding:0 4px"><div style="font:700 14px 'Manrope';color:var(--tx)">Оплата через СБП</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Выберите банк — средства зачислятся на счёт моментально.</div></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showTransfer }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 18px">
+          <img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt="">
+          <span style="font:600 15px 'Manrope';color:var(--tx)">{{ pickedContactLabelTransfer }}</span>
+        </div>
+        <div onClick="{{ goPickContactTransfer }}" style="display:flex;align-items:center;gap:8px;padding:0 4px;cursor:pointer"><img src="assets/icons/person.svg" style="width:16px;height:16px;filter:var(--icf);opacity:.7" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Выбрать из контактов</span></div>
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:22px 20px">
+          <div style="font:600 12px 'Manrope';color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Сумма перевода</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 40px 'Manrope';color:var(--tx)">500</span><span style="font:700 20px 'Manrope';color:var(--acc)">бонусов</span></div>
+          <div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:8px">Доступно: {{ balText }} бонусов</div>
+        </div>
+        <div onClick="{{ goSuccess }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Перевести</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPrices }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:10px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <sc-for list="{{ prices }}" as="p" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:16px 18px">
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:48px;height:42px;border-radius:14px;background:{{ p.bg }};display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#0A0E0B">{{ p.code }}</span><span style="font:700 15px 'Manrope';color:var(--tx)">{{ p.name }}</span></div>
+            <span style="font:800 17px 'Manrope';color:var(--tx)">{{ p.price }} ₽</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPromo }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="border-radius:28px;overflow:hidden;border:1px solid rgba(184,245,60,.28);background:linear-gradient(135deg,rgba(184,245,60,.25),var(--glass));backdrop-filter:blur(var(--blur));padding:22px 20px">
+          <div style="font:600 11px 'Manrope';color:var(--acc);text-transform:uppercase;letter-spacing:.6px">Акция</div>
+          <div style="font:800 20px 'Manrope';color:var(--tx);margin-top:4px">Кешбэк 5% бонусами за каждую заправку</div>
+          <div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:6px">До 31 июля 2026</div>
+        </div>
+        <div style="border-radius:28px;overflow:hidden;border:1px solid var(--bord);background:var(--glass2);backdrop-filter:blur(var(--blur));padding:22px 20px">
+          <div style="font:600 11px 'Manrope';color:var(--acc);text-transform:uppercase;letter-spacing:.6px">Бонус</div>
+          <div style="font:800 20px 'Manrope';color:var(--tx);margin-top:4px">Каждый 6-й кофе — бесплатно</div>
+          <div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:6px">Постоянная программа</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showNews }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <sc-for list="{{ news }}" as="n" hint-placeholder-count="3">
+          <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px">
+            <div style="font:600 11px 'Manrope';color:var(--tx2)">{{ n.date }}</div>
+            <div style="font:700 16px 'Manrope';color:var(--tx);margin-top:4px">{{ n.title }}</div>
+            <div style="font:600 12.5px 'Manrope';color:var(--tx2);margin-top:4px">{{ n.text }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showAbout }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;justify-content:center;padding:14px 0">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><img src="assets/logo-21vek-lime.svg" style="width:220px" alt="21 ВЕК"></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><img src="assets/logo-21vek-dark.svg" style="width:220px" alt="21 ВЕК"></sc-if>
+        </div>
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px"><div style="font:600 13px 'Manrope';color:var(--tx2);line-height:1.55">Сеть АЗС «21 ВЕК» — современное топливо, кофе и программа лояльности. Более 120 станций по стране. Приложение помогает заправляться, копить и тратить бонусы.</div></div>
+        <div onClick="{{ goContacts }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px 18px;cursor:pointer"><div style="display:flex;align-items:center;gap:12px"><img src="assets/icons/contacts.svg" style="width:24px;height:24px;filter:var(--icf)" alt=""><span style="font:700 15px 'Manrope';color:var(--tx)">Контакты</span></div><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showAboutApp }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 0">
+          <sc-if value="{{ isDark }}" hint-placeholder-val="{{ true }}"><img src="assets/logo-21vek-lime.svg" style="width:200px" alt="21 ВЕК"></sc-if>
+          <sc-if value="{{ isLight }}" hint-placeholder-val="{{ false }}"><img src="assets/logo-21vek-dark.svg" style="width:200px" alt="21 ВЕК"></sc-if>
+          <div style="font:600 13px 'Manrope';color:var(--tx2)">Версия 2.0.0</div>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord)"><span style="font:700 14px 'Manrope';color:var(--tx)">Условия использования</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord)"><span style="font:700 14px 'Manrope';color:var(--tx)">Политика конфиденциальности</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px"><span style="font:700 14px 'Manrope';color:var(--tx)">Оценить приложение</span><span style="font:700 13px 'Manrope';color:var(--tx2)">→</span></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showHelp }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <sc-for list="{{ faq }}" as="f" hint-placeholder-count="3">
+            <div style="padding:16px 18px;border-bottom:1px solid var(--bord)"><div style="font:700 14px 'Manrope';color:var(--tx)">{{ f.q }}</div><div style="font:600 12.5px 'Manrope';color:var(--tx2);margin-top:4px">{{ f.a }}</div></div>
+          </sc-for>
+        </div>
+        <div onClick="{{ goContacts }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;gap:8px;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)"><img src="assets/icons/phone.svg" style="width:18px;height:18px" alt="">Связаться с поддержкой</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showInvite }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:14px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="font:600 13px 'Manrope';color:var(--tx2);padding:0 4px">Привязанный аккаунт будет тратить и получать бонусы с вашего общего счёта.</div>
+        <div style="height:54px;border-radius:16px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;gap:10px;padding:0 18px">
+          <img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt="">
+          <span style="font:600 15px 'Manrope';color:var(--tx)">{{ pickedContactLabelInvite }}</span>
+        </div>
+        <div onClick="{{ goPickContactInvite }}" style="display:flex;align-items:center;gap:8px;padding:0 4px;cursor:pointer"><img src="assets/icons/person.svg" style="width:16px;height:16px;filter:var(--icf);opacity:.7" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Выбрать из контактов</span></div>
+        <div onClick="{{ goInviteSent }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Отправить приглашение</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPickContact }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:10px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="height:48px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:16px;display:flex;align-items:center;gap:10px;padding:0 16px">
+          <img src="assets/icons/person.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.5" alt="">
+          <input type="text" placeholder="Поиск по имени или номеру" value="{{ contactQuery }}" onInput="{{ onContactQuery }}" style="flex:1;background:transparent;border:none;outline:none;font:600 14px 'Manrope';color:var(--tx)">
+        </div>
+        <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="5">
+          <div onClick="{{ c.select }}" style="display:flex;align-items:center;gap:14px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:14px 16px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center"><img src="assets/icons/person.svg" style="width:20px;height:20px;filter:var(--icf)" alt=""></div>
+            <div><div style="font:700 14px 'Manrope';color:var(--tx)">{{ c.name }}</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:1px">{{ c.phone }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showInviteSent }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-top:100px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="width:96px;height:96px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 44px 'Manrope';color:#0A0E0B">✓</div>
+        <div style="font:800 22px 'Manrope';color:var(--tx);text-align:center">Приглашение отправлено</div>
+        <div style="font:600 13px 'Manrope';color:var(--tx2);text-align:center;max-width:260px">Как только пользователь примет приглашение, он появится в списке связанных аккаунтов.</div>
+        <div onClick="{{ goProfile }}" style="margin-top:8px;height:52px;padding:0 32px;border-radius:999px;background:var(--glass2);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">В профиль</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showContacts }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;align-items:center;gap:14px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px"><img src="assets/icons/phone.svg" style="width:24px;height:24px;filter:var(--icf)" alt=""><div><div style="font:700 15px 'Manrope';color:var(--tx)">8 800 100 21 21</div><div style="font:600 12px 'Manrope';color:var(--tx2)">Круглосуточно, бесплатно</div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px"><img src="assets/icons/sms.svg" style="width:24px;height:24px;filter:var(--icf)" alt=""><div><div style="font:700 15px 'Manrope';color:var(--tx)">support@21vek.ru</div><div style="font:600 12px 'Manrope';color:var(--tx2)">Ответим в течение дня</div></div></div>
+        <div style="display:flex;align-items:center;gap:14px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:18px"><img src="assets/icons/location.svg" style="width:24px;height:24px;filter:var(--icf)" alt=""><div><div style="font:700 15px 'Manrope';color:var(--tx)">Карта АЗС</div><div style="font:600 12px 'Manrope';color:var(--tx2)">120+ станций поблизости</div></div></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showScan }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;gap:14px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="position:relative;flex:1;min-height:340px;border-radius:28px;overflow:hidden;background:linear-gradient(160deg,#141a12,#050604);display:flex;align-items:center;justify-content:center">
+          <div style="width:220px;height:220px;position:relative">
+            <div style="position:absolute;top:0;left:0;width:44px;height:44px;border-top:4px solid var(--lime);border-left:4px solid var(--lime);border-radius:12px 0 0 0"></div>
+            <div style="position:absolute;top:0;right:0;width:44px;height:44px;border-top:4px solid var(--lime);border-right:4px solid var(--lime);border-radius:0 12px 0 0"></div>
+            <div style="position:absolute;bottom:0;left:0;width:44px;height:44px;border-bottom:4px solid var(--lime);border-left:4px solid var(--lime);border-radius:0 0 0 12px"></div>
+            <div style="position:absolute;bottom:0;right:0;width:44px;height:44px;border-bottom:4px solid var(--lime);border-right:4px solid var(--lime);border-radius:0 0 12px 0"></div>
+            <div style="position:absolute;left:6px;right:6px;top:50%;height:2px;background:var(--lime);box-shadow:0 0 12px var(--lime);animation:scanline 1.8s ease-in-out infinite"></div>
+          </div>
+          <div style="position:absolute;bottom:18px;left:0;right:0;text-align:center;font:600 13px 'Manrope';color:rgba(255,255,255,.7)">Наведите камеру на QR-код</div>
+        </div>
+        <div onClick="{{ goScanResult }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">{{ scanFoundLabel }}</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showSelect }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:10px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <sc-for list="{{ stations }}" as="st" hint-placeholder-count="4">
+          <div onClick="{{ goAfterSelect }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:16px 18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+            <div><div style="font:700 15px 'Manrope';color:var(--tx)">{{ st.name }}</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">{{ st.addr }}</div></div>
+            <span style="font:700 13px 'Manrope';color:var(--tx2)">{{ st.dist }}</span>
+          </div>
+        </sc-for>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Как выбрать нужную АЗС</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Список отсортирован по расстоянию от вас. Нажмите на станцию, чтобы продолжить.</div></div>
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Не нашли свою АЗС?</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Проверьте, включена ли геолокация, или отсканируйте QR-код прямо на колонке.</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showTrkType }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:10px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="font:800 22px 'Manrope';color:var(--tx);margin:2px 4px 4px">Выберите топливо</div>
+        <sc-for list="{{ prices }}" as="p" hint-placeholder-count="4">
+          <div onClick="{{ goLiters }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:16px 18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:48px;height:42px;border-radius:14px;background:{{ p.bg }};display:flex;align-items:center;justify-content:center;font:800 12px 'Manrope';color:#0A0E0B">{{ p.code }}</span><span style="font:700 15px 'Manrope';color:var(--tx)">{{ p.name }}</span></div>
+            <span style="font:800 17px 'Manrope';color:var(--tx)">{{ p.price }} ₽/л</span>
+          </div>
+        </sc-for>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Выберите марку топлива</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Цены актуальны для этой станции и обновляются в реальном времени.</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showLiters }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:14px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;background:var(--glass);border:1px solid var(--bord);border-radius:999px;padding:4px">
+          <div onClick="{{ setLitersMode }}" style="flex:1;text-align:center;padding:9px 0;border-radius:999px;background:{{ litersModeBg }};font:700 13px 'Manrope';color:{{ litersModeC }};cursor:pointer;transition:background .2s">Литры</div>
+          <div onClick="{{ setSumMode }}" style="flex:1;text-align:center;padding:9px 0;border-radius:999px;background:{{ sumModeBg }};font:700 13px 'Manrope';color:{{ sumModeC }};cursor:pointer;transition:background .2s">Сумма</div>
+        </div>
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:22px 20px;display:flex;align-items:flex-end;justify-content:space-between">
+          <div>
+            <div style="font:600 12px 'Manrope';color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Литры</div>
+            <sc-if value="{{ isLitersMode }}" hint-placeholder-val="{{ true }}"><div style="display:flex;align-items:baseline;gap:6px;margin-top:2px"><input type="number" step="0.5" min="1" max="60" value="{{ litersInput }}" onInput="{{ onLitersInput }}" style="width:110px;background:transparent;border:none;outline:none;font:800 40px 'Manrope';color:var(--tx);padding:0"><span style="font:700 18px 'Manrope';color:var(--tx2)">л</span></div></sc-if>
+            <sc-if value="{{ isSumMode }}" hint-placeholder-val="{{ false }}"><div style="font:800 32px 'Manrope';color:var(--tx);margin-top:2px">{{ litersLabel }}</div></sc-if>
+          </div>
+          <div style="text-align:right">
+            <div style="font:600 12px 'Manrope';color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Сумма</div>
+            <sc-if value="{{ isSumMode }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;justify-content:flex-end"><input type="number" step="10" min="50" max="3500" value="{{ sumInput }}" onInput="{{ onSumInput }}" style="width:110px;text-align:right;background:transparent;border:none;outline:none;font:800 28px 'Manrope';color:var(--acc);padding:0"><span style="font:700 16px 'Manrope';color:var(--acc)">₽</span></div></sc-if>
+            <sc-if value="{{ isLitersMode }}" hint-placeholder-val="{{ true }}"><div style="font:800 28px 'Manrope';color:var(--acc);margin-top:2px">{{ sumLabel }}</div></sc-if>
+          </div>
+        </div>
+        <input type="range" min="1" max="60" step="0.5" value="{{ liters }}" onInput="{{ onSlide }}" style="width:100%;height:6px;accent-color:var(--lime);cursor:pointer">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div onClick="{{ setLiters10 }}" style="border-radius:999px;background:{{ chip10 }};border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:{{ chip10C }};cursor:pointer">10 л</div>
+          <div onClick="{{ setLiters20 }}" style="border-radius:999px;background:{{ chip20 }};border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:{{ chip20C }};cursor:pointer">20 л</div>
+          <div onClick="{{ setLiters30 }}" style="border-radius:999px;background:{{ chip30 }};border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:{{ chip30C }};cursor:pointer">30 л</div>
+          <div onClick="{{ setLitersFull }}" style="border-radius:999px;background:{{ chipFullBg }};border:1px solid var(--bord);padding:9px 16px;font:700 13px 'Manrope';color:{{ chipFullC }};cursor:pointer">Полный бак</div>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">АЗС</span><span style="font:700 14px 'Manrope';color:var(--tx)">№14 — Садовая, 8</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">Топливо</span><span style="font:700 14px 'Manrope';color:var(--tx)">АИ-95 · Колонка 3</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px"><span style="font:600 13px 'Manrope';color:var(--tx2)">Цена за литр</span><span style="font:700 14px 'Manrope';color:var(--tx)">57,80 ₽</span></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(0,193,42,.22),var(--glass));border:1px solid rgba(184,245,60,.24);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px 18px">
+          <img src="assets/icons/bonus.svg" style="width:30px;height:30px" alt="">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Начислим 58 бонусов</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">5% кешбэк за эту заправку</div></div>
+        </div>
+        <div onClick="{{ goFuelConfirm }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Начать налив</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showFuelConfirm }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-top:80px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="width:96px;height:96px;border-radius:50%;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));display:flex;align-items:center;justify-content:center"><img src="assets/icons/tab_fuel.svg" style="width:44px;height:44px;filter:var(--icf)" alt=""></div>
+        <div style="font:800 22px 'Manrope';color:var(--tx);text-align:center">Готовы начать налив?</div>
+        <div style="font:600 13px 'Manrope';color:var(--tx2);text-align:center;max-width:260px">АЗС №14 · Колонка 3 · АИ-95 · 20.0 л на 1 156 ₽</div>
+        <div onClick="{{ goPouring }}" style="margin-top:8px;height:56px;width:240px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Запустить колонку</div>
+        <div onClick="{{ goBack }}" style="height:52px;width:240px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:var(--tx);cursor:pointer">Отмена</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showPouring }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding-top:60px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center">
+          <svg width="150" height="150" viewBox="0 0 150 150" style="position:absolute;inset:0;transform:rotate(-90deg)"><circle cx="75" cy="75" r="64" fill="none" stroke="var(--glass2)" stroke-width="10"></circle><circle cx="75" cy="75" r="64" fill="none" stroke="var(--lime)" stroke-width="10" stroke-linecap="round" stroke-dasharray="{{ pourDashArray }}"></circle></svg>
+          <div style="text-align:center"><div style="font:800 30px 'Manrope';color:var(--tx)">{{ pourLiters }} л</div><div style="font:600 11px 'Manrope';color:var(--tx2)">из 20.0 л</div></div>
+        </div>
+        <div style="font:800 20px 'Manrope';color:var(--tx)">Идёт налив…</div>
+        <div style="font:600 13px 'Manrope';color:var(--tx2)">Колонка 3 · АИ-95 · не отходите от авто</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showFuelResult }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:14px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 0 4px">
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 32px 'Manrope';color:#0A0E0B">✓</div>
+          <div style="font:800 22px 'Manrope';color:var(--tx)">Налив завершён</div>
+        </div>
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">АЗС</span><span style="font:700 14px 'Manrope';color:var(--tx)">№14 — Садовая, 8</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">Топливо</span><span style="font:700 14px 'Manrope';color:var(--tx)">АИ-95 · Колонка 3</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bord)"><span style="font:600 13px 'Manrope';color:var(--tx2)">Литры</span><span style="font:700 14px 'Manrope';color:var(--tx)">20.0 л</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px"><span style="font:600 13px 'Manrope';color:var(--tx2)">Списано</span><span style="font:800 16px 'Manrope';color:var(--acc)">1 156 ₽</span></div>
+        </div>
+        <div onClick="{{ goHome }}" style="height:54px;border-radius:999px;background:var(--glass2);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">На главную</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showCoffeeMenu }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:10px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <sc-for list="{{ coffeeItems }}" as="c" hint-placeholder-count="4">
+          <div onClick="{{ c.select }}" style="display:flex;align-items:center;justify-content:space-between;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:20px;padding:16px 18px;cursor:pointer;transition:transform .15s" style-active="transform:scale(.97)">
+            <div style="display:flex;align-items:center;gap:12px"><img src="assets/icons/home_coffee.svg" style="width:32px;height:32px;filter:var(--icf);opacity:.85" alt=""><div><div style="font:700 15px 'Manrope';color:var(--tx)">{{ c.name }}</div><div style="font:600 11.5px 'Manrope';color:var(--tx2);margin-top:2px">{{ c.size }}</div></div></div>
+            <span style="font:800 16px 'Manrope';color:var(--tx)">{{ c.price }} ₽</span>
+          </div>
+        </sc-for>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:12px;padding:0 4px">
+          <div><div style="font:700 14px 'Manrope';color:var(--tx)">Выберите напиток</div><div style="font:600 12px 'Manrope';color:var(--tx2);margin-top:2px">Дальше можно настроить объём и сахар перед приготовлением.</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showCoffeeConfirm }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-top:80px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="width:96px;height:96px;border-radius:50%;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));display:flex;align-items:center;justify-content:center"><img src="assets/icons/home_coffee.svg" style="width:44px;height:44px;filter:var(--icf)" alt=""></div>
+        <div style="font:800 22px 'Manrope';color:var(--tx);text-align:center">Подтвердите заказ</div>
+        <div style="font:600 13px 'Manrope';color:var(--tx2);text-align:center;max-width:260px">{{ selCoffee.name }} · {{ selCoffee.size }} · {{ selCoffee.price }} ₽</div>
+        <div onClick="{{ goCoffeeSuccess }}" style="margin-top:8px;height:56px;width:240px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Приготовить · {{ selCoffee.price }} ₽</div>
+        <div onClick="{{ goBack }}" style="height:52px;width:240px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:var(--tx);cursor:pointer">Отмена</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showSettings }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="display:flex;flex-direction:column;gap:12px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--bord)"><span style="font:700 14px 'Manrope';color:var(--tx)">Push-уведомления</span><div style="width:44px;height:26px;border-radius:99px;background:var(--acc);position:relative"><div style="position:absolute;top:3px;left:21px;width:20px;height:20px;border-radius:50%;background:#FFF"></div></div></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px"><span style="font:700 14px 'Manrope';color:var(--tx)">SMS-уведомления</span><div style="width:44px;height:26px;border-radius:99px;background:var(--glass);border:1px solid var(--bord);position:relative"><div style="position:absolute;top:2px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--tx2)"></div></div></div>
+        </div>
+        <div onClick="{{ goDelete }}" style="display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:24px;padding:16px 18px;cursor:pointer"><img src="assets/icons/profile_delete_acc.svg" style="width:22px;height:22px;filter:var(--icf)" alt=""><span style="font:700 14px 'Manrope';color:#FF6B54">Удалить аккаунт</span></div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showDelete }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding-top:100px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="width:88px;height:88px;border-radius:50%;background:rgba(255,107,84,.15);display:flex;align-items:center;justify-content:center;font:800 36px 'Manrope';color:#FF6B54">!</div>
+        <div style="font:800 22px 'Manrope';color:var(--tx);text-align:center">Удалить аккаунт?</div>
+        <div style="font:600 13px 'Manrope';color:var(--tx2);text-align:center;max-width:260px">Все данные и бонусы будут удалены безвозвратно. Действие необратимо.</div>
+        <div onClick="{{ goDeleteConfirm }}" style="margin-top:10px;height:52px;width:220px;border-radius:999px;background:#FF6B54;display:flex;align-items:center;justify-content:center;font:800 14px 'Manrope';color:#FFF;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Удалить навсегда</div>
+        <div onClick="{{ goBack }}" style="height:52px;width:220px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:var(--tx);cursor:pointer">Отмена</div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ showSuccess }}" hint-placeholder-val="{{ false }}">
+      <div key="{{ screenKey }}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding-top:120px;animation:screenIn .38s cubic-bezier(.2,.8,.25,1)">
+        <div style="width:96px;height:96px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 44px 'Manrope';color:#0A0E0B">✓</div>
+        <div style="font:800 24px 'Manrope';color:var(--tx);text-align:center">Готово!</div>
+        <div style="font:600 14px 'Manrope';color:var(--tx2);text-align:center;max-width:260px">Операция выполнена успешно. Баланс обновится в течение минуты.</div>
+        <div onClick="{{ successGoHome }}" style="margin-top:8px;height:52px;padding:0 32px;border-radius:999px;background:var(--glass2);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:var(--tx);cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">{{ successBtnLabel }}</div>
+      </div>
+    </sc-if>
+  </div>
+
+  <div style="position:absolute;left:16px;right:16px;bottom:18px;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:30px;display:flex;justify-content:space-between;padding:8px 10px;box-shadow:0 8px 28px rgba(0,0,0,.18)">
+    <div onClick="{{ goFuel }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0;cursor:pointer;transition:transform .15s" style-active="transform:scale(.88)"><span style="background:{{ tFuelBg }};border-radius:999px;padding:4px 16px;display:inline-flex;transition:background .25s"><img src="assets/icons/tab_fuel.svg" style="width:22px;height:22px;filter:{{ tFuelF }};transition:filter .25s" alt=""></span><span style="font:600 10px 'Manrope';color:{{ tFuelC }}">Топливо</span></div>
+    <div onClick="{{ goBalance }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0;cursor:pointer;transition:transform .15s" style-active="transform:scale(.88)"><span style="background:{{ tBalBg }};border-radius:999px;padding:4px 16px;display:inline-flex;transition:background .25s"><img src="assets/icons/tab_balance.svg" style="width:22px;height:22px;filter:{{ tBalF }};transition:filter .25s" alt=""></span><span style="font:600 10px 'Manrope';color:{{ tBalC }}">Баланс</span></div>
+    <div onClick="{{ goHome }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0;cursor:pointer;transition:transform .15s" style-active="transform:scale(.88)"><span style="background:{{ tHomeBg }};border-radius:999px;padding:4px 16px;display:inline-flex;transition:background .25s"><img src="assets/icons/tab_home.svg" style="width:22px;height:22px;filter:{{ tHomeF }};transition:filter .25s" alt=""></span><span style="font:600 10px 'Manrope';color:{{ tHomeC }}">Главная</span></div>
+    <div onClick="{{ goCoffee }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0;cursor:pointer;transition:transform .15s" style-active="transform:scale(.88)"><span style="background:{{ tCofBg }};border-radius:999px;padding:4px 16px;display:inline-flex;transition:background .25s"><img src="assets/icons/tab_coffee.svg" style="width:22px;height:22px;filter:{{ tCofF }};transition:filter .25s" alt=""></span><span style="font:600 10px 'Manrope';color:{{ tCofC }}">Кофе</span></div>
+    <div onClick="{{ goProfile }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0;cursor:pointer;transition:transform .15s" style-active="transform:scale(.88)"><span style="background:{{ tProfBg }};border-radius:999px;padding:4px 16px;display:inline-flex;transition:background .25s"><img src="assets/icons/tab_profile.svg" style="width:22px;height:22px;filter:{{ tProfF }};transition:filter .25s" alt=""></span><span style="font:600 10px 'Manrope';color:{{ tProfC }}">Профиль</span></div>
+  </div>
+
+  <sc-if value="{{ showRemoveConfirm }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:20;padding:24px;box-sizing:border-box">
+      <div style="width:100%;background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:24px 22px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,107,84,.15);display:flex;align-items:center;justify-content:center;font:800 28px 'Manrope';color:#FF6B54">!</div>
+        <div style="font:800 18px 'Manrope';color:var(--tx);text-align:center">Удалить «{{ confirmRemoveAccount.name }}»?</div>
+        <div style="font:600 12.5px 'Manrope';color:var(--tx2);text-align:center">Пользователь потеряет доступ к общему счёту и бонусам.</div>
+        <div onClick="{{ confirmRemoveJoinAccount }}" style="height:50px;width:100%;border-radius:999px;background:#FF6B54;display:flex;align-items:center;justify-content:center;font:800 14px 'Manrope';color:#FFF;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Удалить</div>
+        <div onClick="{{ cancelRemoveJoinAccount }}" style="height:50px;width:100%;border-radius:999px;background:var(--glass);border:1px solid var(--bord);display:flex;align-items:center;justify-content:center;font:700 14px 'Manrope';color:var(--tx);cursor:pointer">Отмена</div>
+      </div>
+    </div>
+  </sc-if>
+  </sc-if>
+</div>
+<div onClick="{{ toggleTheme }}" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(14px);border-radius:999px;padding:9px 18px;cursor:pointer;font:700 13px 'Manrope';color:#fff">{{ themeLabel }}</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#00C12A&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#00C12A&quot;,&quot;#B8F53C&quot;,&quot;#12C85B&quot;,&quot;#2AD8C4&quot;],&quot;section&quot;:&quot;Стиль&quot;},&quot;blurStrength&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:20,&quot;min&quot;:0,&quot;max&quot;:40,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Стиль&quot;}}">
+class Component extends DCLogic {
+  state = { tab: 'home', push: null, pushStack: [], theme: 'dark', loading: true, view: 'login', bal: 1250, screenKey: 1, scanKind: 'fuel', liters: 20, litersMode: 'liters', selMyCoffeeId: 1, coffeeTab: 'my', dateFrom: '2026-07-01', dateTo: '2026-07-16', joinAccounts: [{ id: 2, name: 'Мария' }] }
+  componentDidMount() { this.applyTheme() }
+  componentDidUpdate() { this.applyTheme() }
+  componentWillUnmount() { clearInterval(this._t); clearInterval(this._pourT) }
+  applyTheme() {
+    document.body.dataset.theme = this.state.theme
+    document.body.style.setProperty('--blur', (this.props.blurStrength ?? 20) + 'px')
+    document.body.style.setProperty('--acc', this.props.accent ?? '#00C12A')
+  }
+  boot() {
+    clearInterval(this._t)
+    this.setState({ view: 'app', tab: 'home', push: null, loading: true, bal: 0 })
+    setTimeout(() => {
+      this.setState({ loading: false, screenKey: this.state.screenKey + 1 })
+      const t0 = Date.now()
+      this._t = setInterval(() => {
+        const p = Math.min(1, (Date.now() - t0) / 900)
+        this.setState({ bal: Math.round(1250 * (1 - Math.pow(1 - p, 3))) })
+        if (p >= 1) clearInterval(this._t)
+      }, 30)
+    }, 1100)
+  }
+  go(tab) { this.setState({ tab, push: null, pushStack: [], screenKey: this.state.screenKey + 1 }) }
+  openHistory(item) { this.setState({ selHist: item }); this.pushTo('historydetail') }
+  selectCoffee(item) { this.setState({ selCoffee: item }); this.pushTo('coffeeconfirm') }
+  finishCoffeePurchase() { this.setState({ coffeeTab: 'my', push: null, pushStack: [], tab: 'coffee', screenKey: this.state.screenKey + 1 }) }
+  selectMyCoffee(id) { this.setState({ selMyCoffeeId: id }) }
+  setCoffeeTab(t) { this.setState({ coffeeTab: t }) }
+  fmtDate(iso) { const [y,m,d] = iso.split('-'); return `${d}.${m}.${y}` }
+  askRemoveJoinAccount(acc) { this.setState({ confirmRemoveAccount: acc }) }
+  cancelRemoveJoinAccount() { this.setState({ confirmRemoveAccount: null }) }
+  confirmRemoveJoinAccount() {
+    const acc = this.state.confirmRemoveAccount
+    if (acc) this.setState({ joinAccounts: this.state.joinAccounts.filter(a => a.id !== acc.id), confirmRemoveAccount: null })
+  }
+  pickContact(c) {
+    const target = this.state.contactPickTarget
+    const patch = target === 'invite' ? { pickedContactInvite: c } : { pickedContactTransfer: c }
+    this.setState(patch)
+    this.goBackFromLogic()
+  }
+  goBackFromLogic() {
+    const stack = [...this.state.pushStack]
+    const prev = stack.pop()
+    this.setState({ push: prev || null, pushStack: stack, screenKey: this.state.screenKey + 1 })
+  }
+  pushTo(p, fromCoffee) {
+    const stack = this.state.push ? [...this.state.pushStack, this.state.push] : this.state.pushStack
+    this.setState({ push: p, pushStack: stack, successFromCoffee: !!fromCoffee, screenKey: this.state.screenKey + 1 })
+  }
+  startPouring() {
+    this.pushTo('pouring')
+    this.setState({ pourLiters: 0 })
+    clearInterval(this._pourT)
+    const t0 = Date.now()
+    this._pourT = setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / 2400)
+      this.setState({ pourLiters: 20 * p })
+      if (p >= 1) { clearInterval(this._pourT); setTimeout(() => this.pushTo('fuelresult'), 300) }
+    }, 40)
+  }
+  renderVals() {
+    const s = this.state
+    const dark = s.theme === 'dark'
+    const isLogin = s.view === 'login'
+    const isRegister = s.view === 'register'
+    const isApp = s.view === 'app'
+    const titles = { history:'История', pay:'Пополнение баланса', transfer:'Перевод средств', prices:'Цены на топливо', promo:'Акции и бонусы', news:'Новости', about:'О компании', aboutApp:'О приложении', help:'Помощь', contacts:'Контакты', success:'Успешно', scan:'Сканирование', select:'Выбор из списка', settings:'Настройки', delete:'Удаление аккаунта', trktype:'Выбор топлива', liters:'Сумма и литры', coffeemenu:'Меню кофе', coffeeconfirm:'Подтверждение', invite:'Приглашение', invitesent:'Приглашение', pickcontact:'Контакты', fuelconfirm:'Запуск налива', pouring:'Идёт налив', fuelresult:'Итоги налива', historydetail:'Детали операции' }
+    const show = (name) => isApp && !s.loading && !s.push && s.tab === name
+    const pushShow = (name) => isApp && !s.loading && s.push === name
+    const actF = 'brightness(0)'
+    const inactF = dark ? 'brightness(0) invert(1) opacity(.55)' : 'grayscale(1) opacity(.75)'
+    const inactC = dark ? 'rgba(242,246,238,.55)' : 'rgba(10,32,51,.5)'
+    const tab = (name) => {
+      const on = s.tab === name && !s.push
+      return { bg: on ? '#B8F53C' : 'transparent', f: on ? actF : inactF, c: on ? (dark ? '#B8F53C' : '#0A2033') : inactC }
+    }
+    const tf = tab('fuel'), tb = tab('balance'), th = tab('home'), tc = tab('coffee'), tp = tab('profile')
+    return {
+      isLogin, isRegister, isApp,
+      isDark: dark, isLight: !dark,
+      isPush: !!s.push && !s.loading,
+      isMainHeader: isApp && !s.push,
+      pushTitle: titles[s.push] || '',
+      showSkeleton: isApp && s.loading,
+      showHome: show('home'), showFuel: show('fuel'), showBalance: show('balance'),
+      showCoffee: show('coffee'), showProfile: show('profile'),
+      showHistory: pushShow('history'), showPay: pushShow('pay'), showTransfer: pushShow('transfer'),
+      showPrices: pushShow('prices'), showPromo: pushShow('promo'), showNews: pushShow('news'),
+      showAbout: pushShow('about'), showAboutApp: pushShow('aboutApp'), showHelp: pushShow('help'),
+      showContacts: pushShow('contacts'), showSuccess: pushShow('success'),
+      showInvite: pushShow('invite'), showInviteSent: pushShow('invitesent'),
+      hasJoinAccounts: s.joinAccounts.length > 0, hasNoJoinAccounts: s.joinAccounts.length === 0,
+      joinAccounts: [{ id: 1, name: 'Вы', isCreator: true }, ...s.joinAccounts].map(a => ({
+        ...a,
+        bg: a.isCreator ? 'var(--lime)' : 'var(--glass2)',
+        textColor: a.isCreator ? '#0A0E0B' : 'var(--tx)',
+        iconF: a.isCreator ? 'brightness(0)' : 'var(--icf)',
+        canDelete: !a.isCreator,
+        remove: () => this.askRemoveJoinAccount(a),
+      })),
+      confirmRemoveAccount: s.confirmRemoveAccount || null,
+      showRemoveConfirm: !!s.confirmRemoveAccount,
+      cancelRemoveJoinAccount: () => this.cancelRemoveJoinAccount(),
+      confirmRemoveJoinAccount: () => this.confirmRemoveJoinAccount(),
+      showScan: pushShow('scan'), showSelect: pushShow('select'), showSettings: pushShow('settings'), showDelete: pushShow('delete'),
+      showTrkType: pushShow('trktype'), showLiters: pushShow('liters'),
+      showCoffeeMenu: pushShow('coffeemenu'), showCoffeeConfirm: pushShow('coffeeconfirm'),
+      selCoffee: s.selCoffee || {},
+      showFuelConfirm: pushShow('fuelconfirm'), showPouring: pushShow('pouring'), showFuelResult: pushShow('fuelresult'),
+      showHistoryDetail: pushShow('historydetail'),
+      pourLiters: (s.pourLiters ?? 0).toFixed(1),
+      pourDashArray: `${((s.pourLiters ?? 0) / 20) * 402} 402`,
+      selHist: s.selHist || {},
+      scanFoundLabel: s.scanKind === 'coffee' ? 'Кофемашина №3 найдена' : 'АЗС №14, колонка 3 найдена',
+      screenKey: s.screenKey,
+      balText: s.bal.toLocaleString('ru-RU'),
+      themeLabel: dark ? 'Тёмная тема' : 'Светлая тема',
+      switchBg: dark ? '#00C12A' : 'rgba(10,32,51,.2)',
+      switchLeft: dark ? '23px' : '3px',
+      tFuelBg: tf.bg, tFuelF: tf.f, tFuelC: tf.c,
+      tBalBg: tb.bg, tBalF: tb.f, tBalC: tb.c,
+      tHomeBg: th.bg, tHomeF: th.f, tHomeC: th.c,
+      tCofBg: tc.bg, tCofF: tc.f, tCofC: tc.c,
+      tProfBg: tp.bg, tProfF: tp.f, tProfC: tp.c,
+      goHome: () => this.go('home'), goFuel: () => this.go('fuel'), goBalance: () => this.go('balance'),
+      goCoffee: () => this.go('coffee'), goProfile: () => this.go('profile'),
+      goHistory: () => this.pushTo('history'), goPay: () => this.pushTo('pay'), goTransfer: () => this.pushTo('transfer'),
+      goPrices: () => this.pushTo('prices'), goPromo: () => this.pushTo('promo'), goNews: () => this.pushTo('news'),
+      goAbout: () => this.pushTo('about'), goAboutApp: () => this.pushTo('aboutApp'), goHelp: () => this.pushTo('help'),
+      goContacts: () => this.pushTo('contacts'), goSuccess: () => this.pushTo('success'),
+      goInvite: () => this.pushTo('invite'), goInviteSent: () => this.pushTo('invitesent'),
+      goPickContactTransfer: () => { this.setState({ contactPickTarget: 'transfer' }); this.pushTo('pickcontact') },
+      goPickContactInvite: () => { this.setState({ contactPickTarget: 'invite' }); this.pushTo('pickcontact') },
+      pickedContactLabelTransfer: s.pickedContactTransfer ? `${s.pickedContactTransfer.name} · ${s.pickedContactTransfer.phone}` : 'Телефон получателя',
+      pickedContactLabelInvite: s.pickedContactInvite ? `${s.pickedContactInvite.name} · ${s.pickedContactInvite.phone}` : 'Номер телефона пользователя',
+      showPickContact: pushShow('pickcontact'),
+      contactQuery: s.contactQuery || '',
+      onContactQuery: (e) => this.setState({ contactQuery: e.target.value }),
+      contacts: [
+        { name: 'Мария Иванова', phone: '8 900 555 12 34' },
+        { name: 'Дмитрий Соколов', phone: '8 916 222 87 09' },
+        { name: 'Александра Петрова', phone: '8 903 741 60 15' },
+        { name: 'Игорь Смирнов', phone: '8 925 118 43 22' },
+        { name: 'Ольга Кузнецова', phone: '8 999 305 91 47' },
+      ].filter(c => {
+        const q = (s.contactQuery || '').trim().toLowerCase()
+        if (!q) return true
+        return c.name.toLowerCase().includes(q) || c.phone.includes(q)
+      }).map(c => ({ ...c, select: () => this.pickContact(c) })),
+      goCoffeeSuccess: () => this.pushTo('success', true),
+      successGoHome: () => s.successFromCoffee ? this.finishCoffeePurchase() : this.go('home'),
+      successBtnLabel: s.successFromCoffee ? 'Налить кофе' : 'На главную',
+      goScanFuel: () => { this.setState({ scanKind: 'fuel' }); this.pushTo('scan') },
+      goScanCoffee: () => { this.setState({ scanKind: 'coffee' }); this.pushTo('scan') },
+      goSelectFuel: () => { this.setState({ scanKind: 'fuel' }); this.pushTo('select') },
+      goSelectCoffee: () => { this.setState({ scanKind: 'coffee' }); this.pushTo('select') },
+      goScanResult: () => this.pushTo(s.scanKind === 'coffee' ? 'coffeemenu' : 'trktype'),
+      goAfterSelect: () => this.pushTo(s.scanKind === 'coffee' ? 'coffeemenu' : 'trktype'),
+      goTrkType: () => this.pushTo('trktype'), goLiters: () => this.pushTo('liters'),
+      goCoffeeMenu: () => this.pushTo('coffeemenu'),
+      goFuelConfirm: () => this.pushTo('fuelconfirm'), goPouring: () => this.startPouring(),
+      goSettings: () => this.pushTo('settings'), goDelete: () => this.pushTo('delete'),
+      goDeleteConfirm: () => this.setState({ view: 'login', loading: true }),
+      goBack: () => {
+        const stack = [...s.pushStack]
+        const prev = stack.pop()
+        this.setState({ push: prev || null, pushStack: stack, screenKey: s.screenKey + 1 })
+      },
+      goRegister: () => this.setState({ view: 'register' }),
+      goLogin: () => this.setState({ view: 'login' }),
+      toggleTheme: () => this.setState({ theme: dark ? 'light' : 'dark' }),
+      doLogin: () => this.boot(),
+      doLogout: () => this.setState({ view: 'login', loading: true }),
+      history: (() => {
+        const items = [
+          { title:'Заправка АИ-95', date:'14.07.2026 18:32', sum:'-1 200', color:'#FF6B54', isFuel:true,
+            rows:[{k:'АЗС',v:'№14 — Садовая, 8'},{k:'Топливо',v:'АИ-95 · Колонка 3'},{k:'Литры',v:'20.7 л'},{k:'Списано',v:'1 200 ₽'}] },
+          { title:'Пополнение баланса', date:'13.07.2026 09:14', sum:'+3 000', color:'#12C85B', isWallet:true,
+            rows:[{k:'Способ',v:'СБП'},{k:'Банк',v:'Тинькофф'},{k:'Зачислено',v:'3 000 ₽'}] },
+          { title:'Кофе Капучино', date:'12.07.2026 08:02', sum:'-120', color:'#FF6B54', isCoffee:true,
+            rows:[{k:'Напиток',v:'Капучино M'},{k:'АЗС',v:'№12 — Ленинский пр., 45'},{k:'Списано',v:'120 ₽'}] },
+          { title:'Перевод средств', date:'10.07.2026 20:47', sum:'-500', color:'#FF6B54', isPerson:true,
+            rows:[{k:'Получатель',v:'8 900 555 12 34'},{k:'Списано',v:'500 бонусов'}] },
+        ]
+        return items.map(it => ({ ...it, open: () => this.openHistory(it) }))
+      })(),
+      prices: [
+        { code:'АИ-92', name:'Бензин АИ-92', price:'52,40', bg:'#B8F53C' },
+        { code:'АИ-95', name:'Бензин АИ-95', price:'57,80', bg:'#B8F53C' },
+        { code:'АИ-98', name:'Бензин АИ-98', price:'68,10', bg:'#B8F53C' },
+        { code:'ДТ', name:'Дизельное топливо', price:'62,90', bg:'#9BD3FF' },
+      ],
+      homeNews: [
+        { date: '15 июля', title: 'Новая АЗС на трассе М-4' },
+        { date: '8 июля', title: 'Летний кешбэк 5% бонусами' },
+        { date: '1 июля', title: 'Обновление приложения' },
+      ],
+      news: [
+        { date:'15 июля 2026', title:'Новая АЗС на трассе М-4', text:'Открыли 121-ю станцию с кофейней и мойкой.' },
+        { date:'8 июля 2026', title:'Летний кешбэк 5%', text:'Возвращаем бонусами за каждую заправку до конца месяца.' },
+        { date:'1 июля 2026', title:'Обновление приложения', text:'Новый дизайн, тёмная тема и быстрый QR на кассе.' },
+      ],
+      stations: [
+        { name: 'АЗС №12 — Ленинский пр., 45', addr: s.scanKind === 'coffee' ? 'Кофемашина у кассы' : 'Колонка 1–6', dist: '0.4 км' },
+        { name: 'АЗС №14 — Садовая, 8', addr: s.scanKind === 'coffee' ? 'Кофемашина у входа' : 'Колонка 1–8', dist: '1.1 км' },
+        { name: 'АЗС №21 — Трасса М-4, 302 км', addr: s.scanKind === 'coffee' ? 'Кофемашина в магазине' : 'Колонка 1–4', dist: '3.6 км' },
+        { name: 'АЗС №27 — Проспект Мира, 110', addr: s.scanKind === 'coffee' ? 'Кофемашина у кассы' : 'Колонка 1–10', dist: '5.2 км' },
+      ],
+      liters: s.liters,
+      litersLabel: s.liters.toFixed(1) + ' л',
+      sumLabel: Math.round(s.liters * 57.8).toLocaleString('ru-RU') + ' ₽',
+      litersInput: s.liters,
+      sumInput: Math.round(s.liters * 57.8),
+      isLitersMode: s.litersMode === 'liters', isSumMode: s.litersMode === 'sum',
+      litersModeBg: s.litersMode === 'liters' ? 'var(--lime)' : 'transparent',
+      litersModeC: s.litersMode === 'liters' ? '#0A0E0B' : 'var(--tx2)',
+      sumModeBg: s.litersMode === 'sum' ? 'var(--lime)' : 'transparent',
+      sumModeC: s.litersMode === 'sum' ? '#0A0E0B' : 'var(--tx2)',
+      chip10: s.liters === 10 ? 'var(--lime)' : 'var(--glass)', chip10C: s.liters === 10 ? '#0A0E0B' : 'var(--tx)',
+      chip20: s.liters === 20 ? 'var(--lime)' : 'var(--glass)', chip20C: s.liters === 20 ? '#0A0E0B' : 'var(--tx)',
+      chip30: s.liters === 30 ? 'var(--lime)' : 'var(--glass)', chip30C: s.liters === 30 ? '#0A0E0B' : 'var(--tx)',
+      chipFullBg: s.liters === 45 ? 'var(--lime)' : 'var(--glass)', chipFullC: s.liters === 45 ? '#0A0E0B' : 'var(--tx)',
+      setLitersMode: () => this.setState({ litersMode: 'liters' }),
+      setSumMode: () => this.setState({ litersMode: 'sum' }),
+      setLiters10: () => this.setState({ liters: 10 }), setLiters20: () => this.setState({ liters: 20 }),
+      setLiters30: () => this.setState({ liters: 30 }), setLitersFull: () => this.setState({ liters: 45 }),
+      onSlide: (e) => this.setState({ liters: parseFloat(e.target.value) }),
+      onLitersInput: (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) this.setState({ liters: v }) },
+      onSumInput: (e) => { const v = parseFloat(e.target.value); if (!isNaN(v)) this.setState({ liters: v / 57.8 }) },
+      isCoffeeTabMy: s.coffeeTab === 'my', isCoffeeTabBuy: s.coffeeTab === 'buy',
+      coffeeTabMyBg: s.coffeeTab === 'my' ? 'var(--lime)' : 'transparent', coffeeTabMyC: s.coffeeTab === 'my' ? '#0A0E0B' : 'var(--tx2)',
+      coffeeTabBuyBg: s.coffeeTab === 'buy' ? 'var(--lime)' : 'transparent', coffeeTabBuyC: s.coffeeTab === 'buy' ? '#0A0E0B' : 'var(--tx2)',
+      setCoffeeTabMy: () => this.setCoffeeTab('my'), setCoffeeTabBuy: () => this.setCoffeeTab('buy'),
+      dateFrom: s.dateFrom, dateTo: s.dateTo,
+      dateFromLabel: this.fmtDate(s.dateFrom), dateToLabel: this.fmtDate(s.dateTo),
+      onDateFrom: (e) => this.setState({ dateFrom: e.target.value }),
+      onDateTo: (e) => this.setState({ dateTo: e.target.value }),
+      dateFromRef: this.dateFromRef || (this.dateFromRef = React.createRef()),
+      dateToRef: this.dateToRef || (this.dateToRef = React.createRef()),
+      openDateFrom: (e) => { try { e.target.showPicker && e.target.showPicker() } catch (err) {} },
+      openDateTo: (e) => { try { e.target.showPicker && e.target.showPicker() } catch (err) {} },
+      hasMyCoffee: true,
+      myCoffee: (() => {
+        const list = [ { id: 1, name: 'Капучино M', date: 'до 30.07', machine: 'АЗС №12 — кофемашина у кассы' }, { id: 2, name: 'Латте M', date: 'до 02.08', machine: 'АЗС №14 — кофемашина у входа' } ]
+        return list.map(it => ({ ...it, bg: it.id === s.selMyCoffeeId ? 'var(--glass2)' : 'transparent', select: () => this.selectMyCoffee(it.id) }))
+      })(),
+      selMyCoffee: [{ id: 1, name: 'Капучино M' }, { id: 2, name: 'Латте M' }].find(c => c.id === s.selMyCoffeeId) || {},
+      coffeeItems: [
+        { name: 'Капучино S', size: '200 мл', price: 140 },
+        { name: 'Капучино M', size: '300 мл', price: 180 },
+        { name: 'Капучино L', size: '400 мл', price: 210 },
+        { name: 'Латте M', size: '300 мл', price: 190 },
+        { name: 'Американо M', size: '300 мл', price: 140 },
+        { name: 'Раф M', size: '300 мл', price: 210 },
+      ].map(it => ({ ...it, select: () => this.selectCoffee(it) })),
+      faq: [
+        { q:'Как накопить бонусы?', a:'Показывайте свой QR-код на кассе при каждой покупке — бонусы начислятся автоматически.' },
+        { q:'Как оплатить топливо бонусами?', a:'На кассе сообщите кассиру, что хотите списать бонусы, и покажите код.' },
+        { q:'Не приходит SMS с кодом', a:'Проверьте номер и подождите минуту. Если код не пришёл — запросите повторно или войдите звонком.' },
+      ],
+    }
+  }
+}
+</script>
+</body>
+</html>

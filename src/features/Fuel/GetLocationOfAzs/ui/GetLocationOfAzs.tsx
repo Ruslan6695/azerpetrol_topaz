@@ -3,10 +3,11 @@ import { memo, useCallback, useEffect, useState } from 'react'
 import {
     IAzs,
     PermissionsStatuses,
+    ThemeStore,
     useGetLocationPermission,
 } from '../../../../shared'
 import { CustomButton } from '../../../../shared/CustomButton'
-import { LocationIcon } from '../../../../shared/LocationIcon'
+import { Icon } from '../../../../shared/Icons'
 import { ToastBlock } from '../../../../shared/ToastBlock'
 import { getLocationOfAzsApi } from '../api/getLocationOfAzsApi'
 import * as Location from 'expo-location'
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const { locationPermission, fetchLocationOnPress } =
         useGetLocationPermission()
     const [fetchError, setFetchError] = useState<string | null>('')
@@ -53,7 +55,13 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
         return (
             <>
                 <ToastBlock
-                    icon={<LocationIcon size={25} white />}
+                    icon={
+                        <Icon
+                            name="location"
+                            size={16}
+                            color={COLORS.STATE.Destructive}
+                        />
+                    }
                     text="Для автоматического выбора АЗС рекомендуем включить геолокацию"
                     styled={{
                         marginsPaddings: { mb: 10 },
@@ -78,7 +86,13 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
     if (fetchError) {
         return (
             <ToastBlock
-                icon={<LocationIcon size={25} white />}
+                icon={
+                    <Icon
+                        name="location"
+                        size={16}
+                        color={COLORS.STATE.Destructive}
+                    />
+                }
                 text={fetchError}
                 styled={{
                     marginsPaddings: { mb: 30 },
@@ -92,7 +106,13 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
     if (fetchAzsIsLoading) {
         return (
             <ToastBlock
-                icon={<LocationIcon size={25} white />}
+                icon={
+                    <Icon
+                        name="location"
+                        size={16}
+                        color={COLORS.ACCENT.Primary}
+                    />
+                }
                 text={`Идет определение Азс...\nПожалуйста, подождите.`}
                 styled={{
                     marginsPaddings: { mb: 30 },
