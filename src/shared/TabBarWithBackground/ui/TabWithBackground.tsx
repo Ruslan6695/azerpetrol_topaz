@@ -1,12 +1,12 @@
 import { memo, useCallback, useMemo } from 'react'
 import { StyleSheet } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
+import { PRESS_SCALE } from '../../common/config/constants/PRESS_SCALE'
+import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
-import { ITabWithBackground } from '../config/interfaces/ITabWithBackground'
-import { Typography } from '../../Typography'
 import { ThemeStore } from '../../common/model/themeStore'
-import { EColorThemes } from '../../common/config/enums/EColorThemes'
+import { PressableScale } from '../../PressableScale'
+import { Typography } from '../../Typography'
+import { ITabWithBackground } from '../config/interfaces/ITabWithBackground'
 
 interface IProps extends ITabWithBackground {
     isFirst: boolean
@@ -15,55 +15,47 @@ interface IProps extends ITabWithBackground {
     onPress: (tab: ITabWithBackground) => void
 }
 
+// Сегмент-контрол макета: активный сегмент — лаймовая пилюля с тёмным текстом,
+// неактивный — прозрачный. isFirst/isLast больше не нужны (все сегменты — пилюли),
+// но остаются в сигнатуре, чтобы не трогать вызывающие места.
 export const TabWithBackground = memo(
-    ({ label, value, isFirst, isLast, isSelected, onPress }: IProps) => {
+    ({ label, value, isSelected, onPress }: IProps) => {
         const COLORS = ThemeStore.useCOLORS()
-        const colorTheme = ThemeStore.useTheme()
         const styles = useMemo(
             () =>
                 StyleSheet.create({
                     container: {
                         flex: 1,
                         alignItems: 'center',
-                        paddingVertical: SIZES.PX * 15,
+                        justifyContent: 'center',
+                        paddingVertical: 10 * SIZES.PX,
+                        borderRadius: RADII.PILL,
                         backgroundColor: isSelected
-                            ? COLORS.BRAND.Primary
-                            : COLORS.BACKGROUND.Tertiary,
-                        borderTopLeftRadius: isFirst
-                            ? 10 * SIZES.PX
-                            : undefined,
-                        borderBottomLeftRadius: isFirst
-                            ? 10 * SIZES.PX
-                            : undefined,
-                        borderTopRightRadius: isLast
-                            ? 10 * SIZES.PX
-                            : undefined,
-                        borderBottomRightRadius: isLast
-                            ? 10 * SIZES.PX
-                            : undefined,
+                            ? COLORS.ACCENT.Lime
+                            : 'transparent',
                     },
                 }),
-            [COLORS, isFirst, isSelected, isLast]
+            [COLORS, isSelected]
         )
         const handlePress = useCallback(() => {
             onPress({ label, value })
         }, [value, label, onPress])
+
         return (
-            <CustomTouchableOpacity
+            <PressableScale
                 onPress={handlePress}
-                activeOpacity={0.7}
+                scaleTo={PRESS_SCALE.CHIP}
                 style={styles.container}
             >
                 <Typography
-                    color={
-                        colorTheme === EColorThemes.LIGHT && isSelected
-                            ? 'invert'
-                            : undefined
+                    type="label13"
+                    customColor={
+                        isSelected ? COLORS.ACCENT.OnLime : COLORS.TEXT.Secondary
                     }
                 >
-                    {label.toUpperCase()}
+                    {label}
                 </Typography>
-            </CustomTouchableOpacity>
+            </PressableScale>
         )
     }
 )

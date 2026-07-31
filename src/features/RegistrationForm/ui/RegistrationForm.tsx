@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router'
-import { memo, useRef } from 'react'
-import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
-import { ESCREENS } from '../../../shared'
-import { CustomButton } from '../../../shared/CustomButton'
-import { CustomInput } from '../../../shared/CustomInput'
+import { memo, useCallback, useRef } from 'react'
+import { ESCREENS, ThemeStore } from '../../../shared'
+import { GlassInput } from '../../../shared/GlassInput'
+import { Icon } from '../../../shared/Icons'
+import { LinkButton } from '../../../shared/LinkButton'
+import { PillButton } from '../../../shared/PillButton'
 
 type Props = {
     onChangePhoneValue: (value: string) => void
@@ -12,9 +13,17 @@ type Props = {
     nameValue: string
     onChangeSurnameValue: (value: string) => void
     surnameValue: string
-    onSubmitRegistration: () =>void
+    onSubmitRegistration: () => void
+    /** Отправка в полёте — индикатор в кнопке */
+    isLoading?: boolean
+    /** Способы подтверждения ещё грузятся — сабмит запрещён, но без индикатора */
+    disabled?: boolean
 }
 
+const PHONE_LENGTH = 11
+
+// Макет рисует два поля — имя и телефон, но registration/ и callcheck-инициация
+// требуют name и surname раздельно, поэтому фамилия остаётся отдельным полем.
 export const RegistrationForm = memo(
     ({
         onChangePhoneValue,
@@ -24,78 +33,96 @@ export const RegistrationForm = memo(
         onChangeSurnameValue,
         surnameValue,
         onSubmitRegistration,
+        isLoading,
+        disabled,
     }: Props) => {
         const router = useRouter()
-        const ref1 = useRef<any>()
-        const ref2 = useRef<any>()
+        const COLORS = ThemeStore.useCOLORS()
+        const surnameRef = useRef<any>(null)
+        const phoneRef = useRef<any>(null)
+
+        const handleFocusSurname = useCallback(() => {
+            surnameRef.current?.getElement()?.focus()
+        }, [])
+
+        const handleFocusPhone = useCallback(() => {
+            phoneRef.current?.getElement()?.focus()
+        }, [])
+
+        const handleGoToLogin = useCallback(() => {
+            router.navigate(ESCREENS.LOGIN)
+        }, [router])
+
+        const isSubmitDisabled =
+            disabled ||
+            phoneValue.length < PHONE_LENGTH ||
+            nameValue.length === 0 ||
+            surnameValue.length === 0
 
         return (
             <>
-                <CustomInput
+                <GlassInput
+                    icon={
+                        <Icon
+                            name="person"
+                            size={20}
+                            color={COLORS.Icon.Secondary}
+                            opacity={0.6}
+                        />
+                    }
                     returnKeyType="next"
-                    onSubmitEditing={() => {
-                        if (ref1.current) {
-                            ref1.current.getElement().focus()
-                        }
-                    }}
-                    placeholder="Имя"
-                    styled={{
-                        marginsPaddings: { mb: 10 },
-                        width: { type: 'absolute', value: '100%' },
-                    }}
+                    onSubmitEditing={handleFocusSurname}
+                    placeholder="Ваше имя"
                     value={nameValue}
                     onChangeText={onChangeNameValue}
                 />
-                <CustomInput
+
+                <GlassInput
+                    ref={surnameRef}
+                    icon={
+                        <Icon
+                            name="person"
+                            size={20}
+                            color={COLORS.Icon.Secondary}
+                            opacity={0.6}
+                        />
+                    }
                     returnKeyType="next"
-                    onSubmitEditing={() => {
-                        if (ref2.current) {
-                            ref2.current.getElement().focus()
-                        }
-                    }}
-                    ref={ref1}
+                    onSubmitEditing={handleFocusPhone}
                     placeholder="Фамилия"
-                    styled={{
-                        width: { type: 'absolute', value: '100%' },
-                    }}
                     value={surnameValue}
                     onChangeText={onChangeSurnameValue}
                 />
-                <CustomInput
-                    styled={{
-                        width: { type: 'absolute', value: '100%' },
-                        marginsPaddings: { mt: 10, mb: 16 },
-                    }}
+
+                <GlassInput
+                    ref={phoneRef}
+                    icon={
+                        <Icon
+                            name="phone"
+                            size={20}
+                            color={COLORS.Icon.Secondary}
+                            opacity={0.6}
+                        />
+                    }
+                    keyboardType="numeric"
                     onSubmitEditing={onSubmitRegistration}
-                    ref={ref2}
                     mask="8 999 999 99 99"
                     placeholder="Номер телефона"
                     value={phoneValue}
                     onChangeText={onChangePhoneValue}
                 />
-                <CustomButton
+
+                <PillButton
+                    title="Зарегистрироваться"
                     onPress={onSubmitRegistration}
-                    styled={{
-                        borderRadius: 1000,
-                        width: { type: 'absolute', value: '100%' },
-                    }}
-                >
-                    Зарегистрироваться
-                </CustomButton>
-                <ButtonsSeparator />
-                <CustomButton
-                    onPress={() => {
-                        router.navigate(ESCREENS.LOGIN)
-                    }}
-                    styled={{
-                        borderRadius: 1000,
-                        type: 'secondary',
-                        height: { value: 56 },
-                        width: { type: 'absolute', value: '100%' },
-                    }}
-                >
-                    Войти
-                </CustomButton>
+                    loading={isLoading}
+                    disabled={isSubmitDisabled}
+                />
+
+                <LinkButton
+                    title="У меня уже есть аккаунт"
+                    onPress={handleGoToLogin}
+                />
             </>
         )
     }

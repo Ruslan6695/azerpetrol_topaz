@@ -1,7 +1,7 @@
-import React from 'react'
+import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import WebView from 'react-native-webview'
-import { COLORS_DARK, SIZES } from '../../../shared'
+import { SIZES, ThemeStore } from '../../../shared'
 
 type Props = {
     onSubmitCaptcha: ({
@@ -13,10 +13,27 @@ type Props = {
     }) => void
 }
 
-export const GetCaptcha = ({ onSubmitCaptcha }: Props) => {
+// Виджет Yandex SmartCaptcha рисует собственную разметку и к токенам макета
+// не приводится — в макете экрана капчи нет вовсе. Задаём ему только фон
+// по теме, иначе в тёмной теме получаем белую вспышку на пол-экрана.
+export const GetCaptcha = memo(({ onSubmitCaptcha }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
+
+    const styles = StyleSheet.create({
+        container: {
+            height: SIZES.HEIGHT(0.62),
+            width: SIZES.WIDTH(1),
+            backgroundColor: COLORS.BACKGROUND.Primary,
+        },
+        webView: {
+            backgroundColor: COLORS.BACKGROUND.Primary,
+        },
+    })
+
     return (
         <View style={styles.container}>
             <WebView
+                style={styles.webView}
                 onMessage={async (event: any) => {
                     if (event.nativeEvent.data) {
                         onSubmitCaptcha({
@@ -32,11 +49,4 @@ export const GetCaptcha = ({ onSubmitCaptcha }: Props) => {
             />
         </View>
     )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        height: SIZES.HEIGHT(0.8),
-        width: SIZES.WIDTH(1),
-    },
 })

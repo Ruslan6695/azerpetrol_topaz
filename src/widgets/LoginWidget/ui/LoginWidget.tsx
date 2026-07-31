@@ -1,5 +1,4 @@
 import { memo, useCallback, useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import { LoginForm } from '../../../features/LoginForm'
 import { SendSmsCallCodeForm } from '../../../features/SendSmsCallCodeForm'
 import { SendCallcheckWait } from '../../../features/SendCallcheckWait'
@@ -7,23 +6,25 @@ import {
     authMethodsApi,
     EAuthMethod,
     IUser,
+    TAuthStep,
     useFetchData,
     UserStore,
     useSendFetch,
 } from '../../../shared'
 import { useInput } from '../../../shared/CustomInput'
-import { Loader } from '../../../shared/Loader'
 import { showError } from '../../../shared/ToastComponent'
 import { loginWidgetApi } from '../api/loginWidgetApi'
 import { GetCaptcha } from '../../../features/GetCaptcha'
-import { LoginRegistrationLayout } from '../../../layouts/LoginRegistrationLayout'
 import { useFocusEffect } from 'expo-router'
 
-type Props = {}
+type Props = {
+    /** Экран решает по шагу, показывать ли шапку с вордмарком */
+    onStepChange?: (step: TAuthStep) => void
+}
 
 const DEFAULT_METHODS: EAuthMethod[] = [EAuthMethod.Call, EAuthMethod.Sms]
 
-export const LoginWidget = memo((props: Props) => {
+export const LoginWidget = memo(({ onStepChange }: Props) => {
     const [road, setRoad] = useState<'phoneInput' | 'confirm' | 'captcha'>(
         'phoneInput'
     )
@@ -167,8 +168,7 @@ export const LoginWidget = memo((props: Props) => {
 
     const handleCallcheckRetry = useCallback(() => {
         setCaptchaValue('')
-        const captchaDisabled =
-            captchaEnabledData?.show_captcha === false
+        const captchaDisabled = captchaEnabledData?.show_captcha === false
         if (captchaDisabled) {
             handleSubmitCaptcha({ method: EAuthMethod.Callcheck })
         } else {
@@ -206,58 +206,68 @@ export const LoginWidget = memo((props: Props) => {
         }, [])
     )
 
-    const isLoading = isSendCodeLoading || isLoginLoading || methodsLoading
+    // Загрузка больше не подменяет содержимое шита целиком — иначе шит
+    // схлопывается до высоты лоадера и прыгает. Индикатор живёт в кнопке формы.
+    // methodsLoading идёт отдельно: пока способы входа не приехали, сабмит
+    // запрещён, но крутить спиннер на холодном старте незачем.
+    const isLoading = isSendCodeLoading || isLoginLoading
+
+    useEffect(() => {
+        onStepChange?.(road === 'phoneInput' ? 'form' : road)
+    }, [road, onStepChange])
+
+    if (road === 'captcha') {
+        return (
+            <GetCaptcha
+                onSubmitCaptcha={({ captchaToken }) => {
+                    handleSubmitCaptcha({ captchaToken })
+                }}
+            />
+        )
+    }
+
+    if (road === 'phoneInput') {
+        return (
+            <LoginForm
+                isLoading={isLoading}
+                disabled={methodsLoading}
+                onSubmit={
+                    captchaEnabledData &&
+                    captchaEnabledData?.show_captcha === false
+                        ? async () => {
+                              await handleSubmitCaptcha({})
+                          }
+                        : handleSubmitLogin
+                }
+                phoneValue={phoneValue}
+                onChangePhoneValue={handleChangePhoneValue}
+            />
+        )
+    }
+
+    if (currentMethod === EAuthMethod.Callcheck) {
+        return (
+            <SendCallcheckWait
+                mode="login"
+                phone={phoneValue}
+                captchaToken={captchaValue}
+                fallbackMethod={fallbackMethod}
+                onSuccess={handleCallcheckSuccess}
+                onFallback={handleCallcheckFallback}
+                onCancel={handleCallcheckCancel}
+                onRetry={handleCallcheckRetry}
+            />
+        )
+    }
 
     return (
-        <LoginRegistrationLayout hideLogo={road === 'captcha'}>
-            {isLoading ? (
-                <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
-            ) : road === 'phoneInput' ? (
-                <LoginForm
-                    onSubmit={
-                        captchaEnabledData &&
-                        captchaEnabledData?.show_captcha === false
-                            ? async () => {
-                                  await handleSubmitCaptcha({})
-                              }
-                            : handleSubmitLogin
-                    }
-                    phoneValue={phoneValue}
-                    onChangePhoneValue={handleChangePhoneValue}
-                />
-            ) : road === 'captcha' ? (
-                <GetCaptcha
-                    onSubmitCaptcha={({ captchaToken }) => {
-                        handleSubmitCaptcha({ captchaToken })
-                    }}
-                />
-            ) : currentMethod === EAuthMethod.Callcheck ? (
-                <SendCallcheckWait
-                    mode="login"
-                    phone={phoneValue}
-                    captchaToken={captchaValue}
-                    fallbackMethod={fallbackMethod}
-                    onSuccess={handleCallcheckSuccess}
-                    onFallback={handleCallcheckFallback}
-                    onCancel={handleCallcheckCancel}
-                    onRetry={handleCallcheckRetry}
-                />
-            ) : (
-                <SendSmsCallCodeForm
-                    confirmationType={
-                        currentMethod === EAuthMethod.Sms ? 'sms' : 'call'
-                    }
-                    onToggleConfirmationType={handleToggleConfirmationType}
-                    onSend={handleSubmitCode}
-                />
-            )}
-        </LoginRegistrationLayout>
+        <SendSmsCallCodeForm
+            isLoading={isLoading}
+            confirmationType={
+                currentMethod === EAuthMethod.Sms ? 'sms' : 'call'
+            }
+            onToggleConfirmationType={handleToggleConfirmationType}
+            onSend={handleSubmitCode}
+        />
     )
-})
-
-const styles = StyleSheet.create({
-    logo: {
-        top: '-100%',
-        position: 'absolute',
-    },
 })

@@ -1,35 +1,44 @@
-import React, { useCallback } from 'react'
-import { CustomButton } from '../../../shared/CustomButton'
-import { CustomInput, useInput } from '../../../shared/CustomInput'
+import { memo, useCallback } from 'react'
+import { GlassInput } from '../../../shared/GlassInput'
+import { PillButton } from '../../../shared/PillButton'
 import { Typography } from '../../../shared/Typography'
+import { useInput } from '../../../shared/CustomInput'
+
+const CODE_LENGTH = 4
 
 type Props = {
     onSubmit: (smsCode: string) => void
+    isLoading?: boolean
 }
 
-export const SendSmsCode = ({ onSubmit }: Props) => {
+export const SendSmsCode = memo(({ onSubmit, isLoading }: Props) => {
     const { handleChangeInputValue, inputValue } = useInput()
 
     const handleSubmit = useCallback(() => {
         onSubmit(inputValue)
     }, [onSubmit, inputValue])
+
     return (
         <>
-            <Typography textAlign="center">
+            <Typography type="body14" color="secondary" textAlign="center">
                 Мы отправили СМС на ваш номер телефона. Введите код из СМС.
             </Typography>
-            <CustomInput
+
+            <GlassInput
                 onSubmitEditing={handleSubmit}
-                keyboardType="numeric"
-                maxLength={4}
-                styled={{
-                    marginsPaddings: { mt: 20, mb: 16 },
-                }}
+                keyboardType="number-pad"
+                maxLength={CODE_LENGTH}
                 value={inputValue}
                 onChangeText={handleChangeInputValue}
                 placeholder="Код из СМС"
             />
-            <CustomButton onPress={handleSubmit}>Подтвердить</CustomButton>
+
+            <PillButton
+                title="Подтвердить"
+                onPress={handleSubmit}
+                loading={isLoading}
+                disabled={inputValue.length < CODE_LENGTH}
+            />
         </>
     )
-}
+})

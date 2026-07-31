@@ -1,60 +1,69 @@
 import { useRouter } from 'expo-router'
-import { memo } from 'react'
-import { COLORS, ESCREENS, SIZES } from '../../../shared'
-import { CustomButton } from '../../../shared/CustomButton'
-import { CustomInput } from '../../../shared/CustomInput'
-import { PhoneIcon } from '../../../shared/PhoneIcon'
-import { StyleSheet, View } from 'react-native'
-import { Typography } from '../../../shared/Typography'
-import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
+import { memo, useCallback } from 'react'
+import { ESCREENS, ThemeStore } from '../../../shared'
+import { GlassInput } from '../../../shared/GlassInput'
+import { Icon } from '../../../shared/Icons'
+import { PillButton } from '../../../shared/PillButton'
 
 type Props = {
     onChangePhoneValue: (value: string) => void
     phoneValue: string
-    onSubmit: () => Promise<void>
+    onSubmit: () => void
+    /** Отправка в полёте — индикатор в кнопке */
+    isLoading?: boolean
+    /** Способы входа ещё грузятся — сабмит запрещён, но без индикатора */
+    disabled?: boolean
 }
 
+// Маска «8 999 999 99 99» — 11 цифр, пробелы GlassInput вырезает сам
+const PHONE_LENGTH = 11
+
 export const LoginForm = memo(
-    ({ phoneValue, onChangePhoneValue, onSubmit }: Props) => {
+    ({
+        phoneValue,
+        onChangePhoneValue,
+        onSubmit,
+        isLoading,
+        disabled,
+    }: Props) => {
         const router = useRouter()
+        const COLORS = ThemeStore.useCOLORS()
+
+        const handleGoToRegistration = useCallback(() => {
+            router.navigate(ESCREENS.REGISTRATION)
+        }, [router])
 
         return (
             <>
-                <CustomInput
+                <GlassInput
+                    icon={
+                        <Icon
+                            name="phone"
+                            size={20}
+                            color={COLORS.Icon.Secondary}
+                            opacity={0.6}
+                        />
+                    }
                     keyboardType="numeric"
                     onSubmitEditing={onSubmit}
                     mask="8 999 999 99 99"
                     value={phoneValue}
                     onChangeText={onChangePhoneValue}
                     placeholder="Ваш номер телефона"
-                    styled={{
-                        width: { type: 'absolute', value: '100%' },
-                    }}
                 />
-                <CustomButton
-                    onPress={onSubmit}
-                    styled={{
-                        borderRadius: 1000,
-                        marginsPaddings: { mt: 16 },
-                        width: { type: 'absolute', value: '100%' },
-                    }}
-                >
-                    Войти
-                </CustomButton>
-                <ButtonsSeparator />
-                <CustomButton
-                    onPress={() => {
-                        router.navigate(ESCREENS.REGISTRATION)
-                    }}
-                    styled={{
-                        borderRadius: 1000,
 
-                        type: 'secondary',
-                        width: { type: 'absolute', value: '100%' },
-                    }}
-                >
-                    Зарегистрироваться
-                </CustomButton>
+                <PillButton
+                    title="Войти"
+                    onPress={onSubmit}
+                    loading={isLoading}
+                    disabled={disabled || phoneValue.length < PHONE_LENGTH}
+                />
+
+                <PillButton
+                    title="Зарегистрироваться"
+                    variant="secondary"
+                    onPress={handleGoToRegistration}
+                />
             </>
         )
     }

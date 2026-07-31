@@ -1,43 +1,66 @@
-import * as Device from 'expo-device'
 import { usePathname, useRouter } from 'expo-router'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { EDeviceOsNames, SCREENS_TITLES, SIZES } from '../../../shared'
-import { BackIcon } from '../../../shared/BackIcon'
-import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
+import {
+    PRESS_SCALE,
+    RADII,
+    SCREENS_TITLES,
+    SIZES,
+    ThemeStore,
+} from '../../../shared'
+import { Glass } from '../../../shared/GlassCard'
+import { PressableScale } from '../../../shared/PressableScale'
 import { Typography } from '../../../shared/Typography'
+
 type Props = {}
+
+const BACK_SIZE = 38
 
 export const InternalPagesHeader = memo(({}: Props) => {
     const router = useRouter()
     const pathname = usePathname()
+    const COLORS = ThemeStore.useCOLORS()
+
+    const handleBack = useCallback(() => {
+        router.back()
+    }, [router])
+
     const styles = StyleSheet.create({
         container: {
             flexDirection: 'row',
-            height: Device.osName === EDeviceOsNames.IOS ? 120 : 100 * SIZES.PX,
-            paddingTop:
-                Device.osName === EDeviceOsNames.IOS ? 30 : 0 * SIZES.PX,
-            paddingRight: SIZES.PX * 20,
             alignItems: 'center',
+            gap: 12 * SIZES.PX,
+            paddingTop: 10 * SIZES.PX,
+            paddingBottom: 12 * SIZES.PX,
+            paddingHorizontal: 20 * SIZES.PX,
         },
-        backButton: {
-            padding: 20 * SIZES.PX,
-            marginRight: SIZES.PX * 30,
+        back: {
+            width: BACK_SIZE * SIZES.PX,
+            height: BACK_SIZE * SIZES.PX,
+            alignItems: 'center',
+            justifyContent: 'center',
         },
     })
+
     return (
         <View style={styles.container}>
-            <CustomTouchableOpacity
-                onPress={() => {
-                    router.back()
-                }}
-                style={styles.backButton}
-            >
-                <BackIcon />
-            </CustomTouchableOpacity>
-            <Typography type="displaySmall">
-                {SCREENS_TITLES[pathname]}
-            </Typography>
+            <PressableScale onPress={handleBack} scaleTo={PRESS_SCALE.BACK}>
+                <Glass
+                    level="secondary"
+                    radius={(BACK_SIZE / 2) * SIZES.PX}
+                >
+                    <View style={styles.back}>
+                        <Typography
+                            type="num16"
+                            customColor={COLORS.TEXT.Primary}
+                        >
+                            ←
+                        </Typography>
+                    </View>
+                </Glass>
+            </PressableScale>
+
+            <Typography type="num18">{SCREENS_TITLES[pathname]}</Typography>
         </View>
     )
 })

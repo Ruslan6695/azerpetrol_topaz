@@ -1,14 +1,3 @@
-export type TTypographyTypes =
-    | 'displayLarge'
-    | 'displayMedium'
-    | 'displaySmall'
-    | 'headlineMedium'
-    | 'headlineSmall'
-    | 'bodyLarge'
-    | 'bodyMedium'
-    | 'bodySmall'
-    | 'bodyAccentLarge'
-    | 'bodyAccentMedium'
-    | 'bodyAccentSmall'
-    | 'caption'
-    | 'captionAccent'
+import { TYPOGRAPHY_SCALE } from '../constants/TYPOGRAPHY_SCALE'
+
+export type TTypographyTypes = keyof typeof TYPOGRAPHY_SCALE

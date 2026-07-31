@@ -1,72 +1,76 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
-import { CustomButton } from '../../../shared/CustomButton'
-import { CustomInput, useInput } from '../../../shared/CustomInput'
-import { DisabledIcon } from '../../../shared/DisabledIcon'
-import { showError } from '../../../shared/ToastComponent'
+import { memo, useCallback, useEffect, useState } from 'react'
+import { GlassInput } from '../../../shared/GlassInput'
+import { PillButton } from '../../../shared/PillButton'
 import { Typography } from '../../../shared/Typography'
+import { useInput } from '../../../shared/CustomInput'
+
+const CODE_LENGTH = 4
+const SMS_UNLOCK_SEC = 30
 
 type Props = {
     sendSms: () => void
     onSendCode: (smsCode: string) => void
+    isLoading?: boolean
 }
 
-export const SendPhoneCallCode = memo(({ sendSms, onSendCode }: Props) => {
-    const { handleChangeInputValue, inputValue } = useInput()
-    const [timerToSms, setTimerToSms] = useState(30)
-    const intervalToSmsRef = useRef<any>(null)
-    const handleSubmit = useCallback(() => {
-        if (inputValue.length <= 4) {
+export const SendPhoneCallCode = memo(
+    ({ sendSms, onSendCode, isLoading }: Props) => {
+        const { handleChangeInputValue, inputValue } = useInput()
+        const [timerToSms, setTimerToSms] = useState(SMS_UNLOCK_SEC)
+
+        const handleSubmit = useCallback(() => {
             onSendCode(inputValue)
-        } else {
-            showError({ text: 'Введите код' })
-        }
-    }, [inputValue, onSendCode])
+        }, [inputValue, onSendCode])
 
-    useEffect(() => {
-        intervalToSmsRef.current = setInterval(() => {
-            setTimerToSms((prev) => {
-                if (prev === 1) {
-                    if (intervalToSmsRef.current) {
-                        clearInterval(intervalToSmsRef.current)
+        useEffect(() => {
+            const id = setInterval(() => {
+                setTimerToSms((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(id)
+                        return 0
                     }
-                }
-                return (prev -= 1)
-            })
-        }, 1000)
-    }, [])
-    return (
-        <>
-            <Typography textAlign="center" marginsPaddings={{ mb: 20 }}>
-                На ваш телефон сейчас поступит звонок. Введите последние 4 цифры
-                звонившего номера.
-            </Typography>
+                    return prev - 1
+                })
+            }, 1000)
+            return () => clearInterval(id)
+        }, [])
 
-            <CustomInput
-                mask="9999"
-                onSubmitEditing={handleSubmit}
-                onChangeText={handleChangeInputValue}
-                keyboardType="numeric"
-                value={inputValue}
-                placeholder="Последние 4 цифры номера"
-            />
-            <CustomButton
-                onPress={handleSubmit}
-                styled={{ marginsPaddings: { mt: 16 } }}
-            >
-                ПОДТВЕРДИТЬ
-            </CustomButton>
-            <ButtonsSeparator />
-            <CustomButton
-                styled={{ type: 'secondary' }}
-                icon={timerToSms > 0 && <DisabledIcon />}
-                disabled={timerToSms > 0}
-                onPress={sendSms}
-            >
-                {timerToSms > 0
-                    ? `${timerToSms}      Отправить смс-код`
-                    : ' Отправить смс-код'}
-            </CustomButton>
-        </>
-    )
-})
+        const isSmsLocked = timerToSms > 0
+
+        return (
+            <>
+                <Typography type="body14" color="secondary" textAlign="center">
+                    На ваш телефон сейчас поступит звонок. Введите последние 4
+                    цифры звонившего номера.
+                </Typography>
+
+                <GlassInput
+                    mask="9999"
+                    onSubmitEditing={handleSubmit}
+                    onChangeText={handleChangeInputValue}
+                    keyboardType="number-pad"
+                    value={inputValue}
+                    placeholder="Последние 4 цифры номера"
+                />
+
+                <PillButton
+                    title="Подтвердить"
+                    onPress={handleSubmit}
+                    loading={isLoading}
+                    disabled={inputValue.length < CODE_LENGTH}
+                />
+
+                <PillButton
+                    title={
+                        isSmsLocked
+                            ? `Отправить смс-код (${timerToSms})`
+                            : 'Отправить смс-код'
+                    }
+                    variant="secondary"
+                    disabled={isSmsLocked}
+                    onPress={sendSms}
+                />
+            </>
+        )
+    }
+)

@@ -3,6 +3,7 @@ import { StyleSheet, Text, TextProps } from 'react-native'
 import { SIZES } from '../../common/config/constants/sizes'
 import { IMarginsPaddings } from '../../common/config/interfaces/IMarginsPaddings'
 import { ThemeStore } from '../../common/model/themeStore'
+import { TYPOGRAPHY_SCALE } from '../config/constants/TYPOGRAPHY_SCALE'
 import { TTypographyColorTypes } from '../config/types/TTypographyColorTypes'
 import { TTypographyTypes } from '../config/types/TTypographyTypes'
 
@@ -18,7 +19,7 @@ interface Props extends TextProps {
 export const Typography = memo(
     ({
         type = 'bodySmall',
-        color = 'primary',
+        color,
         children,
         marginsPaddings,
         textAlign,
@@ -27,64 +28,23 @@ export const Typography = memo(
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
         const styles = useMemo(() => {
-            let ff: string = 'Manrope-SemiBold'
-            let cl: string = COLORS.TEXT.Success
-            let fz: number
+            const entry = TYPOGRAPHY_SCALE[type] ?? TYPOGRAPHY_SCALE.bodySmall
+            const ff = entry.ff
+            const fz = entry.fz
 
-            switch (type) {
-                case 'displayLarge':
-                    fz = 36
-                    break
-                case 'displayMedium':
-                    fz = 28
-                    break
-                case 'displaySmall':
-                    fz = 16
-                    break
-                case 'headlineMedium':
-                    fz = 36
-                    break
-                case 'headlineSmall':
-                    fz = 24
-                    break
-                case 'bodyLarge':
-                    ff = 'Manrope-Medium'
-                    fz = 24
-                    break
-                case 'bodyMedium':
-                    ff = 'Manrope-Medium'
-                    fz = 20
-                    break
-                case 'bodySmall':
-                    ff = 'Manrope-Medium'
-                    fz = 16
-                    break
-                case 'bodyAccentLarge':
-                    fz = 24
-                    break
-                case 'bodyAccentMedium':
-                    fz = 20
-                    break
-                case 'bodyAccentSmall':
-                    fz = 16
-                    break
+            // Часть типов лестницы несёт собственный цвет по умолчанию (eyebrow),
+            // но явный проп color всегда важнее.
+            const scaleColor =
+                'color' in entry
+                    ? (entry.color as TTypographyColorTypes)
+                    : undefined
+            const resolvedColor = color ?? scaleColor ?? 'primary'
 
-                case 'caption':
-                    fz = 12
-                    break
-                case 'captionAccent':
-                    ff = 'Manrope-Medium'
-                    fz = 12
-                    break
-                default:
-                    fz = 16
-                    ff = 'Manrope-SemiBold'
-                    break
-            }
+            let cl: string
             if (customColor) {
                 cl = customColor
             } else {
-                switch (color) {
+                switch (resolvedColor) {
                     case 'secondary': {
                         cl = COLORS.TEXT.Secondary
                         break
@@ -115,11 +75,22 @@ export const Typography = memo(
                 }
             }
 
+            const letterSpacing =
+                'letterSpacing' in entry && entry.letterSpacing
+                    ? entry.letterSpacing * SIZES.PX
+                    : undefined
+            const textTransform =
+                'uppercase' in entry && entry.uppercase
+                    ? ('uppercase' as const)
+                    : undefined
+
             return StyleSheet.create({
                 text: {
                     fontFamily: ff,
                     color: cl,
                     fontSize: fz * SIZES.PX,
+                    letterSpacing,
+                    textTransform,
                     marginTop: marginsPaddings?.mt
                         ? marginsPaddings?.mt * SIZES.PX
                         : 0,
@@ -149,7 +120,7 @@ export const Typography = memo(
                     ...style,
                 },
             })
-        }, [type, color, textAlign, marginsPaddings, COLORS, customColor])
+        }, [type, color, textAlign, marginsPaddings, COLORS, customColor, style])
         return <Text style={styles.text}>{children}</Text>
     }
 )

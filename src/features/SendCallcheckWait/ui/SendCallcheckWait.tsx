@@ -1,12 +1,19 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { Linking } from 'react-native'
-import { ButtonsSeparator } from '../../../entities/ButtonsSeparator'
-import { CustomButton } from '../../../shared/CustomButton'
-import { DisabledIcon } from '../../../shared/DisabledIcon'
+import { Linking, StyleSheet, View } from 'react-native'
+import { CenteredState } from '../../../shared/CenteredState'
+import { Icon } from '../../../shared/Icons'
 import { Loader } from '../../../shared/Loader'
+import { PillButton } from '../../../shared/PillButton'
 import { Typography } from '../../../shared/Typography'
 import { showError } from '../../../shared/ToastComponent'
-import { EAuthMethod, IUser } from '../../../shared'
+import {
+    EAuthMethod,
+    IUser,
+    RADII,
+    SIZES,
+    SPACING,
+    ThemeStore,
+} from '../../../shared'
 import { callcheckApi } from '../api/callcheckApi'
 import { TCallcheckStatusResponse } from '../config/interfaces/ICallcheckStatusResponse'
 import {
@@ -57,11 +64,11 @@ export const SendCallcheckWait = memo(
         onCancel,
         onRetry,
     }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
         const [initData, setInitData] = useState<InitData | null>(null)
-        const [status, setStatus] =
-            useState<'initiating' | 'waiting' | 'expired' | 'initError'>(
-                'initiating'
-            )
+        const [status, setStatus] = useState<
+            'initiating' | 'waiting' | 'expired' | 'initError'
+        >('initiating')
         const [elapsedSec, setElapsedSec] = useState(0)
         const mountedRef = useRef(true)
 
@@ -159,13 +166,10 @@ export const SendCallcheckWait = memo(
             setStatus('expired')
         }, [])
 
-        const handlePollFatal = useCallback(
-            (kind: ECallcheckErrorKind) => {
-                showError({ text: getCallcheckErrorText(kind) })
-                setStatus('expired')
-            },
-            []
-        )
+        const handlePollFatal = useCallback((kind: ECallcheckErrorKind) => {
+            showError({ text: getCallcheckErrorText(kind) })
+            setStatus('expired')
+        }, [])
 
         useCallcheckPolling({
             enabled: status === 'waiting' && initData !== null,
@@ -187,52 +191,78 @@ export const SendCallcheckWait = memo(
             onFallback(fallbackMethod)
         }, [fallbackMethod, onFallback])
 
+        const styles = StyleSheet.create({
+            // Фиксированная высота, чтобы шит не схлопывался на время инициации
+            initiating: {
+                minHeight: 220 * SIZES.PX,
+                alignItems: 'center',
+                justifyContent: 'center',
+            },
+            waiting: {
+                alignItems: 'center',
+                gap: SPACING.SM * SIZES.PX,
+                paddingBottom: SPACING.SM * SIZES.PX,
+            },
+            circle: {
+                width: 96 * SIZES.PX,
+                height: 96 * SIZES.PX,
+                borderRadius: RADII.PILL,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: COLORS.GLASS.Secondary,
+                borderWidth: 1,
+                borderColor: COLORS.GLASS.Border,
+                marginBottom: SPACING.SM * SIZES.PX,
+            },
+            hint: {
+                maxWidth: 260 * SIZES.PX,
+            },
+        })
+
         if (status === 'initiating') {
-            return <Loader marginsPaddings={{ mt: 50, mb: 50 }} />
+            return (
+                <View style={styles.initiating}>
+                    <Loader />
+                </View>
+            )
         }
 
         if (status === 'initError') {
             return (
-                <>
-                    <Typography textAlign="center" marginsPaddings={{ mb: 20 }}>
-                        Не удалось подготовить звонок. Попробуйте ещё раз.
-                    </Typography>
-                    <CustomButton onPress={onRetry}>
-                        ПОПРОБОВАТЬ ЕЩЁ РАЗ
-                    </CustomButton>
-                    <ButtonsSeparator />
-                    <CustomButton
-                        styled={{ type: 'secondary' }}
-                        onPress={onCancel}
-                    >
-                        Назад
-                    </CustomButton>
-                </>
+                <CenteredState
+                    variant="error"
+                    title="Не удалось подготовить звонок"
+                    description="Попробуйте ещё раз."
+                    action={{
+                        label: 'Попробовать ещё раз',
+                        onPress: onRetry,
+                        variant: 'primary',
+                    }}
+                    secondaryAction={{ label: 'Назад', onPress: onCancel }}
+                />
             )
         }
 
         if (status === 'expired') {
             return (
-                <>
-                    <Typography textAlign="center" marginsPaddings={{ mb: 20 }}>
-                        Мы не получили ваш звонок. Попробуйте ещё раз или
-                        воспользуйтесь другим способом.
-                    </Typography>
-                    <CustomButton onPress={onRetry}>
-                        ПОПРОБОВАТЬ ЕЩЁ РАЗ
-                    </CustomButton>
-                    {fallbackMethod && (
-                        <>
-                            <ButtonsSeparator />
-                            <CustomButton
-                                styled={{ type: 'secondary' }}
-                                onPress={handleFallback}
-                            >
-                                {fallbackLabel(fallbackMethod)}
-                            </CustomButton>
-                        </>
-                    )}
-                </>
+                <CenteredState
+                    variant="error"
+                    title="Мы не получили ваш звонок"
+                    description="Попробуйте ещё раз или воспользуйтесь другим способом."
+                    action={{
+                        label: 'Попробовать ещё раз',
+                        onPress: onRetry,
+                        variant: 'primary',
+                    }}
+                    secondaryAction={
+                        fallbackMethod
+                            ? {
+                                  label: fallbackLabel(fallbackMethod),
+                                  onPress: handleFallback,
+                              }
+                            : undefined
+                    }
+                />
             )
         }
 
@@ -241,47 +271,59 @@ export const SendCallcheckWait = memo(
         const ss = secondsLeft % 60
         const timeLeft = `${mm}:${ss < 10 ? '0' : ''}${ss}`
         const fallbackUnlocked = elapsedSec >= FALLBACK_UNLOCK_SEC
-        const fallbackWaitLeft = Math.max(
-            0,
-            FALLBACK_UNLOCK_SEC - elapsedSec
-        )
+        const fallbackWaitLeft = Math.max(0, FALLBACK_UNLOCK_SEC - elapsedSec)
 
         return (
             <>
-                <Typography textAlign="center" marginsPaddings={{ mb: 10 }}>
-                    Позвоните на номер
-                </Typography>
-                <Typography
-                    type="headlineSmall"
-                    textAlign="center"
-                    marginsPaddings={{ mb: 10 }}
-                >
-                    {initData?.call_phone_pretty || ''}
-                </Typography>
-                <Typography
-                    type="caption"
-                    color="secondary"
-                    textAlign="center"
-                    marginsPaddings={{ mb: 20 }}
-                >
-                    Мы сразу сбросим звонок, это бесплатно. Ожидание:{' '}
-                    {timeLeft}
-                </Typography>
-                <CustomButton onPress={handleCall}>ПОЗВОНИТЬ</CustomButton>
-                {fallbackMethod && (
-                    <>
-                        <ButtonsSeparator />
-                        <CustomButton
-                            styled={{ type: 'secondary' }}
-                            icon={!fallbackUnlocked && <DisabledIcon />}
-                            disabled={!fallbackUnlocked}
-                            onPress={handleFallback}
+                <View style={styles.waiting}>
+                    <View style={styles.circle}>
+                        <Icon name="phone" size={44} />
+                    </View>
+
+                    <Typography
+                        type="body14"
+                        color="secondary"
+                        textAlign="center"
+                    >
+                        Позвоните на номер
+                    </Typography>
+
+                    <Typography type="num20" textAlign="center">
+                        {initData?.call_phone_pretty || ''}
+                    </Typography>
+
+                    <View style={styles.hint}>
+                        <Typography
+                            type="body13"
+                            color="secondary"
+                            textAlign="center"
                         >
-                            {fallbackUnlocked
+                            Мы сразу сбросим звонок, это бесплатно
+                        </Typography>
+                    </View>
+
+                    <Typography
+                        type="caption12"
+                        color="tertiary"
+                        textAlign="center"
+                    >
+                        Ожидание: {timeLeft}
+                    </Typography>
+                </View>
+
+                <PillButton title="Позвонить" onPress={handleCall} />
+
+                {fallbackMethod && (
+                    <PillButton
+                        title={
+                            fallbackUnlocked
                                 ? fallbackLabel(fallbackMethod)
-                                : `${fallbackWaitLeft}      ${fallbackLabel(fallbackMethod)}`}
-                        </CustomButton>
-                    </>
+                                : `${fallbackLabel(fallbackMethod)} (${fallbackWaitLeft})`
+                        }
+                        variant="secondary"
+                        disabled={!fallbackUnlocked}
+                        onPress={handleFallback}
+                    />
                 )}
             </>
         )

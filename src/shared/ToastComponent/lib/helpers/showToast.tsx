@@ -1,10 +1,11 @@
 import Toast from 'react-native-toast-message'
+import { TToastTypes } from '../../config/types/TToastTypes'
 
 export async function showToast({
     text,
     type,
 }: {
-    type: 'success' | 'error' | 'warning'
+    type: TToastTypes
     text: string
 }) {
     Toast.show({
@@ -19,8 +20,8 @@ export function showError({ text, error }: { text: string; error?: any }) {
         text: error?.response?.data
             ? error.response?.data
             : text
-            ? text
-            : 'Произошла непредвиденная ошибка',
+              ? text
+              : 'Произошла непредвиденная ошибка',
         type: 'error',
     })
 }
