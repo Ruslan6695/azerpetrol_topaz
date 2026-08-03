@@ -35,7 +35,10 @@ export const BuyCoffeeWidget = memo(
                 args: undefined,
                 hideToastOnError: true,
                 afterDataCallback(data) {
-                    setBalance({ balance: data.balance })
+                    setBalance({
+                        balance: data.balance,
+                        bonus_balance: data.bonus_balance,
+                    })
                 },
             })
         }, [])

@@ -16,6 +16,11 @@ type Props = {
     radius?: number
     /** В единицах макета, домножается на SIZES.PX внутри */
     padding?: number
+    /** Асимметричные паддинги макета. Перекрывают padding по своей стороне */
+    paddingTop?: number
+    paddingBottom?: number
+    paddingHorizontal?: number
+    paddingVertical?: number
     blur?: boolean
     bordered?: boolean
     onPress?: () => void
@@ -32,6 +37,10 @@ export const GlassCard = memo(
         variant = 'glass',
         radius = RADII.CARD,
         padding = 20,
+        paddingTop,
+        paddingBottom,
+        paddingHorizontal,
+        paddingVertical,
         blur,
         bordered = true,
         onPress,
@@ -40,10 +49,27 @@ export const GlassCard = memo(
         const COLORS = ThemeStore.useCOLORS()
 
         const scaledRadius = radius * SIZES.PX
+        // Асимметричные паддинги макета (22/20/18 у карточки баланса,
+        // 16/18 у промо-строки). Заданные стороны перекрывают общий padding.
+        const paddings = {
+            padding: padding * SIZES.PX,
+            paddingVertical:
+                paddingVertical !== undefined
+                    ? paddingVertical * SIZES.PX
+                    : undefined,
+            paddingHorizontal:
+                paddingHorizontal !== undefined
+                    ? paddingHorizontal * SIZES.PX
+                    : undefined,
+            paddingTop:
+                paddingTop !== undefined ? paddingTop * SIZES.PX : undefined,
+            paddingBottom:
+                paddingBottom !== undefined
+                    ? paddingBottom * SIZES.PX
+                    : undefined,
+        }
         const styles = StyleSheet.create({
-            inner: {
-                padding: padding * SIZES.PX,
-            },
+            inner: paddings,
             gradient: {
                 borderRadius: scaledRadius,
                 overflow: 'hidden',
@@ -51,7 +77,7 @@ export const GlassCard = memo(
                 // У градиентных карточек макета своя лаймовая рамка,
                 // а не общий GLASS.Border.
                 borderColor: 'rgba(184,245,60,0.28)',
-                padding: padding * SIZES.PX,
+                ...paddings,
             },
         })
 

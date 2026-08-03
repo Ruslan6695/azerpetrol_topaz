@@ -1,37 +1,26 @@
-import { memo } from 'react'
-import { HomeMainBlock } from '../../../../entities/HomeMainBlock'
-import BonusesSvg from '../assets/bonuses.svg'
-import BonusesDarkSvg from '../assets/bonuses_dark.svg'
-import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
+import { HomeQuickTile } from '../../../../entities/Home/HomeQuickTile'
+import { ESCREENS } from '../../../../shared'
+
 type Props = {
-    big_text: string
-    small_text: string
+    big_text?: string
+    small_text?: string
 }
 
 export const OpenPromotionAndBonusesScreen = memo(
     ({ big_text, small_text }: Props) => {
-        const colorTheme = ThemeStore.useTheme()
+        const router = useRouter()
+        const handlePress = useCallback(() => {
+            router.navigate(ESCREENS.PROMOTIONS_AND_BONUSES)
+        }, [router])
 
         return (
-            <HomeMainBlock
-                link={ESCREENS.PROMOTIONS_AND_BONUSES}
-                bgColor="rgba(106, 96, 206, 0.8) 0%"
-                desciptionText={small_text}
-                mainText={big_text}
-                title="Акции и бонусы"
-                icon={
-                    colorTheme === 'light' ? (
-                        <BonusesSvg
-                            height={56 * SIZES.PX}
-                            width={56 * SIZES.PX}
-                        />
-                    ) : (
-                        <BonusesDarkSvg
-                            height={56 * SIZES.PX}
-                            width={56 * SIZES.PX}
-                        />
-                    )
-                }
+            <HomeQuickTile
+                icon="home_bonuses"
+                title="Акции"
+                subtitle={[small_text, big_text].filter(Boolean).join(' ')}
+                onPress={handlePress}
             />
         )
     }

@@ -1,32 +1,27 @@
-import { memo } from 'react'
-import { HomeMainBlock } from '../../../../entities/HomeMainBlock'
-import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
-import CoffeSvg from '../assets/coffee.svg'
-import CoffeeDarkSvg from '../assets/coffee_dark.svg'
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
+import { HomeQuickTile } from '../../../../entities/Home/HomeQuickTile'
+import { ESCREENS } from '../../../../shared'
+
 type Props = {
-    big_text: string
-    small_text: string
+    big_text?: string
+    small_text?: string
 }
 
 export const OpenCoffeeScreen = memo(({ big_text, small_text }: Props) => {
-    const colorTheme = ThemeStore.useTheme()
+    const router = useRouter()
+    // Кофе — вкладка таб-бара, поэтому navigate, а не push: иначе на табе
+    // появится «назад», которой в макете нет.
+    const handlePress = useCallback(() => {
+        router.navigate(ESCREENS.COFFEE)
+    }, [router])
+
     return (
-        <HomeMainBlock
-            link={ESCREENS.COFFEE}
-            bgColor="rgba(187, 136, 76, 0.8)"
-            desciptionText={small_text}
-            icon={
-                colorTheme === 'light' ? (
-                    <CoffeSvg height={56 * SIZES.PX} width={56 * SIZES.PX} />
-                ) : (
-                    <CoffeeDarkSvg
-                        height={56 * SIZES.PX}
-                        width={56 * SIZES.PX}
-                    />
-                )
-            }
+        <HomeQuickTile
+            icon="home_coffee"
             title="Купить кофе"
-            mainText={big_text}
+            subtitle={[small_text, big_text].filter(Boolean).join(' ')}
+            onPress={handlePress}
         />
     )
 })

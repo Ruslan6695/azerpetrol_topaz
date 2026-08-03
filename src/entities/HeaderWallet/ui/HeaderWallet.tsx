@@ -2,15 +2,15 @@ import { useRouter } from 'expo-router'
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
-    divideNumber,
     ESCREENS,
+    HIDDEN_BALANCE,
     PRESS_SCALE,
     RADII,
     SIZES,
     ThemeStore,
     UserStore,
 } from '../../../shared'
-import { BonusIcon } from '../../../shared/BonusIcon'
+import { AnimatedNumber } from '../../../shared/AnimatedNumber'
 import { Glass } from '../../../shared/GlassCard'
 import { Icon } from '../../../shared/Icons'
 import { PressableScale } from '../../../shared/PressableScale'
@@ -21,6 +21,7 @@ type Props = {}
 export const HeaderWallet = memo((props: Props) => {
     const router = useRouter()
     const balance = UserStore.useBalance()
+    const isBalanceHidden = UserStore.useIsBalanceHidden()
     const COLORS = ThemeStore.useCOLORS()
     const handlePress = useCallback(() => {
         router.navigate(ESCREENS.BALANCE)
@@ -46,10 +47,20 @@ export const HeaderWallet = memo((props: Props) => {
                         color={COLORS.Icon.Primary}
                         opacity={0.8}
                     />
-                    <Typography type="label14">
-                        {balance ? divideNumber(balance) : 0}
-                    </Typography>
-                    <BonusIcon bold size={16} />
+                    {/* По макету в чипе рублёвый баланс, иконки бонуса нет —
+                        бонусы показывает карточка на главной. Число то же
+                        самое, что в карточке, поэтому набегает синхронно с ней */}
+                    {isBalanceHidden ? (
+                        <Typography type="label14">
+                            {HIDDEN_BALANCE.AMOUNT}
+                        </Typography>
+                    ) : (
+                        <AnimatedNumber
+                            value={balance ?? 0}
+                            suffix="₽"
+                            type="label14"
+                        />
+                    )}
                 </View>
             </Glass>
         </PressableScale>

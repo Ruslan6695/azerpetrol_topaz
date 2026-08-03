@@ -1,35 +1,40 @@
 import { useFocusEffect } from 'expo-router'
-import React, { useCallback, useEffect } from 'react'
+import React, { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { BalanceCard } from '../../../../entities/Home/BalanceCard'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 import { OpenCoffeeBonusScreenFromCoffee } from '../../../../features/Coffee/OpenCoffeeBonusScreen'
+import { ConvertBonusToBalance } from '../../../../features/Home/ConvertBonusToBalance'
 import { OpenCoffeeScreen } from '../../../../features/Home/OpenCoffeeScreen'
+import { OpenFuelPricesScreen } from '../../../../features/Home/OpenFuelPricesScreen'
 import { OpenFuelScreen } from '../../../../features/Home/OpenFuelScreen'
 import { OpenHistoryScreen } from '../../../../features/Home/OpenHistoryScreen'
-import { OpenOsagoScreen } from '../../../../features/Home/OpenOsagoScreen'
 import { OpenPayBalanceScreen } from '../../../../features/Home/OpenPayBalanceScreen'
 import { OpenPromotionAndBonusesScreen } from '../../../../features/Home/OpenPromotionAndBonusesScreen'
 import { OpenTransferBalanceScreen } from '../../../../features/Home/OpenTransferBalanceScreen'
+import { ToggleBalanceVisibility } from '../../../../features/Home/ToggleBalanceVisibility'
+import { ShowMainPromotions } from '../../../../features/Home/ShowMainPromotions'
+import { ShowPromotionsModal } from '../../../../features/ShowPromotionsModal'
 import {
     AppStore,
     ESCREENS,
     SIZES,
+    SPACING,
     UserStore,
     useFetchData,
     useFetchStoreData,
 } from '../../../../shared'
-import Skeleton from '../../../../shared/Skeleton/ui/Skeletons'
 import { homeMainWidgetApi } from '../api/homeMainWidgetApi'
 import { IHomeMainwidgetData } from '../config/interfaces/IHomeMainwidgetData'
 import { HomeStore } from '../model/HomeStore'
-import { ShowMainPromotions } from '../../../../features/Home/ShowMainPromotions'
-import { ShowPromotionsModal } from '../../../../features/ShowPromotionsModal'
-import { OpenFuelPricesScreen } from '../../../../features/Home/OpenFuelPricesScreen'
+import { HomeMainWidgetSkeleton } from './HomeMainWidgetSkeleton'
 
 type Props = {}
 
-export const HomeMainWidget = (props: Props) => {
+export const HomeMainWidget = memo((props: Props) => {
     const data = HomeStore.useData()
+    const balance = UserStore.useBalance()
+    const bonusBalance = UserStore.useBonus_balance()
     const setBalance = UserStore.useSetBalance()
     const setToken = UserStore.useSetToken()
     const isTokenRefreshed = AppStore.useIsTokenRefreshed()
@@ -59,7 +64,10 @@ export const HomeMainWidget = (props: Props) => {
                         args: undefined,
                         hideToastOnError: true,
                         afterDataCallback(data) {
-                            setBalance({ balance: data.balance })
+                            setBalance({
+                                balance: data.balance,
+                                bonus_balance: data.bonus_balance,
+                            })
                         },
                     })
                 },
@@ -69,7 +77,10 @@ export const HomeMainWidget = (props: Props) => {
                 args: undefined,
                 hideToastOnError: true,
                 afterDataCallback(data) {
-                    setBalance({ balance: data.balance })
+                    setBalance({
+                        balance: data.balance,
+                        bonus_balance: data.bonus_balance,
+                    })
                 },
             })
         }
@@ -81,155 +92,96 @@ export const HomeMainWidget = (props: Props) => {
         }, [])
     )
 
-    useEffect(() => {
-    }, [isTokenRefreshed])
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.MD * SIZES.PX,
+        },
+        grid: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: SPACING.MD * SIZES.PX,
+        },
+    })
 
     if (errorText || refreshTokenErrorText) {
         return (
             <ErrorWhileFetchingForm
                 buttonProps={{ type: 'primary' }}
                 onReload={reloadData}
-                message={errorText || refreshTokenErrorText}
+                message={errorText ?? refreshTokenErrorText ?? ''}
             />
         )
     }
-    return (
-        <>
-            <View style={styles.container}>
-                {isTokenRefreshed && <ShowPromotionsModal />}
-                <View style={styles.row}>
-                    <OpenFuelScreen
-                        big_text={texts[ESCREENS.FUEL]?.big_text}
-                        small_text={texts[ESCREENS.FUEL]?.small_text}
-                    />
-                </View>
-                <View style={styles.row}>
-                    {data?.options?.includes(ESCREENS.PAY_BALANCE) && (
-                        <OpenPayBalanceScreen />
-                    )}
-                    {data?.options?.includes(ESCREENS.TRANSFER_BALANCE) && (
-                        <OpenTransferBalanceScreen />
-                    )}
-                </View>
 
-                {data?.coffee_bonus && data.coffee_bonus > 0 && (
-                    <OpenCoffeeBonusScreenFromCoffee
-                        count={data?.coffee_bonus}
+    if (isDataLoading && !data) {
+        return <HomeMainWidgetSkeleton />
+    }
+
+    const canPay = data?.options?.includes(ESCREENS.PAY_BALANCE)
+    const canTransfer = data?.options?.includes(ESCREENS.TRANSFER_BALANCE)
+    // Именно undefined, а не пустой фрагмент: массив [false, false] был бы
+    // truthy и дал бы в карточке пустой ряд с отступом.
+    const balanceActions =
+        canPay || canTransfer ? (
+            <>
+                {canPay && <OpenPayBalanceScreen />}
+                {canTransfer && <OpenTransferBalanceScreen />}
+            </>
+        ) : undefined
+
+    return (
+        <View style={styles.container}>
+            {isTokenRefreshed && <ShowPromotionsModal />}
+
+            <BalanceCard
+                balance={balance ?? 0}
+                bonus_balance={bonusBalance ?? 0}
+                actions={balanceActions}
+                bonusAction={<ConvertBonusToBalance />}
+                visibilityAction={<ToggleBalanceVisibility />}
+            />
+
+            <OpenFuelScreen
+                big_text={texts[ESCREENS.FUEL]?.big_text}
+                small_text={texts[ESCREENS.FUEL]?.small_text}
+            />
+
+            <View style={styles.grid}>
+                {data?.options?.includes(ESCREENS.COFFEE) && (
+                    <OpenCoffeeScreen
+                        big_text={texts[ESCREENS.COFFEE]?.big_text}
+                        small_text={texts[ESCREENS.COFFEE]?.small_text}
                     />
                 )}
-                <View style={styles.mainBlocks}>
-                    {isDataLoading && !data ? (
-                        <>
-                            <Skeleton
-                                width={SIZES.WIDTH(1 / 2) - 30 * SIZES.PX}
-                                height={150 * SIZES.PX}
-                            />
-                            <Skeleton
-                                width={SIZES.WIDTH(1 / 2) - 30 * SIZES.PX}
-                                height={150 * SIZES.PX}
-                            />
-                        </>
-                    ) : (
-                        <>
-                            {data?.options?.includes(ESCREENS.COFFEE) && (
-                                <OpenCoffeeScreen
-                                    big_text={texts[ESCREENS.COFFEE]?.big_text}
-                                    small_text={
-                                        texts[ESCREENS.COFFEE]?.small_text
-                                    }
-                                />
-                            )}
-                        </>
-                    )}
-
-                    {isDataLoading && !data ? (
-                        <View style={styles.row}>
-                            <Skeleton
-                                width={SIZES.WIDTH(1) - 40 * SIZES.PX}
-                                height={140 * SIZES.PX}
-                            />
-                        </View>
-                    ) : (
-                        <>
-                            {data?.options?.includes(ESCREENS.FUEL_PRICES) && (
-                                <OpenFuelPricesScreen
-                                    big_text={
-                                        texts[ESCREENS.FUEL_PRICES]?.big_text
-                                    }
-                                    small_text={
-                                        texts[ESCREENS.FUEL_PRICES]?.small_text
-                                    }
-                                />
-                            )}
-                        </>
-                    )}
-                    {isDataLoading && !data ? (
-                        <View style={styles.row}>
-                            <Skeleton
-                                width={SIZES.WIDTH(1) - 40 * SIZES.PX}
-                                height={140 * SIZES.PX}
-                            />
-                        </View>
-                    ) : (
-                        <>
-                            {data?.options?.includes(
-                                ESCREENS.PROMOTIONS_AND_BONUSES
-                            ) && (
-                                <OpenPromotionAndBonusesScreen
-                                    big_text={
-                                        texts[ESCREENS.PROMOTIONS_AND_BONUSES]
-                                            ?.big_text
-                                    }
-                                    small_text={
-                                        texts[ESCREENS.PROMOTIONS_AND_BONUSES]
-                                            ?.small_text
-                                    }
-                                />
-                            )}
-                        </>
-                    )}
-                    {isDataLoading && !data ? (
-                        <View style={styles.row}>
-                            <Skeleton
-                                width={SIZES.WIDTH(1) - 40 * SIZES.PX}
-                                height={140 * SIZES.PX}
-                            />
-                        </View>
-                    ) : (
-                        <>
-                            {data?.options?.includes(ESCREENS.HISTORY) && (
-                                <View style={styles.row}>
-                                    <OpenHistoryScreen
-                                        big_text={
-                                            texts[ESCREENS.HISTORY]?.big_text
-                                        }
-                                        small_text={
-                                            texts[ESCREENS.HISTORY]?.small_text
-                                        }
-                                    />
-                                </View>
-                            )}
-                        </>
-                    )}
-                </View>
-                <ShowMainPromotions />
+                {data?.options?.includes(ESCREENS.HISTORY) && (
+                    <OpenHistoryScreen
+                        big_text={texts[ESCREENS.HISTORY]?.big_text}
+                        small_text={texts[ESCREENS.HISTORY]?.small_text}
+                    />
+                )}
+                {data?.options?.includes(ESCREENS.PROMOTIONS_AND_BONUSES) && (
+                    <OpenPromotionAndBonusesScreen
+                        big_text={
+                            texts[ESCREENS.PROMOTIONS_AND_BONUSES]?.big_text
+                        }
+                        small_text={
+                            texts[ESCREENS.PROMOTIONS_AND_BONUSES]?.small_text
+                        }
+                    />
+                )}
+                {data?.options?.includes(ESCREENS.FUEL_PRICES) && (
+                    <OpenFuelPricesScreen
+                        big_text={texts[ESCREENS.FUEL_PRICES]?.big_text}
+                        small_text={texts[ESCREENS.FUEL_PRICES]?.small_text}
+                    />
+                )}
             </View>
-        </>
+
+            {!!data?.coffee_bonus && data.coffee_bonus > 0 && (
+                <OpenCoffeeBonusScreenFromCoffee count={data.coffee_bonus} />
+            )}
+
+            <ShowMainPromotions />
+        </View>
     )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        gap: 12 * SIZES.PX,
-    },
-    row: {
-        flexDirection: 'row',
-        gap: 8 * SIZES.PX,
-    },
-
-    mainBlocks: {
-        flexDirection: 'row',
-        gap: 8 * SIZES.PX,
-        flexWrap: 'wrap',
-    },
 })

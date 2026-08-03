@@ -3,6 +3,9 @@ import BonusSvg from '../../assets/bonus.svg'
 import CoffeeScanSvg from '../../assets/coffee_scan.svg'
 import CoffeeSelectSvg from '../../assets/coffee_select.svg'
 import ContactsSvg from '../../assets/contacts.svg'
+import ConvertSvg from '../../assets/convert.svg'
+import EyeSvg from '../../assets/eye.svg'
+import EyeOffSvg from '../../assets/eye_off.svg'
 import FuelHelpSvg from '../../assets/fuel_help.svg'
 import FuelScanSvg from '../../assets/fuel_scan.svg'
 import FuelSelectSvg from '../../assets/fuel_select.svg'
@@ -33,6 +36,9 @@ export const ICONS = {
     coffee_scan: CoffeeScanSvg,
     coffee_select: CoffeeSelectSvg,
     contacts: ContactsSvg,
+    convert: ConvertSvg,
+    eye: EyeSvg,
+    eye_off: EyeOffSvg,
     fuel_help: FuelHelpSvg,
     fuel_scan: FuelScanSvg,
     fuel_select: FuelSelectSvg,

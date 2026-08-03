@@ -35,7 +35,10 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
             afterDataCallback(data) {
                 changeColumn(data.trc)
                 changeAzs(data.azs)
-                setBalance({ balance: data.balance })
+                setBalance({
+                    balance: data.balance,
+                    bonus_balance: data.bonus_balance,
+                })
                 setRoad('selectTrkType')
             },
             onErrorCallback(error) {},

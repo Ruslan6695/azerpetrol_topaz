@@ -4,4 +4,5 @@ export enum EAsyncStoreKeys {
     CONTACTS = 'contacts',
     PUSH_NOTIFICATION = 'pushNotification',
     COLOR_THEME = 'colorTheme',
+    IS_BALANCE_HIDDEN = 'isBalanceHidden',
 }

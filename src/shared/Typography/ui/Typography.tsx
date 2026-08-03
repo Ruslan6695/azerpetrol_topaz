@@ -25,6 +25,8 @@ export const Typography = memo(
         textAlign,
         style,
         customColor,
+        numberOfLines,
+        ellipsizeMode,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
         const styles = useMemo(() => {
@@ -121,6 +123,14 @@ export const Typography = memo(
                 },
             })
         }, [type, color, textAlign, marginsPaddings, COLORS, customColor, style])
-        return <Text style={styles.text}>{children}</Text>
+        return (
+            <Text
+                style={styles.text}
+                numberOfLines={numberOfLines}
+                ellipsizeMode={ellipsizeMode}
+            >
+                {children}
+            </Text>
+        )
     }
 )

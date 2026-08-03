@@ -7,4 +7,5 @@ export interface IProfileData {
     balance_creator_id: number
     join_accounts: IProfileJoinAccountItem[]
     balance: number
+    bonus_balance: number
 }

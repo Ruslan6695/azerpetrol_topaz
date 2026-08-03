@@ -1,21 +1,24 @@
 import { memo } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { AppStore, SIZES, SPACING } from '../../../shared'
 import { HomeMainWidget } from '../../../widgets/Home/HomeMainWidget'
 import { NewsWidget } from '../../../widgets/News/NewsWidget'
-import { MPLayout } from '../../../shared/MpLayout'
-import { AppStore } from '../../../shared'
 
 type Props = {}
 
 export const Home = memo((props: Props) => {
     const isTokenRefreshed = AppStore.useIsTokenRefreshed()
+
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.MD * SIZES.PX,
+        },
+    })
+
     return (
-        <>
+        <View style={styles.container}>
             <HomeMainWidget />
-            {isTokenRefreshed && (
-                <MPLayout mb={20} mt={20}>
-                    <NewsWidget />
-                </MPLayout>
-            )}
-        </>
+            {isTokenRefreshed && <NewsWidget variant="carousel" />}
+        </View>
     )
 })

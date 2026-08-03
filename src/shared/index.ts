@@ -6,6 +6,7 @@ export * from "./common/config/constants/RADII";
 export * from "./common/config/constants/FONTS";
 export * from "./common/config/constants/SPACING";
 export * from "./common/config/constants/PRESS_SCALE";
+export * from "./common/config/constants/HIDDEN_BALANCE";
 export * from "./common/config/constants/BLUR";
 export type { IMarginsPaddings } from "./common/config/interfaces/IMarginsPaddings";
 export * from "./common/config/constants/USE_TERMS_LINK";

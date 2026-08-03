@@ -57,7 +57,10 @@ export const Profile = memo((props: Props) => {
         fetchData({
             args: undefined,
             afterDataCallback(data) {
-                setBalance({ balance: data.balance })
+                setBalance({
+                    balance: data.balance,
+                    bonus_balance: data.bonus_balance,
+                })
             },
             hideToastOnError: true,
         })

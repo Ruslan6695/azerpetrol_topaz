@@ -20,7 +20,7 @@ export const BonusIcon = ({ size, color, bold, ml, mt }: Props) => {
     const colorTheme = ThemeStore.useTheme()
     if (bold) {
         return (
-            <MPLayout mt={mt} ml={5}>
+            <MPLayout mt={mt} ml={ml ?? 5}>
                 <Foundation
                     name="bold"
                     size={size || 24 * SIZES.PX}
