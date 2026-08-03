@@ -1,7 +1,7 @@
-import { IInfoBlock } from '../../../entities/InfoBlock'
+import { IInfoCard } from '../../../entities/InfoCard'
 import { AZS_NAME } from '../../../shared'
 
-export const PAY_BALANCE_INFO_TEXTS: IInfoBlock[] = [
+export const PAY_BALANCE_INFO_TEXTS: IInfoCard[] = [
     {
         title: 'Оплата пройдет через сервис СБП',
         info: 'Мы не храним данные ваших банковских карт и не требуем ввода каких-либо реквизитов.',

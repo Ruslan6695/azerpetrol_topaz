@@ -1,13 +1,19 @@
 import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
-import { PayBalanceWaitingGif } from '../../../../entities/PayBalanceWaitingGif'
-import { ESCREENS, useSendFetch } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { Typography } from '../../../../shared/Typography'
+import { ESCREENS, SIZES, useSendFetch } from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { Loader } from '../../../../shared/Loader'
 import { payBalanceWaitingApi } from '../api/payBalanceWaitingApi'
 import { IPayBalanceWaitingData } from '../config/interfaces/IPayBalanceWaitingData'
+
+// CenteredState растягивается по flex, а экран пополнения скроллится —
+// без минимальной высоты состояние схлопнулось бы по контенту у шапки.
+const styles = StyleSheet.create({
+    container: {
+        minHeight: SIZES.HEIGHT(0.65),
+    },
+})
 
 type Props = {
     payId: number
@@ -19,7 +25,7 @@ export const PayBalanceWaiting = memo(
     ({ payId, onGoBack, backLink }: Props) => {
         const router = useRouter()
         const intervalRef = useRef<any>(null)
-        const { errorText, isSendFetchLoading, sendFetch } = useSendFetch<
+        const { errorText, sendFetch } = useSendFetch<
             { pay_id: number },
             IPayBalanceWaitingData
         >({
@@ -35,12 +41,11 @@ export const PayBalanceWaiting = memo(
                     afterDataCallback(data) {
                         if (data.status) {
                             if (intervalRef) clearInterval(intervalRef.current)
+                            // text не передаём — на экране успеха
+                            // подставится текст пополнения из макета
                             router.navigate({
                                 pathname: ESCREENS.SUCCESS,
-                                params: {
-                                    text: 'Оплата прошла успешно',
-                                    link: backLink,
-                                },
+                                params: { link: backLink },
                             })
                         }
                     },
@@ -61,69 +66,31 @@ export const PayBalanceWaiting = memo(
             }
         }, [payId])
 
+        if (errorText) {
+            return (
+                <View style={styles.container}>
+                    <CenteredState
+                        variant="error"
+                        title="Не удалось проверить оплату"
+                        description={errorText}
+                        action={{ label: 'На главную', onPress: goOnHomePage }}
+                    />
+                </View>
+            )
+        }
+
         return (
             <View style={styles.container}>
-                {errorText ? (
-                    <>
-                        <ErrorWhileFetchingForm
-                            margins={{ mb: 30, mt: 30 }}
-                            message={errorText}
-                        />
-                        <CustomButton
-                            onPress={goOnHomePage}
-                            styled={{
-                                width: { type: 'px', value: 300 },
-                                height: { type: 'px', value: 50 },
-                                marginsPaddings: { mb: 15 },
-                            }}
-                        >
-                            Вернуться на главную
-                        </CustomButton>
-                    </>
-                ) : (
-                    <>
-                        <PayBalanceWaitingGif width={200} height={300} />
-                        <Typography
-                            type="bodyAccentMedium"
-                            textAlign="center"
-                            marginsPaddings={{ mt: -20 }}
-                        >
-                            НЕМНОГО ПОДОЖДИТЕ
-                        </Typography>
-                        <Typography
-                            type="bodySmall"
-                            marginsPaddings={{ mb: 30 }}
-                            textAlign="center"
-                        >
-                            ДЕНЬГИ ПОСТУПЯТ АВТОМАТИЧЕСКИ
-                        </Typography>
-                        <CustomButton
-                            onPress={onGoBack}
-                            styled={{
-                                width: { type: 'px', value: 300 },
-                                marginsPaddings: { mb: 15 },
-                            }}
-                        >
-                            Вернуться к выбору банков
-                        </CustomButton>
-                    </>
-                )}
-
-                <CustomButton
-                    onPress={() => {}}
-                    styled={{
-                        type: 'secondary',
-                        width: { type: 'px', value: 300 },
+                <CenteredState
+                    title="Ожидаем оплату"
+                    description="Подтвердите платёж в приложении банка — средства поступят автоматически."
+                    icon={<Loader />}
+                    action={{
+                        label: 'Вернуться к выбору банка',
+                        onPress: onGoBack,
                     }}
-                >
-                    ПОМОЩЬ
-                </CustomButton>
+                />
             </View>
         )
     }
 )
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-    },
-})

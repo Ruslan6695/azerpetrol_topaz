@@ -1,5 +1,4 @@
 import React from 'react'
-import { InternalPagesLayout } from '../../layouts/InternalPagesLayout'
 import { PayBalanceScreen } from '../../screens/PayBalanceScreen'
 
 type Props = {}

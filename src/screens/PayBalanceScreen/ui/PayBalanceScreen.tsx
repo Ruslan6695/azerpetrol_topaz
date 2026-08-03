@@ -10,7 +10,7 @@ export const PayBalanceScreen = memo((props: Props) => {
     const params = useLocalSearchParams<TPayBalanceScreenParams>()
 
     return (
-        <InternalPagesLayout hideScroll>
+        <InternalPagesLayout>
             <PayBalanceWidget params={params} />
         </InternalPagesLayout>
     )

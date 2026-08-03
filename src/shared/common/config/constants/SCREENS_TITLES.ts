@@ -18,5 +18,6 @@ export const SCREENS_TITLES: any = {
     [ESCREENS.SETTINGS]: 'Настройки',
     [ESCREENS.NEWS]: 'Новости',
     [ESCREENS.NEWS_DETAILS]: 'Новости',
-    [ESCREENS.FUEL_PRICES]: 'Цены на топливо'
+    [ESCREENS.FUEL_PRICES]: 'Цены на топливо',
+    [ESCREENS.SUCCESS]: 'Успешно',
 }

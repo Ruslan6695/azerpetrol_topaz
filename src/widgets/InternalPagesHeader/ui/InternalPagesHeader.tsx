@@ -1,6 +1,7 @@
 import { usePathname, useRouter } from 'expo-router'
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
     PRESS_SCALE,
     RADII,
@@ -20,6 +21,9 @@ export const InternalPagesHeader = memo(({}: Props) => {
     const router = useRouter()
     const pathname = usePathname()
     const COLORS = ThemeStore.useCOLORS()
+    // Экраны вне группы (main) не обёрнуты в SafeAreaView, а статус-бар
+    // скрыт глобально — без этого отступа шапка уезжает под вырез.
+    const insets = useSafeAreaInsets()
 
     const handleBack = useCallback(() => {
         router.back()
@@ -30,7 +34,7 @@ export const InternalPagesHeader = memo(({}: Props) => {
             flexDirection: 'row',
             alignItems: 'center',
             gap: 12 * SIZES.PX,
-            paddingTop: 10 * SIZES.PX,
+            paddingTop: insets.top + 10 * SIZES.PX,
             paddingBottom: 12 * SIZES.PX,
             paddingHorizontal: 20 * SIZES.PX,
         },
@@ -45,10 +49,7 @@ export const InternalPagesHeader = memo(({}: Props) => {
     return (
         <View style={styles.container}>
             <PressableScale onPress={handleBack} scaleTo={PRESS_SCALE.BACK}>
-                <Glass
-                    level="secondary"
-                    radius={(BACK_SIZE / 2) * SIZES.PX}
-                >
+                <Glass level="secondary" radius={(BACK_SIZE / 2) * SIZES.PX}>
                     <View style={styles.back}>
                         <Typography
                             type="num16"
