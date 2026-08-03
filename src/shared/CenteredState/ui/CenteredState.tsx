@@ -75,11 +75,16 @@ export const CenteredState = memo(
             description: {
                 maxWidth: 260 * SIZES.PX,
             },
+            // В макете кнопка состояния — пилюля по ширине контента,
+            // а не растянутая на всю ширину экрана
             actions: {
                 gap: 10 * SIZES.PX,
-                alignSelf: 'stretch',
-                paddingHorizontal: 40 * SIZES.PX,
+                alignSelf: 'center',
+                alignItems: 'center',
                 marginTop: 8 * SIZES.PX,
+            },
+            actionButton: {
+                alignSelf: 'center',
             },
         })
 
@@ -87,13 +92,13 @@ export const CenteredState = memo(
             <View style={styles.container}>
                 <View style={styles.circle}>
                     {icon ?? (
-                        <Typography type="h5" customColor={glyphColor}>
+                        <Typography type="h1" customColor={glyphColor}>
                             {glyph}
                         </Typography>
                     )}
                 </View>
 
-                <Typography type="h6" textAlign="center">
+                <Typography type="h5" textAlign="center">
                     {title}
                 </Typography>
 
@@ -116,6 +121,8 @@ export const CenteredState = memo(
                                 title={action.label}
                                 onPress={action.onPress}
                                 variant={action.variant ?? 'elevated'}
+                                fullWidth={false}
+                                style={styles.actionButton}
                             />
                         )}
                         {secondaryAction && (
@@ -123,6 +130,8 @@ export const CenteredState = memo(
                                 title={secondaryAction.label}
                                 onPress={secondaryAction.onPress}
                                 variant="secondary"
+                                fullWidth={false}
+                                style={styles.actionButton}
                             />
                         )}
                     </View>

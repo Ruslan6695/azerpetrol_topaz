@@ -1,22 +1,30 @@
-import { memo, useCallback } from 'react'
-import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { SumIcon } from '../../../../shared/SumIcon'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { SIZES, useSendFetch } from '../../../../shared'
+import { memo, useCallback, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import {
+    divideNumber,
+    RADII,
+    SIZES,
+    SPACING,
+    useSendFetch,
+} from '../../../../shared'
+import { AmountField } from '../../../../shared/AmountField'
+import { Chip } from '../../../../shared/Chip'
+import { GlassCard } from '../../../../shared/GlassCard'
+import { PillButton } from '../../../../shared/PillButton'
+import { Typography } from '../../../../shared/Typography'
 import { payBalanceFormApi } from '../api/payBalanceFormApi'
+import { DEFAULT_PAY_SUM } from '../config/constants/DEFAULT_PAY_SUM'
+import { QUICK_SUMS } from '../config/constants/QUICK_SUMS'
 import { IPayBalanceFormData } from '../config/interfaces/IPayBalanceFormData'
-import { Loader } from '../../../../shared/Loader'
-import { showError } from '../../../../shared/ToastComponent'
 
 type Props = {
     onPay: (order: IPayBalanceFormData) => void
+    /** Сумма, переданная параметром маршрута — например нехватка средств при наливе */
     sum: string | null
 }
 
 export const PayBalanceForm = memo(({ onPay, sum }: Props) => {
-    const { handleChangeInputValue, inputValue } = useInput({
-        defaultValue: sum ? sum : '',
-    })
+    const [amount, setAmount] = useState(sum ? Number(sum) : DEFAULT_PAY_SUM)
     const { isSendFetchLoading, sendFetch } = useSendFetch<
         number,
         IPayBalanceFormData
@@ -24,45 +32,67 @@ export const PayBalanceForm = memo(({ onPay, sum }: Props) => {
         apiCallback: payBalanceFormApi.pay,
         errorText: 'Ошибка при пополнении баланса',
     })
+
     const handleSubmit = useCallback(() => {
-        if (inputValue.length > 0) {
-            sendFetch({
-                args: +inputValue,
-                afterDataCallback(data) {
-                    onPay(data)
-                },
-            })
-        } else {
-            showError({text:'Введите сумму'})
-        }
-    }, [onPay, inputValue])
+        sendFetch({
+            args: amount,
+            afterDataCallback(data) {
+                onPay(data)
+            },
+        })
+    }, [onPay, amount, sendFetch])
+
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.MD * SIZES.PX,
+        },
+        amount: {
+            marginTop: SPACING.SM * SIZES.PX,
+        },
+        chips: {
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: SPACING.SM * SIZES.PX,
+            marginTop: SPACING.LG * SIZES.PX,
+        },
+    })
+
     return (
-        <>
-            {isSendFetchLoading ? (
-                <Loader marginsPaddings={{ mt: 20, mb: 20 }} />
-            ) : (
-                <>
-                    <CustomInput
-                        mask="99999999999999999999999"
-                        styled={{ width: { type: 'absolute', value: '100%' } }}
-                        keyboardType="numeric"
-                        onSubmitEditing={handleSubmit}
-                        placeholder="Введите сумму"
-                        value={inputValue}
-                        onChangeText={handleChangeInputValue}
-                    />
-                    <CustomButton
-                        disabled={isSendFetchLoading}
-                        onPress={handleSubmit}
-                        styled={{
-                            marginsPaddings: { mt: 15 },
-                            width: { type: 'absolute', value: '100%' },
-                        }}
-                    >
-                        Подтвердить
-                    </CustomButton>
-                </>
-            )}
-        </>
+        <View style={styles.container}>
+            <GlassCard
+                variant="glass2"
+                radius={RADII.HERO_SM}
+                paddingTop={22}
+                paddingHorizontal={SPACING.SCREEN}
+                paddingBottom={18}
+            >
+                <Typography type="eyebrow">Сумма пополнения</Typography>
+
+                <AmountField
+                    value={amount}
+                    onChangeValue={setAmount}
+                    suffix="₽"
+                    style={styles.amount}
+                />
+
+                <View style={styles.chips}>
+                    {QUICK_SUMS.map((quickSum) => (
+                        <Chip
+                            key={quickSum}
+                            label={divideNumber(quickSum)}
+                            selected={amount === quickSum}
+                            onPress={() => setAmount(quickSum)}
+                        />
+                    ))}
+                </View>
+            </GlassCard>
+
+            <PillButton
+                title="Перейти к оплате"
+                onPress={handleSubmit}
+                loading={isSendFetchLoading}
+                disabled={amount <= 0}
+            />
+        </View>
     )
 })

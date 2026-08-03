@@ -1,51 +1,58 @@
 import { memo, useCallback, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
-import { MapInfoBlocks } from '../../../features/MapInfoBlocks'
+import { InfoCard } from '../../../entities/InfoCard'
 import {
     IPayBalanceFormData,
     PayBalanceForm,
 } from '../../../features/PayBalance/PayBalanceForm'
-import { PAY_BALANCE_INFO_TEXTS } from '../constants/PAY_BALANCE_INFO_TEXTS'
 import { PayBalanceSelectBank } from '../../../features/PayBalance/PayBalanceSelectBank'
 import { PayBalanceWaiting } from '../../../features/PayBalance/PayBalanceWaiting'
-import { TPayBalanceScreenParams } from '../../../shared'
+import { SIZES, SPACING, TPayBalanceScreenParams } from '../../../shared'
+import { PAY_BALANCE_INFO_TEXTS } from '../constants/PAY_BALANCE_INFO_TEXTS'
 
 type Props = {
     params: Partial<TPayBalanceScreenParams>
 }
 
 export const PayBalanceWidget = memo(({ params }: Props) => {
-    const [road, setRoad] = useState<'changeSum' | 'selectBank' | 'waiting'>(
-        'waiting'
-    )
+    // Шаг экрана и шит выбора банка живут отдельно: из ожидания
+    // можно вернуться к банкам, не перерисовывая форму.
+    const [step, setStep] = useState<'form' | 'waiting'>('form')
+    const [isBankOpened, setIsBankOpened] = useState(false)
     const [orderData, setOrderData] = useState<IPayBalanceFormData>()
+
     const handleSetOrderData = useCallback((order: IPayBalanceFormData) => {
         setOrderData(order)
-        setRoad('selectBank')
+        setIsBankOpened(true)
     }, [])
 
     const handleSelectBank = useCallback(() => {
-        setRoad('waiting')
+        setIsBankOpened(false)
+        setStep('waiting')
     }, [])
 
     const handleGoBackToSelectBank = useCallback(() => {
-        setRoad('selectBank')
+        setIsBankOpened(true)
     }, [])
+
+    const handleCloseBankSheet = useCallback(() => {
+        setIsBankOpened(false)
+    }, [])
+
+    const styles = StyleSheet.create({
+        infoList: {
+            gap: SPACING.MD * SIZES.PX,
+            marginTop: SPACING.SECTION * SIZES.PX,
+        },
+    })
 
     return (
         <>
-            <ScreenTitle title="Пополните баланс" />
-            {road === 'waiting' && orderData ? (
+            {step === 'waiting' && orderData ? (
                 <PayBalanceWaiting
                     backLink={params.backLink}
                     onGoBack={handleGoBackToSelectBank}
-                    payId={orderData?.id}
-                />
-            ) : road === 'selectBank' && orderData ? (
-                <PayBalanceSelectBank
-                    onSelectBank={handleSelectBank}
-                    link={orderData?.link}
+                    payId={orderData.id}
                 />
             ) : (
                 <>
@@ -53,12 +60,24 @@ export const PayBalanceWidget = memo(({ params }: Props) => {
                         sum={params.sum ? params.sum : null}
                         onPay={handleSetOrderData}
                     />
-                    <MapInfoBlocks infoBlocks={PAY_BALANCE_INFO_TEXTS} />
+                    <View style={styles.infoList}>
+                        {PAY_BALANCE_INFO_TEXTS.map((infoBlock) => (
+                            <InfoCard
+                                key={infoBlock.title}
+                                title={infoBlock.title}
+                                info={infoBlock.info}
+                            />
+                        ))}
+                    </View>
                 </>
             )}
+
+            <PayBalanceSelectBank
+                isOpened={isBankOpened && !!orderData}
+                link={orderData?.link ?? ''}
+                onSelectBank={handleSelectBank}
+                onClose={handleCloseBankSheet}
+            />
         </>
     )
-})
-const styles = StyleSheet.create({
-    container: {},
 })
