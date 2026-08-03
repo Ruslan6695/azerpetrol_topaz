@@ -4,4 +4,5 @@ export interface IFuelScanBarcodeWidgetData {
     azs: IAzs
     trc: IColumn
     balance: number
+    bonus_balance: number
 }

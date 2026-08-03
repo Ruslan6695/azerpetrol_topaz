@@ -93,7 +93,10 @@ export const TransferBalanceConfirm = memo(
         hideToastOnError: true,
         afterDataCallback(data) {
           setUserName(data.name);
-          setBalance({ balance: data.balance });
+          setBalance({
+                                balance: data.balance,
+                                bonus_balance: data.bonus_balance,
+                            });
         },
       });
     }, []);

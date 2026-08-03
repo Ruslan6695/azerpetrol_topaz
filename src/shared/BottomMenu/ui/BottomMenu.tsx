@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { SPACING } from '../../common/config/constants/SPACING'
 import { ThemeStore } from '../../common/model/themeStore'
 import { Glass } from '../../GlassCard'
 import { BottomMenuItem } from '../BottomMenuItem'
@@ -24,7 +25,7 @@ export const BottomMenu = (props: Props) => {
                 position: 'absolute',
                 left: 16 * SIZES.PX,
                 right: 16 * SIZES.PX,
-                bottom: 18 * SIZES.PX + insets.bottom,
+                bottom: SPACING.TABBAR_BOTTOM * SIZES.PX + insets.bottom,
                 borderRadius: RADII.TABBAR * SIZES.PX,
                 shadowColor: '#000',
                 shadowOpacity: 0.18,

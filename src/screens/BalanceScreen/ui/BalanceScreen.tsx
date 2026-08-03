@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
 import { BalanceWidget } from '../../../widgets/BalanceWidget'
-import { HomeStore } from '../../../widgets/Home/HomeMainWidget/model/HomeStore'
+import { HomeStore } from '../../../widgets/Home/HomeMainWidget'
 import { ESCREENS } from '../../../shared'
 
 type Props = {}

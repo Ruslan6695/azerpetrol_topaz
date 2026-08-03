@@ -12,8 +12,11 @@ import { PromotionsAndBonusesItem } from '../../../entities/PromotionsAndBonuses
 import { IShowPromotionsModalData } from '../../../features/ShowPromotionsModal/config/interfaces/IShowPromotionsModalData'
 const width = Dimensions.get('window').width
 
-interface IProps extends IShowPromotionsModalData {}
-export const ImageCarousel = ({ promotions }: IProps) => {
+interface IProps extends IShowPromotionsModalData {
+    /** Ширина слайда. По умолчанию 90% экрана */
+    width?: number
+}
+export const ImageCarousel = ({ promotions, width: slideWidth }: IProps) => {
     const ref = useRef<ICarouselInstance>(null)
     const progress = useSharedValue<number>(0)
     const colorTheme = ThemeStore.useTheme()
@@ -35,7 +38,7 @@ export const ImageCarousel = ({ promotions }: IProps) => {
                 autoPlay
                 style={{ borderRadius: 25 * SIZES.PX }}
                 ref={ref}
-                width={SIZES.WIDTH(0.9)}
+                width={slideWidth ?? SIZES.WIDTH(0.9)}
                 height={160 * SIZES.PX}
                 data={promotions}
                 onProgressChange={progress}
@@ -48,7 +51,7 @@ export const ImageCarousel = ({ promotions }: IProps) => {
                 progress={progress}
                 data={promotions}
                 dotStyle={{
-                    backgroundColor: 'black',
+                    backgroundColor: COLORS.TEXT.Tertiary,
                     borderRadius: '50%',
                 }}
                 activeDotStyle={{

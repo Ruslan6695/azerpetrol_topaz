@@ -32,7 +32,7 @@ export const NewsItem = ({ date_create, header, html_text, id }: IProps) => {
                     objectFit: 'contain',
                 },
             }),
-        []
+        [COLORS]
     )
 
     return (

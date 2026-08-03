@@ -76,7 +76,11 @@ const Blob = memo(({ color, opacity, size, duration, reverse }: BlobProps) => {
             <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
                 <Defs>
                     <RadialGradient id={gradientId} cx="50%" cy="50%" r="50%">
-                        <Stop offset="0%" stopColor={color} stopOpacity={opacity} />
+                        <Stop
+                            offset="0%"
+                            stopColor={color}
+                            stopOpacity={opacity}
+                        />
                         <Stop
                             offset="40%"
                             stopColor={color}
@@ -96,7 +100,7 @@ const Blob = memo(({ color, opacity, size, duration, reverse }: BlobProps) => {
     )
 })
 
-// Амбиентный фон макета: два медленно дрейфующих размытых пятна позади контента.
+// Амбиентный фон макета: три медленно дрейфующих размытых пятна позади контента.
 // Заменяет BackgroundImage в лэйаутах; сам BackgroundImage остаётся для экранов,
 // где он используется как декор.
 export const AmbientBackground = memo(() => {
@@ -112,6 +116,11 @@ export const AmbientBackground = memo(() => {
             position: 'absolute',
             top: 180 * SIZES.PX,
             right: -120 * SIZES.PX,
+        },
+        blobC: {
+            position: 'absolute',
+            bottom: 120 * SIZES.PX,
+            left: -100 * SIZES.PX,
         },
     })
 
@@ -132,6 +141,14 @@ export const AmbientBackground = memo(() => {
                     size={300 * SIZES.PX}
                     duration={11000}
                     reverse
+                />
+            </Animated.View>
+            <Animated.View pointerEvents="none" style={styles.blobC}>
+                <Blob
+                    color={COLORS.AMBIENT.BlobC}
+                    opacity={COLORS.AMBIENT.BlobCOpacity}
+                    size={280 * SIZES.PX}
+                    duration={13000}
                 />
             </Animated.View>
         </>

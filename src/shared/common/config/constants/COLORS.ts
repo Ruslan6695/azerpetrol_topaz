@@ -47,11 +47,16 @@ export const COLORS = {
     // Surface — непрозрачная поверхность модалок и боттом-шитов: полупрозрачная
     // панель над затемнённым бэкдропом просвечивает и выглядит сломанной.
     GLASS: {
-        Primary: 'rgba(255,255,255,0.55)',
-        Secondary: 'rgba(255,255,255,0.85)',
-        Border: 'rgba(10,32,51,0.08)',
-        SolidPrimary: '#EAEFE2',
-        SolidSecondary: '#F4F7EE',
+        // Стекло светлой темы стало заметно прозрачнее: сквозь него должны
+        // просвечивать амбиентные блобы, поэтому рамка тоже светлая, а не
+        // тёмная — иначе карточки читались бы как «обведённые».
+        Primary: 'rgba(255,255,255,0.28)',
+        Secondary: 'rgba(255,255,255,0.45)',
+        Border: 'rgba(255,255,255,0.7)',
+        // Непрозрачные подложки для Android — те же стёкла, предкомпозированные
+        // на BACKGROUND.Primary (#E4E9DD).
+        SolidPrimary: '#EBEFE6',
+        SolidSecondary: '#F0F3EC',
         Surface: '#F2F5EC',
     },
     ACCENT: {
@@ -59,6 +64,9 @@ export const COLORS = {
         Lime: '#B8F53C',
         // Текст на лайме — всегда тёмный, в обеих темах.
         OnLime: '#0A0E0B',
+        // Подложка под акцентной иконкой (круг в модалке перевода бонусов).
+        // Тонировка поверх стекла, поэтому одинакова в обеих темах.
+        PrimarySoft: 'rgba(0, 193, 42, 0.16)',
     },
     STATE: {
         Destructive: '#FF6B54',
@@ -75,13 +83,19 @@ export const COLORS = {
     // Цвета фоновых блобов (shared/AmbientBackground).
     AMBIENT: {
         BlobA: '#00C12A',
-        BlobAOpacity: 0.18,
+        BlobAOpacity: 0.26,
         BlobB: '#B8F53C',
-        BlobBOpacity: 0.22,
+        BlobBOpacity: 0.3,
+        BlobC: '#00C12A',
+        BlobCOpacity: 0.22,
     },
     EFFECTS: {
         BlurTint: 'light' as 'light' | 'dark',
         BlurIntensity: 20,
+        // Скрим поверх фотографии промо-карточки. Лежит на фото, а не на фоне
+        // экрана, поэтому в обеих палитрах одинаковый.
+        ScrimFrom: 'rgba(10,14,11,0.05)',
+        ScrimTo: 'rgba(10,14,11,0.85)',
     },
 }
 
@@ -136,6 +150,7 @@ export const COLORS_DARK = {
         Primary: '#00C12A',
         Lime: '#B8F53C',
         OnLime: '#0A0E0B',
+        PrimarySoft: 'rgba(0, 193, 42, 0.16)',
     },
     STATE: {
         Destructive: '#FF6B54',
@@ -151,12 +166,16 @@ export const COLORS_DARK = {
     },
     AMBIENT: {
         BlobA: '#00C12A',
-        BlobAOpacity: 0.3,
+        BlobAOpacity: 0.42,
         BlobB: '#B8F53C',
-        BlobBOpacity: 0.18,
+        BlobBOpacity: 0.34,
+        BlobC: '#00C12A',
+        BlobCOpacity: 0.26,
     },
     EFFECTS: {
         BlurTint: 'dark' as 'light' | 'dark',
         BlurIntensity: 20,
+        ScrimFrom: 'rgba(10,14,11,0.05)',
+        ScrimTo: 'rgba(10,14,11,0.85)',
     },
 }

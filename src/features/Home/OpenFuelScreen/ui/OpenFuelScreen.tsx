@@ -1,60 +1,70 @@
-import { useNavigation, useRouter } from 'expo-router'
-import { memo, useCallback, useMemo } from 'react'
-import { Image, StyleSheet, View } from 'react-native'
-import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { ESCREENS, RADII, SIZES, SPACING, ThemeStore } from '../../../../shared'
+import { GlassCard } from '../../../../shared/GlassCard'
 import { Typography } from '../../../../shared/Typography'
-import { BackgroundImage } from '../../../../shared/BackgroundImage'
+
 type Props = {
-    big_text: string
-    small_text: string
+    big_text?: string
+    small_text?: string
 }
 
+// Герой главной: градиентная карточка с лаймовым кругом-стрелкой справа.
 export const OpenFuelScreen = memo(({ big_text, small_text }: Props) => {
     const router = useRouter()
     const COLORS = ThemeStore.useCOLORS()
+    // Топливо — вкладка таб-бара, поэтому navigate, а не push.
     const handlePress = useCallback(() => {
         router.navigate(ESCREENS.FUEL)
-    }, [])
+    }, [router])
 
-    const styles = useMemo(() => {
-        return StyleSheet.create({
-            container: {
-                width: '100%',
-                borderRadius: SIZES.PX * 16,
-                position: 'relative',
-                height: 154,
-                backgroundColor: COLORS.BACKGROUND.Tertiary,
-                borderColor: COLORS.BRAND.Secondary,
-                borderWidth: 0.9 * SIZES.PX,
-                overflow: 'hidden',
-            },
-            image: {
-                borderRadius: SIZES.PX * 16,
-                width: '100%',
-                height: 160 * SIZES.PX,
-            },
-            textContainer: {
-                position: 'absolute',
-                top: 16 * SIZES.PX,
-                left: 16 * SIZES.PX,
-            },
-        })
-    }, [COLORS])
+    const styles = StyleSheet.create({
+        card: {
+            minHeight: 104 * SIZES.PX,
+            justifyContent: 'center',
+        },
+        arrow: {
+            position: 'absolute',
+            right: 18 * SIZES.PX,
+            top: '50%',
+            transform: [{ translateY: -22 * SIZES.PX }],
+            width: 44 * SIZES.PX,
+            height: 44 * SIZES.PX,
+            borderRadius: RADII.PILL,
+            backgroundColor: COLORS.ACCENT.Lime,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        text: {
+            paddingRight: 62 * SIZES.PX,
+        },
+    })
 
     return (
-        <CustomTouchableOpacity
+        <GlassCard
+            variant="hero"
+            radius={RADII.HERO_SM}
+            paddingVertical={22}
+            paddingHorizontal={SPACING.SCREEN}
             onPress={handlePress}
-            activeOpacity={0.8}
-            style={styles.container}
+            style={styles.card}
         >
-            <BackgroundImage bottom={-10} right={-5} />
-            <View style={styles.textContainer}>
-                <Typography type="headlineSmall">Заправить авто</Typography>
-                <Typography color="secondary" type="caption">
-                    {small_text} {big_text}
+            <View style={styles.text}>
+                <Typography type="h5">Заправить авто</Typography>
+                <Typography
+                    type="body13"
+                    color="secondary"
+                    marginsPaddings={{ mt: SPACING.XS }}
+                >
+                    {[small_text, big_text].filter(Boolean).join(' ')}
                 </Typography>
             </View>
-        </CustomTouchableOpacity>
+            <View style={styles.arrow}>
+                <Typography type="num18" customColor={COLORS.ACCENT.OnLime}>
+                    →
+                </Typography>
+            </View>
+        </GlassCard>
     )
 })

@@ -1,13 +1,17 @@
+import { useRouter } from 'expo-router'
 import { memo, useEffect } from 'react'
-import { StyleSheet } from 'react-native'
-import { PromotionsAndBonusesItem } from '../../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
-import { AppStore, SIZES, useFetchData } from '../../../../shared'
+import {
+    HomePromotionCard,
+    IPromotionsAndBonusesItem,
+} from '../../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
+import { AppStore, ESCREENS, useFetchData } from '../../../../shared'
 import { ShowPromotionsModalStore } from '../../../ShowPromotionsModal'
 import { showMainPromotionsApi } from '../api/showMainPromotionsApi'
 
 type Props = {}
 
 export const ShowMainPromotions = memo((props: Props) => {
+    const router = useRouter()
     const setModalPromotions = ShowPromotionsModalStore.useSetPromotions()
     const { data, fetchData, setData } = useFetchData({
         apiCallback: showMainPromotionsApi.getPromotions,
@@ -35,17 +39,29 @@ export const ShowMainPromotions = memo((props: Props) => {
                 },
             })
     }, [isTokenRefreshed])
+
+    const handlePress = (promotion: IPromotionsAndBonusesItem) => () => {
+        router.navigate({
+            pathname: ESCREENS.PROMOTIONS_AND_BONUSES_DETAILS,
+            params: {
+                date_create: promotion.date_create,
+                html_text: promotion.html_text,
+                img: promotion.img,
+                header: promotion.header,
+                page_link: promotion.page_link,
+            },
+        })
+    }
+
     return (
         <>
             {data?.promotions?.map((pr) => (
-                <PromotionsAndBonusesItem {...pr} key={pr.id} />
+                <HomePromotionCard
+                    {...pr}
+                    key={pr.id}
+                    onPress={handlePress(pr)}
+                />
             ))}
         </>
     )
-})
-
-const styles = StyleSheet.create({
-    promotions: {
-        gap: SIZES.PX * 10,
-    },
 })

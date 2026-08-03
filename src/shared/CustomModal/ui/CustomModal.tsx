@@ -17,6 +17,8 @@ type Props = {
     animationType?: 'fade' | 'slide' | 'none'
     bgDark?: boolean
     title?: string
+    /** В единицах макета, домножается на SIZES.PX внутри */
+    radius?: number
 }
 
 export const CustomModal = memo(
@@ -31,6 +33,7 @@ export const CustomModal = memo(
         bgDark,
         title,
         white,
+        radius = 15,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
 
@@ -46,7 +49,7 @@ export const CustomModal = memo(
                 // обязана быть непрозрачной. Проп white оставлен для совместимости
                 // сигнатуры, но белым в тёмной теме больше не мигает.
                 backgroundColor: COLORS.GLASS.Surface,
-                borderRadius: SIZES.PX * 15,
+                borderRadius: SIZES.PX * radius,
                 width: width,
                 height: height,
                 zIndex: 2,

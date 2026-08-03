@@ -11,10 +11,22 @@ const store = create<IUserStore>()(
     immer((set) => ({
         user: null,
         balance: 0,
+        bonus_balance: 0,
         getUserIsLoadung: true,
-        setBalance({ balance }) {
+        isBalanceHidden: false,
+        setBalance({ balance, bonus_balance }) {
             set((state) => {
                 state.balance = balance
+                state.bonus_balance = bonus_balance
+            })
+        },
+        toggleBalanceHidden() {
+            set((state) => {
+                state.isBalanceHidden = !state.isBalanceHidden
+                setItemToAsyncStorage({
+                    key: EAsyncStoreKeys.IS_BALANCE_HIDDEN,
+                    value: String(state.isBalanceHidden),
+                })
             })
         },
         async getUser() {
@@ -26,6 +38,15 @@ const store = create<IUserStore>()(
                 const token = await getItemFromAsyncStorage(
                     EAsyncStoreKeys.TOKEN
                 )
+                // Флаг скрытия баланса восстанавливаем здесь же: он должен
+                // быть готов до первой отрисовки шапки и карточки.
+                const isBalanceHidden = await getItemFromAsyncStorage(
+                    EAsyncStoreKeys.IS_BALANCE_HIDDEN
+                )
+
+                set((state) => {
+                    state.isBalanceHidden = isBalanceHidden === 'true'
+                })
 
                 if (name && token)
                     set((state) => {

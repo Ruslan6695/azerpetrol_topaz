@@ -176,7 +176,7 @@ src/shared/Icons/
 - `MainHeaderWidget` — убран хак `Device.osName` для высоты (его заменил safe-area), padding `14/20`, `<Logo size={50} />` → `<Wordmark height={15} />`.
 - `HeaderWallet` — стеклянная пилюля `RADII.PILL` с padding `7/14`, обёрнута в `PressableScale`, иконка кошелька из нового набора, баланс `label14`, `BonusIcon` 16 без тонировки.
 - `InternalPagesHeader` — круглая стеклянная кнопка «назад» 38×38 в `PressableScale` со `scaleTo={PRESS_SCALE.BACK}`, заголовок `displaySmall` → `num18`.
-- `(main)/_layout.tsx` — фон `BACKGROUND.Primary`, `edges` `['bottom',…]` → `['top',…]` (низ уходит под плавающий бар), `AmbientBackground`, `paddingBottom: SPACING.TABBAR_CLEARANCE`.
+- `(main)/_layout.tsx` — фон `BACKGROUND.Primary`, `edges` `['bottom',…]` → `['top',…]` (низ уходит под плавающий бар), `AmbientBackground`, `paddingBottom: useBottomMenuClearance()` (считает `insets.bottom + TABBAR_BOTTOM + TABBAR_HEIGHT + XL`; раньше была константа `TABBAR_CLEARANCE`, но она не учитывала инсеты и на iPhone контент заезжал под бар).
 - `InternalPagesLayout` — `AmbientBackground`, `paddingBottom: 40`, убраны мёртвый импорт статического `COLORS` и висячий `{' '}`.
 
 Аудит вложенных скроллеров: вертикальных скроллеров внутри табов нет. `MapProfileJoinAccounts` горизонтальный, `MapHistoryItems` живёт на `/history` вне `(main)` (там таб-бара нет), `MapCoffeeItems` импортирует `ScrollView`, но не использует.

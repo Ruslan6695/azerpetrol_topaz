@@ -1,4 +1,4 @@
-import { INewsItem } from '../../../../../entities/NewsItem'
+import { INewsItem } from '../../../../../entities/News/NewsItem'
 
 export interface INewsWidgetApiData {
     news: INewsItem[]

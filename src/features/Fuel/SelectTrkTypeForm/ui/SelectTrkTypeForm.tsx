@@ -38,7 +38,10 @@ export const SelectTrkTypeForm = memo(
         args: { azsId: azs.id, columnId: column.id },
         hideToastOnError: true,
         afterDataCallback(data) {
-          setBalance({ balance: data.balance });
+          setBalance({
+                                balance: data.balance,
+                                bonus_balance: data.bonus_balance,
+                            });
           changeFuelOnDebt(data.fuel_on_debt);
         },
       });
