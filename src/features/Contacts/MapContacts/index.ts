@@ -1,2 +1,2 @@
 export * from './ui/MapContacts'
-export * from './lib/helpers/checkIsContactsInSystem'
+export * from './lib/helpers/checkIsContactInSystem'

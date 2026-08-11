@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
 import { setItemToAsyncStorage } from '../asyncStorage/setItemToAsyncStorage'
 import { EAsyncStoreKeys } from '../../enums/EAsyncStoreKeys'
-import { router } from 'expo-router'
+import { Href, router } from 'expo-router'
 type Props = {
     setToken: React.Dispatch<React.SetStateAction<string>>
 }
@@ -60,7 +60,9 @@ export const useNotifications = () => {
     ) => {
         const data: { url?: string } =
             response.notification.request.content.data
-        if (data.url) router.replace(data.url)
+        // Маршрут приходит с бэкенда в payload пуша, поэтому typedRoutes
+        // его не проверяет — тип href указывается явно.
+        if (data.url) router.replace(data.url as Href)
     }
     return {
         registerForPushNotificationsAsync,

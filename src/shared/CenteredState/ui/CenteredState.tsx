@@ -2,6 +2,7 @@ import { ReactNode, memo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { SPACING } from '../../common/config/constants/SPACING'
 import { ThemeStore } from '../../common/model/themeStore'
 import { PillButton } from '../../PillButton'
 import { TPillButtonVariants } from '../../PillButton/config/types/TPillButtonVariants'
@@ -78,7 +79,7 @@ export const CenteredState = memo(
             // В макете кнопка состояния — пилюля по ширине контента,
             // а не растянутая на всю ширину экрана
             actions: {
-                gap: 10 * SIZES.PX,
+                gap: SPACING.ROW_GAP * SIZES.PX,
                 alignSelf: 'center',
                 alignItems: 'center',
                 marginTop: 8 * SIZES.PX,

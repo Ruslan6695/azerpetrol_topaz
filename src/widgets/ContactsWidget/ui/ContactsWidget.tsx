@@ -23,8 +23,7 @@ export const ContactsWidget = memo(({ params }: Props) => {
 
     useEffect(() => {
         if (contactsPermission)
-            //@ts-ignore
-            checkIsContactInSystem(contactsPermission?.status)
+            checkIsContactInSystem(contactsPermission.status)
     }, [contactsPermission])
     // Заголовок «Контакты» приходит из шапки InternalPagesHeader
     return contactsPermission?.status == PermissionStatus.DENIED ? (

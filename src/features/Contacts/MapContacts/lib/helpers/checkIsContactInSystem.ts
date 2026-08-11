@@ -3,14 +3,18 @@ import { mask } from 'react-native-mask-text'
 import { contactsApi } from '../../api/contactsApi'
 import { randomUUID } from 'expo-crypto'
 import { IContactItem } from '../../../../../entities/ContactItem'
-import {
-    EPermissionsStatuses,
-    setItemToAsyncStorage,
-} from '../../../../../shared'
+import { setItemToAsyncStorage } from '../../../../../shared'
 import { EAsyncStoreKeys } from '../../../../../shared/common/config/enums/EAsyncStoreKeys'
 
-export const checkIsContactInSystem = async (status: EPermissionsStatuses) => {
-    if (status === EPermissionsStatuses.SUCCESS) {
+// Статус берётся из типа expo-contacts, а не из EPermissionsStatuses: у того
+// два значения ('granted' | 'denied'), а expo отдаёт ещё 'undetermined'.
+// Приводить одно к другому нельзя — члены двух разных enum'ов TS считает
+// несовместимыми даже при одинаковых строках, из-за этого в вызывающем
+// ContactsWidget стоял @ts-ignore.
+export const checkIsContactInSystem = async (
+    status: Contacts.PermissionStatus
+) => {
+    if (status === Contacts.PermissionStatus.GRANTED) {
         const { data } = await Contacts.getContactsAsync({
             fields: [Contacts.Fields.PhoneNumbers],
             sort: Contacts.SortTypes.FirstName,
