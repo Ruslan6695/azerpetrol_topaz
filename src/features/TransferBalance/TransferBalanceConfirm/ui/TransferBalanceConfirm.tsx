@@ -1,192 +1,151 @@
-import { useRouter } from "expo-router";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { ErrorWhileFetchingForm } from "../../../../entities/ErrorWhileFetchingForm";
-import { TransferBalanceConfirmInfoItem } from "../../../../entities/TransferBalanceConfirmInfoItem";
+import { useRouter } from 'expo-router'
+import { memo, useCallback, useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
 import {
-  COLORS,
-  ESCREENS,
-  SIZES,
-  ThemeStore,
-  UserStore,
-  divideNumber,
-  useFetchData,
-  useSendFetch,
-} from "../../../../shared";
-import { CustomButton } from "../../../../shared/CustomButton";
-import { Loader } from "../../../../shared/Loader";
-import { showError } from "../../../../shared/ToastComponent";
-import { transferBalanceConfirmApi } from "../api/transferBalanceConfirmApi";
-import { ITransferBalanceGetClientData } from "../config/interfaces/ITransferBalanceGetClientData";
-import { TransferBalanceConfirmSkeleton } from "./TransferBalanceConfirmSkeleton";
+    divideNumber,
+    ESCREENS,
+    SIZES,
+    SPACING,
+    UserStore,
+    useFetchData,
+    useSendFetch,
+} from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { ListGroup, ListRow } from '../../../../shared/ListRow'
+import { PillButton } from '../../../../shared/PillButton'
+import { showError } from '../../../../shared/ToastComponent'
+import { transferBalanceConfirmApi } from '../api/transferBalanceConfirmApi'
+import { ITransferBalanceGetClientData } from '../config/interfaces/ITransferBalanceGetClientData'
+import { TransferBalanceConfirmSkeleton } from './TransferBalanceConfirmSkeleton'
 
 type Props = {
-  name?: string;
-  phone: string;
-  sum: number;
-  onGoBack: () => void;
-};
+    name?: string
+    phone: string
+    sum: number
+    onGoBack: () => void
+    /** Черновик формы сбрасывает виджет — слайс формы отсюда недоступен */
+    onSuccess: () => void
+}
 
 export const TransferBalanceConfirm = memo(
-  ({ name, phone, sum, onGoBack }: Props) => {
-    const COLORS = ThemeStore.useCOLORS();
-    const setBalance = UserStore.useSetBalance();
-    const balance = UserStore.useBalance();
-    const [userName, setUserName] = useState(name || "");
-    const router = useRouter();
-    const { data, errorText, fetchData, isDataLoading } = useFetchData<
-      ITransferBalanceGetClientData,
-      { phone: string }
-    >({
-      apiCallback: transferBalanceConfirmApi.getClientInfo,
-      errorText: "Не удалось получить клиента",
-    });
-    const {
-      errorText: transferErorrtext,
-      isSendFetchLoading: isTransferLoading,
-      sendFetch: sendTransfer,
-    } = useSendFetch<{
-      transferId: number;
-      sum: number;
-    }>({
-      apiCallback: transferBalanceConfirmApi.confirm,
-      errorText: "Не удалось перевести средства",
-    });
+    ({ name, phone, sum, onGoBack, onSuccess }: Props) => {
+        const setBalance = UserStore.useSetBalance()
+        const balance = UserStore.useBalance()
+        const router = useRouter()
+        const { data, errorText, fetchData, isDataLoading } = useFetchData<
+            ITransferBalanceGetClientData,
+            { phone: string }
+        >({
+            apiCallback: transferBalanceConfirmApi.getClientInfo,
+            errorText: 'Не удалось получить клиента',
+        })
+        const {
+            isSendFetchLoading: isTransferLoading,
+            sendFetch: sendTransfer,
+        } = useSendFetch<{
+            transferId: number
+            sum: number
+        }>({
+            apiCallback: transferBalanceConfirmApi.confirm,
+            errorText: 'Не удалось перевести средства',
+        })
 
-    const handleSubmit = useCallback(() => {
-      if (data) {
-        if (sum <= balance)
-          sendTransfer({
-            args: { transferId: data?.id, sum },
-            afterDataCallback(data) {
-              router.navigate({
-                pathname: ESCREENS.SUCCESS,
-                params: { text: "Перевод успешно выполнен" },
-              });
+        const handleSubmit = useCallback(() => {
+            if (data) {
+                if (sum <= balance)
+                    sendTransfer({
+                        args: { transferId: data.id, sum },
+                        afterDataCallback() {
+                            onSuccess()
+                            router.navigate({
+                                pathname: ESCREENS.SUCCESS,
+                                params: { text: 'Перевод успешно выполнен' },
+                            })
+                        },
+                    })
+                else {
+                    showError({ text: 'Недостаточно средств' })
+                }
+            } else {
+                showError({
+                    text: 'Не удалось получить пользователя для перевода',
+                })
+            }
+        }, [data, sum, balance, sendTransfer, onSuccess, router])
+
+        const styles = StyleSheet.create({
+            actions: {
+                gap: SPACING.ROW_GAP * SIZES.PX,
+                marginTop: SPACING.SCREEN * SIZES.PX,
             },
-          });
-        else {
-          showError({ text: "Недостаточно средств" });
-        }
-      } else {
-        showError({
-          text: "Не удалось получить пользователя для перевода",
-        });
-      }
-    }, [data]);
+        })
 
-    const styles = useMemo(
-      () =>
-        StyleSheet.create({
-          container: {
-            backgroundColor: COLORS.BACKGROUND.Tertiary,
-            padding: SIZES.PX * 20,
-            borderRadius: 16 * SIZES.PX,
-          },
-        }),
-      [COLORS]
-    );
-
-    useEffect(() => {
-      fetchData({
-        args: { phone: phone },
-        hideToastOnError: true,
-        afterDataCallback(data) {
-          setUserName(data.name);
-          setBalance({
-                                balance: data.balance,
-                                bonus_balance: data.bonus_balance,
-                            });
-        },
-      });
-    }, []);
-
-    return (
-      <>
-        {errorText ? (
-          <>
-            <ErrorWhileFetchingForm margins={{ mb: 20 }} message={errorText} />
-            <CustomButton
-              onPress={onGoBack}
-              styled={{
-                type: "secondary",
-                width: {
-                  value: "100%",
-                  type: "absolute",
+        useEffect(() => {
+            fetchData({
+                args: { phone: phone },
+                hideToastOnError: true,
+                afterDataCallback(data) {
+                    setBalance({
+                        balance: data.balance,
+                        bonus_balance: data.bonus_balance,
+                    })
                 },
+            })
+        }, [])
 
-                marginsPaddings: { mt: 10 },
-              }}
-            >
-              Вернуться назад
-            </CustomButton>
-          </>
-        ) : (
-          <>
-            <View style={styles.container}>
-              {isDataLoading ? (
-                <TransferBalanceConfirmSkeleton />
-              ) : (
-                <>
-                  <TransferBalanceConfirmInfoItem
-                    title="Получатель"
-                    info={userName}
-                  />
-                  <TransferBalanceConfirmInfoItem
-                    title="Телефон"
-                    info={phone}
-                  />
-                  <TransferBalanceConfirmInfoItem
-                    bonus
-                    title="Сумма"
-                    info={`${divideNumber(+sum.toFixed(2))}`}
-                  />
-                  <TransferBalanceConfirmInfoItem
-                    bonus
-                    title="Остаток средств"
-                    info={`${divideNumber(+(balance - sum).toFixed(2))}`}
-                  />
-                </>
-              )}
-            </View>
-            {isTransferLoading ? (
-              <Loader />
-            ) : isDataLoading ? (
-              <></>
-            ) : (
-              <>
-                <CustomButton
-                  disabled={isTransferLoading}
-                  onPress={handleSubmit}
-                  styled={{
-                    width: {
-                      value: "100%",
-                      type: "absolute",
-                    },
-                    marginsPaddings: { mt: 20 },
-                  }}
-                >
-                  Перевести
-                </CustomButton>
-                <CustomButton
-                  onPress={onGoBack}
-                  styled={{
-                    type: "secondary",
-                    width: {
-                      value: "100%",
-                      type: "absolute",
-                    },
+        if (errorText) {
+            return (
+                <CenteredState
+                    variant="error"
+                    title="Не удалось получить клиента"
+                    description={errorText}
+                    action={{ label: 'Вернуться назад', onPress: onGoBack }}
+                />
+            )
+        }
 
-                    marginsPaddings: { mt: 10 },
-                  }}
-                >
-                  Вернуться назад
-                </CustomButton>
-              </>
-            )}
-          </>
-        )}
-      </>
-    );
-  }
-);
+        return (
+            <>
+                <ListGroup>
+                    {isDataLoading ? (
+                        <TransferBalanceConfirmSkeleton />
+                    ) : (
+                        <>
+                            <ListRow
+                                title="Получатель"
+                                value={data?.name ?? name ?? ''}
+                            />
+                            <ListRow title="Телефон" value={phone} />
+                            <ListRow
+                                title="Сумма"
+                                value={`${divideNumber(+sum.toFixed(2))} ₽`}
+                            />
+                            <ListRow
+                                last
+                                title="Остаток средств"
+                                value={`${divideNumber(
+                                    +(balance - sum).toFixed(2)
+                                )} ₽`}
+                            />
+                        </>
+                    )}
+                </ListGroup>
+
+                {!isDataLoading && (
+                    <View style={styles.actions}>
+                        <PillButton
+                            title="Перевести"
+                            onPress={handleSubmit}
+                            loading={isTransferLoading}
+                        />
+                        <PillButton
+                            title="Вернуться назад"
+                            variant="secondary"
+                            onPress={onGoBack}
+                        />
+                    </View>
+                )}
+            </>
+        )
+    }
+)

@@ -1,113 +1,122 @@
 import { useRouter } from 'expo-router'
-import { useEffect, useMemo } from 'react'
+import { memo, useCallback, useEffect } from 'react'
 import { StyleSheet, View } from 'react-native'
 import {
-    COLORS,
+    divideNumber,
     ESCREENS,
+    RADII,
     SIZES,
-    ThemeStore,
+    SPACING,
     UserStore,
 } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { PhoneIcon } from '../../../../shared/PhoneIcon'
-import { showError } from '../../../../shared/ToastComponent'
-import { ContactsIcon } from '../../../../shared/Icons/ContactsIcon'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import { AmountField } from '../../../../shared/AmountField'
+import { GlassCard } from '../../../../shared/GlassCard'
+import { GlassInput } from '../../../../shared/GlassInput'
+import { Icon } from '../../../../shared/Icons'
+import { PillButton } from '../../../../shared/PillButton'
+import { Typography } from '../../../../shared/Typography'
+import { TTransferPayload } from '../config/types/TTransferPayload'
+import { TransferDraftStore } from '../model/transferDraftStore'
 
 type Props = {
     name?: string
     phone?: string
-    onTransfer: (p: { name?: string; phone: string; sum: number }) => void
+    onTransfer: (payload: TTransferPayload) => void
 }
 
-export const TransferBalanceForm = ({ name, phone, onTransfer }: Props) => {
-    const COLORS = ThemeStore.useCOLORS()
-    const balance = UserStore.useBalance()
-    const route = useRouter()
-    const {
-        handleChangeInputValue: handleChangePhoneValue,
-        inputValue: phoneValue,
-    } = useInput()
-    const {
-        handleChangeInputValue: handleChangeSumValue,
-        inputValue: sumValue,
-    } = useInput()
+// Длина телефона по маске «8 999 999 99 99» после того, как GlassInput
+// вырезал пробелы.
+const PHONE_LENGTH = 11
 
-    const openContacts = () => {
-        route.navigate(ESCREENS.CONTACTS)
-    }
+export const TransferBalanceForm = memo(
+    ({ name, phone, onTransfer }: Props) => {
+        const balance = UserStore.useBalance()
+        const router = useRouter()
+        const phoneValue = TransferDraftStore.usePhone()
+        const sum = TransferDraftStore.useSum()
+        const setPhone = TransferDraftStore.useSetPhone()
+        const setSum = TransferDraftStore.useSetSum()
 
-    const handleSubmit = () => {
-        if (phoneValue.length > 0 && sumValue.length > 0) {
-            if (+sumValue <= balance) {
-                onTransfer({ name, phone: phoneValue, sum: +sumValue })
-            } else {
-                showError({ text: 'Недостаточно средств для перевода' })
-            }
-        } else {
-            showError({ text: 'Заполните все поля' })
-        }
-    }
+        const handleOpenContacts = useCallback(() => {
+            // Цель возврата передаём явно: MapContacts имеет дефолт на этот экран,
+            // и без параметра связь между экранами остаётся неявной.
+            router.navigate({
+                pathname: ESCREENS.CONTACTS,
+                params: { onSelectLink: ESCREENS.TRANSFER_BALANCE },
+            })
+        }, [router])
 
-    const styles = useMemo(
-        () =>
-            StyleSheet.create({
-                phoneContainer: {
-                    flexDirection: 'row',
-                    width: '100%',
-                    backgroundColor: COLORS.BACKGROUND.Tertiary,
-                    alignItems: 'center',
-                    marginBottom: SIZES.PX * 16,
-                    borderRadius: SIZES.PX * 12,
-                    paddingRight: SIZES.PX * 14,
-                },
-            }),
-        [COLORS]
-    )
+        const handleSubmit = useCallback(() => {
+            onTransfer({ name, phone: phoneValue, sum })
+        }, [onTransfer, name, phoneValue, sum])
 
-    useEffect(() => {
-        if (phone) handleChangePhoneValue(phone)
-    }, [phone])
+        const styles = StyleSheet.create({
+            container: {
+                gap: SPACING.MD * SIZES.PX,
+            },
+            amount: {
+                marginTop: SPACING.SM * SIZES.PX,
+            },
+        })
 
-    return (
-        <>
-            <View style={styles.phoneContainer}>
-                <CustomInput
+        // Телефон, выбранный на экране контактов, приходит route-параметром.
+        useEffect(() => {
+            if (phone) setPhone(phone)
+        }, [phone, setPhone])
+
+        return (
+            <View style={styles.container}>
+                <GlassInput
                     mask="8 999 999 99 99"
                     keyboardType="numeric"
-                    onChangeText={handleChangePhoneValue}
+                    onChangeText={setPhone}
                     value={phoneValue}
-                    styled={{
-                        width: {
-                            type: 'absolute',
-                            value: SIZES.WIDTH(1) - 83 * SIZES.PX,
-                        },
-                    }}
                     placeholder="Введите номер телефона"
+                    icon={<Icon name="phone" size={20} opacity={0.6} />}
                 />
-                <CustomTouchableOpacity
-                    style={{ padding: SIZES.PX * 5 }}
-                    onPress={openContacts}
-                >
-                    <ContactsIcon />
-                </CustomTouchableOpacity>
-            </View>
 
-            <CustomInput
-                onSubmitEditing={handleSubmit}
-                keyboardType="numeric"
-                onChangeText={handleChangeSumValue}
-                value={sumValue}
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    marginsPaddings: { mb: 20 },
-                }}
-                placeholder="Введите сумму"
-            />
-            <CustomButton onPress={handleSubmit} styled={{}}>
-                Перевести
-            </CustomButton>
-        </>
-    )
-}
+                <PillButton
+                    title="Выбрать из контактов"
+                    variant="secondary"
+                    size="md"
+                    onPress={handleOpenContacts}
+                    icon={<Icon name="person" size={18} />}
+                />
+
+                <GlassCard
+                    variant="glass2"
+                    radius={RADII.HERO_SM}
+                    paddingTop={22}
+                    paddingHorizontal={SPACING.SCREEN}
+                    paddingBottom={18}
+                >
+                    <Typography type="eyebrow">Сумма перевода</Typography>
+
+                    <AmountField
+                        value={sum}
+                        onChangeValue={setSum}
+                        suffix="₽"
+                        fontSize={40}
+                        fullWidth
+                        max={balance}
+                        style={styles.amount}
+                    />
+
+                    <Typography
+                        type="caption12"
+                        color="secondary"
+                        marginsPaddings={{ mt: 8 }}
+                    >
+                        {`Доступно: ${divideNumber(balance)} ₽`}
+                    </Typography>
+                </GlassCard>
+
+                <PillButton
+                    title="Перевести"
+                    onPress={handleSubmit}
+                    disabled={phoneValue.length < PHONE_LENGTH || sum <= 0}
+                />
+            </View>
+        )
+    }
+)

@@ -4,11 +4,14 @@ import { TextInputMask } from 'react-native-masked-text'
 import { FONTS } from '../../common/config/constants/FONTS'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { SPACING } from '../../common/config/constants/SPACING'
 import { ThemeStore } from '../../common/model/themeStore'
 import { Typography } from '../../Typography'
 
 const DEFAULT_MASK =
     '******************************************************************************'
+// Боковой отступ поля из макета — в шкале SPACING такого шага нет.
+const FIELD_PADDING_HORIZONTAL = 18
 
 interface IProps extends TextInputProps {
     onChangeText: (text: string) => void
@@ -21,6 +24,11 @@ interface IProps extends TextInputProps {
     maskType?: any
     /** В единицах макета, домножается на SIZES.PX */
     height?: number
+    /**
+     * Пробелы вырезаются, потому что поле изначально писалось под маску
+     * телефона. Текстовому полю (поиск по имени) это мешает — тогда true.
+     */
+    keepSpaces?: boolean
 }
 
 // Поле ввода макета: стекло, рамка GLASS.Border, радиус 16, иконка слева.
@@ -36,6 +44,7 @@ export const GlassInput = forwardRef((props: IProps, ref: any) => {
         mask,
         maskType,
         height = 54,
+        keepSpaces,
         onChangeText,
         ...rest
     } = props
@@ -44,9 +53,9 @@ export const GlassInput = forwardRef((props: IProps, ref: any) => {
         field: {
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 10 * SIZES.PX,
+            gap: SPACING.ROW_GAP * SIZES.PX,
             height: height * SIZES.PX,
-            paddingHorizontal: 18 * SIZES.PX,
+            paddingHorizontal: FIELD_PADDING_HORIZONTAL * SIZES.PX,
             borderRadius: RADII.INPUT * SIZES.PX,
             backgroundColor: COLORS.GLASS.Primary,
             borderWidth: 1,
@@ -64,7 +73,11 @@ export const GlassInput = forwardRef((props: IProps, ref: any) => {
     return (
         <View>
             {label && (
-                <Typography type="caption12" color="secondary" marginsPaddings={{ mb: 6 }}>
+                <Typography
+                    type="caption12"
+                    color="secondary"
+                    marginsPaddings={{ mb: 6 }}
+                >
                     {label}
                 </Typography>
             )}
@@ -85,14 +98,22 @@ export const GlassInput = forwardRef((props: IProps, ref: any) => {
                             text[text.length - 1] === ','
                                 ? text.replace(',', '.')
                                 : text
-                        onChangeText(normalized.replace(/ /g, ''))
+                        onChangeText(
+                            keepSpaces
+                                ? normalized
+                                : normalized.replace(/ /g, '')
+                        )
                     }}
                 />
                 {rightSlot}
             </View>
 
             {error && (
-                <Typography type="caption12" color="error" marginsPaddings={{ mt: 6 }}>
+                <Typography
+                    type="caption12"
+                    color="error"
+                    marginsPaddings={{ mt: 6 }}
+                >
                     {error}
                 </Typography>
             )}

@@ -43,8 +43,10 @@ export const TYPOGRAPHY_SCALE = {
     h6: { ff: FONTS.EXTRABOLD, fz: 22 },
     num20: { ff: FONTS.EXTRABOLD, fz: 20 },
     num18: { ff: FONTS.EXTRABOLD, fz: 18 },
+    num17: { ff: FONTS.EXTRABOLD, fz: 17 },
     num16: { ff: FONTS.EXTRABOLD, fz: 16 },
     num15: { ff: FONTS.EXTRABOLD, fz: 15 },
+    num12: { ff: FONTS.EXTRABOLD, fz: 12 },
 
     // 700 — заголовки строк списка, вторичные кнопки
     rowTitle: { ff: FONTS.BOLD, fz: 15 },

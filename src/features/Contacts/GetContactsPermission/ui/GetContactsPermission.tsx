@@ -1,36 +1,43 @@
 import { memo, useCallback, useEffect, useRef } from 'react'
-import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
-import { ECustomButtonTypes } from '../../../../shared/CustomButton'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { Icon } from '../../../../shared/Icons'
 
 type Props = {
     onAllowPermission: () => void
     fetchPermission: () => void
 }
 
+// Системный диалог разрешения закрывается не мгновенно: статус перечитываем
+// с задержкой, иначе получаем ещё старое значение.
+const PERMISSION_RECHECK_DELAY = 1000
+
 export const GetContactsPermission = memo(
     ({ onAllowPermission, fetchPermission }: Props) => {
-        const intervalId = useRef<any>(null)
+        const timeoutId = useRef<ReturnType<typeof setTimeout> | null>(null)
 
         const handleAllowPermission = useCallback(() => {
             onAllowPermission()
-            intervalId.current = setTimeout(() => {
+            timeoutId.current = setTimeout(() => {
                 fetchPermission()
-            }, 1000)
+            }, PERMISSION_RECHECK_DELAY)
         }, [onAllowPermission, fetchPermission])
 
         useEffect(() => {
             return function () {
-                if (intervalId.current) clearInterval(intervalId.current)
+                if (timeoutId.current) clearTimeout(timeoutId.current)
             }
         }, [])
+
         return (
-            <ErrorWhileFetchingForm
-                buttonProps={{
-                    text: 'РАЗРЕШИТЬ',
-                    type: ECustomButtonTypes.OUTLINED,
+            <CenteredState
+                title="Нужен доступ к контактам"
+                description="Для выбора контактов требуется разрешение на использование телефонной книги."
+                icon={<Icon name="contacts" size={40} />}
+                action={{
+                    label: 'Разрешить',
+                    onPress: handleAllowPermission,
+                    variant: 'primary',
                 }}
-                onReload={handleAllowPermission}
-                message="Для выбора контактов требуется разрешение на использование телефонной книги."
             />
         )
     }

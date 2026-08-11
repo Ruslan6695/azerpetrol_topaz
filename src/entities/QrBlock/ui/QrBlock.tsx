@@ -1,31 +1,41 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../shared'
+import { RADII, SIZES, SPACING, ThemeStore } from '../../../shared'
+import { GlassCard } from '../../../shared/GlassCard'
 import { QrCode } from '../../../shared/QrCode'
 
 type Props = {
     qr?: string
     qrSize?: number
-    height?: number
     qrIsLoading?: boolean
 }
 
-export const QrBlock = memo(({ qr, height, qrIsLoading, qrSize }: Props) => {
-    return (
-        <View style={styles.qrContainer}>
-            <QrCode qrIsLoading={qrIsLoading} size={qrSize || 200} value={qr} />
-        </View>
-    )
-})
+// Размер QR из макета (design/21vek-app.dc.html:184). QrCode домножает
+// его на SIZES.PX сам, поэтому передаётся сырым.
+const QR_SIZE = 190
 
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    qrContainer: {
-        padding: 30 * SIZES.PX,
-        backgroundColor: COLORS.BACKGROUND.Tertiary,
-        borderRadius: SIZES.PX * 27,
-    },
+export const QrBlock = memo(({ qr, qrIsLoading, qrSize }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
+
+    const styles = StyleSheet.create({
+        plate: {
+            borderRadius: RADII.ROW * SIZES.PX,
+            padding: SPACING.MD * SIZES.PX,
+            // Подложка появляется вместе с кодом: пока грузится, QrCode
+            // рисует шиммер на GLASS.*, который на белом не виден.
+            backgroundColor: qr ? COLORS.BACKGROUND.QrPlate : 'transparent',
+        },
+    })
+
+    return (
+        <GlassCard variant="glass2" radius={RADII.HERO} padding={26}>
+            <View style={styles.plate}>
+                <QrCode
+                    qrIsLoading={qrIsLoading}
+                    size={qrSize || QR_SIZE}
+                    value={qr}
+                />
+            </View>
+        </GlassCard>
+    )
 })

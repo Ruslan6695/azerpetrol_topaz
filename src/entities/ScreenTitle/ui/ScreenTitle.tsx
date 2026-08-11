@@ -14,7 +14,7 @@ export const ScreenTitle = memo(({ title, mb, ml }: Props) => {
                 mb: mb !== undefined ? mb : 10,
                 ml: ml !== undefined ? ml : 10,
             }}
-            type="displayMedium"
+            type="h4"
         >
             {title}
         </Typography>

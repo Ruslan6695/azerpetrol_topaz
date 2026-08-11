@@ -1,17 +1,19 @@
 import { useFocusEffect, useRouter } from 'expo-router'
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { InfoCard } from '../../../entities/InfoCard'
 import { QrBlock } from '../../../entities/QrBlock'
 import { ScreenTitle } from '../../../entities/ScreenTitle'
-import { MapInfoBlocks } from '../../../features/MapInfoBlocks'
 import {
     AppStore,
     ESCREENS,
     SIZES,
+    SPACING,
     UserStore,
     useGetBalance,
 } from '../../../shared'
-import { CustomButton } from '../../../shared/CustomButton'
+import { PillButton } from '../../../shared/PillButton'
+import { Typography } from '../../../shared/Typography'
 import { BALANCE_WIDGET_INFO_TEXTS } from '../config/constants/BALANCE_WIDGET_INFO_TEXTS'
 
 type Props = {
@@ -19,7 +21,9 @@ type Props = {
 }
 
 export const BalanceWidget = memo(({ isHidePayButton }: Props) => {
-    const { balance, fetchBalance, isBalanceLoading } = useGetBalance()
+    // Баланс на этом экране не показывается — запрос обновляет UserStore,
+    // из которого живёт чип баланса в шапке.
+    const { fetchBalance } = useGetBalance()
     const isTokenRefreshed = AppStore.useIsTokenRefreshed()
     const token = UserStore.useUser()?.token
     const router = useRouter()
@@ -35,31 +39,51 @@ export const BalanceWidget = memo(({ isHidePayButton }: Props) => {
             })
         }, [])
     )
+
+    const styles = StyleSheet.create({
+        center: {
+            alignItems: 'center',
+            marginTop: SPACING.MD * SIZES.PX,
+        },
+        infoList: {
+            gap: SPACING.MD * SIZES.PX,
+            marginTop: SPACING.XL * SIZES.PX,
+        },
+        button: {
+            marginTop: SPACING.XL * SIZES.PX,
+        },
+    })
+
     return (
         <View>
-            <ScreenTitle title="Ваш уникальный код" />
+            <ScreenTitle title="Ваш уникальный код" ml={SPACING.XS} mb={2} />
             <View style={styles.center}>
                 <QrBlock qr={isTokenRefreshed ? token : undefined} />
             </View>
+            <Typography
+                type="body125"
+                color="secondary"
+                textAlign="center"
+                marginsPaddings={{ mt: SPACING.MD }}
+            >
+                Покажите код на кассе для списания и начисления бонусов
+            </Typography>
             {!isHidePayButton && (
-                <CustomButton
+                <PillButton
+                    title="Пополнить счёт"
                     onPress={onPayBalance}
-                    styled={{ marginsPaddings: { mt: 20 }, type: 'primary' }}
-                >
-                    Пополнить счет
-                </CustomButton>
+                    style={styles.button}
+                />
             )}
-            <MapInfoBlocks infoBlocks={BALANCE_WIDGET_INFO_TEXTS} />
+            <View style={styles.infoList}>
+                {BALANCE_WIDGET_INFO_TEXTS.map((infoBlock) => (
+                    <InfoCard
+                        key={infoBlock.title}
+                        title={infoBlock.title}
+                        info={infoBlock.info}
+                    />
+                ))}
+            </View>
         </View>
     )
-})
-
-const styles = StyleSheet.create({
-    center: {
-        alignItems: 'center',
-        marginTop: 20 * SIZES.PX,
-    },
-    container: {
-        alignItems: 'center',
-    },
 })

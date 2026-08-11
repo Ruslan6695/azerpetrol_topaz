@@ -1,10 +1,9 @@
-import React from 'react'
+import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { SIZES } from '../../../shared'
-import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
-import { PersonIcon } from '../../../shared/Icons/PersonIcon'
-import { Logo, LogoFull } from '../../../shared/Logo'
-import { MPLayout } from '../../../shared/MpLayout'
+import { PRESS_SCALE, RADII, SIZES, SPACING, ThemeStore } from '../../../shared'
+import { Glass } from '../../../shared/GlassCard'
+import { Icon } from '../../../shared/Icons'
+import { PressableScale } from '../../../shared/PressableScale'
 import { Typography } from '../../../shared/Typography'
 import { IContactItem } from '../config/interfaces/IContactItem'
 
@@ -12,39 +11,52 @@ interface IProps extends IContactItem {
     onPress: (contact: IContactItem) => void
 }
 
-export const ContactItem = ({ id, name, phone, onPress }: IProps) => {
-    const handlePress = () => {
-        onPress({ id, name, phone })
-    }
-    return (
-        <CustomTouchableOpacity
-            onPress={handlePress}
-            activeOpacity={0.6}
-            style={styles.container}
-        >
-            <View style={styles.left}>
-                <PersonIcon size={24} />
-                <MPLayout ml={10}>
-                    <Typography type="bodySmall">{name}</Typography>
-                    <Typography color="secondary" type="caption">
-                        {phone}
-                    </Typography>
-                </MPLayout>
-            </View>
-            <Logo size={20} />
-        </CustomTouchableOpacity>
-    )
-}
+const AVATAR_SIZE = 40
 
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: SIZES.PX * 5,
-    },
-    left: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
+export const ContactItem = memo(({ id, name, phone, onPress }: IProps) => {
+    const COLORS = ThemeStore.useCOLORS()
+
+    const handlePress = useCallback(() => {
+        onPress({ id, name, phone })
+    }, [onPress, id, name, phone])
+
+    const styles = StyleSheet.create({
+        row: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: SPACING.LG * SIZES.PX,
+            paddingVertical: SPACING.LG * SIZES.PX,
+            paddingHorizontal: SPACING.XL * SIZES.PX,
+        },
+        avatar: {
+            width: AVATAR_SIZE * SIZES.PX,
+            height: AVATAR_SIZE * SIZES.PX,
+            borderRadius: RADII.PILL,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: COLORS.GLASS.Primary,
+        },
+    })
+
+    return (
+        <PressableScale onPress={handlePress} scaleTo={PRESS_SCALE.ROW}>
+            <Glass level="secondary" radius={RADII.ROW * SIZES.PX}>
+                <View style={styles.row}>
+                    <View style={styles.avatar}>
+                        <Icon name="person" size={20} />
+                    </View>
+                    <View>
+                        <Typography type="label14">{name}</Typography>
+                        <Typography
+                            type="caption12"
+                            color="secondary"
+                            marginsPaddings={{ mt: 1 }}
+                        >
+                            {phone}
+                        </Typography>
+                    </View>
+                </View>
+            </Glass>
+        </PressableScale>
+    )
 })
