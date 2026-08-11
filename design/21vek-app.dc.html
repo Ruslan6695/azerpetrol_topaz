@@ -348,7 +348,7 @@ a{color:#00C12A;text-decoration:none}a:hover{color:#8fd41f}
           <img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt="">
           <span style="font:600 15px 'Manrope';color:var(--tx)">{{ pickedContactLabelTransfer }}</span>
         </div>
-        <div onClick="{{ goPickContactTransfer }}" style="display:flex;align-items:center;gap:8px;padding:0 4px;cursor:pointer"><img src="assets/icons/person.svg" style="width:16px;height:16px;filter:var(--icf);opacity:.7" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Выбрать из контактов</span></div>
+        <div onClick="{{ goPickContactTransfer }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)"><img src="assets/icons/person.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.75" alt=""><span style="font:700 14px 'Manrope';color:var(--tx)">Выбрать из контактов</span></div>
         <div style="background:var(--glass2);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));border-radius:28px;padding:22px 20px">
           <div style="font:600 12px 'Manrope';color:var(--tx2);text-transform:uppercase;letter-spacing:.4px">Сумма перевода</div>
           <div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font:800 40px 'Manrope';color:var(--tx)">500</span><span style="font:700 20px 'Manrope';color:var(--acc)">бонусов</span></div>
@@ -440,7 +440,7 @@ a{color:#00C12A;text-decoration:none}a:hover{color:#8fd41f}
           <img src="assets/icons/phone.svg" style="width:20px;height:20px;filter:var(--icf);opacity:.6" alt="">
           <span style="font:600 15px 'Manrope';color:var(--tx)">{{ pickedContactLabelInvite }}</span>
         </div>
-        <div onClick="{{ goPickContactInvite }}" style="display:flex;align-items:center;gap:8px;padding:0 4px;cursor:pointer"><img src="assets/icons/person.svg" style="width:16px;height:16px;filter:var(--icf);opacity:.7" alt=""><span style="font:700 13px 'Manrope';color:var(--acc)">Выбрать из контактов</span></div>
+        <div onClick="{{ goPickContactInvite }}" style="display:flex;align-items:center;justify-content:center;gap:8px;height:48px;border-radius:999px;background:var(--glass);border:1px solid var(--bord);backdrop-filter:blur(var(--blur));cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)"><img src="assets/icons/person.svg" style="width:18px;height:18px;filter:var(--icf);opacity:.75" alt=""><span style="font:700 14px 'Manrope';color:var(--tx)">Выбрать из контактов</span></div>
         <div onClick="{{ goInviteSent }}" style="height:54px;border-radius:999px;background:var(--lime);display:flex;align-items:center;justify-content:center;font:800 15px 'Manrope';color:#0A0E0B;cursor:pointer;transition:transform .15s" style-active="transform:scale(.96)">Отправить приглашение</div>
       </div>
     </sc-if>

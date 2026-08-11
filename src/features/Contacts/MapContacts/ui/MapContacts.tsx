@@ -3,37 +3,37 @@ import { useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ContactItem, IContactItem } from '../../../../entities/ContactItem'
-import {
-    COLORS,
-    ESCREENS,
-    SIZES,
-    ThemeStore,
-    getContacts,
-} from '../../../../shared'
-import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { Typography } from '../../../../shared/Typography'
+import { ESCREENS, SIZES, SPACING, getContacts } from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { GlassInput } from '../../../../shared/GlassInput'
+import { Icon } from '../../../../shared/Icons'
 
 type Props = {
     onSelectLink: ESCREENS | undefined
 }
 
+const SEARCH_HEIGHT = 48
+
 export const MapContacts = memo(({ onSelectLink }: Props) => {
-    const COLORS = ThemeStore.useCOLORS()
     const router = useRouter()
     const [contacts, setContacts] = useState<IContactItem[]>([])
-
     const [filteredContacts, setFilteredContacts] = useState<IContactItem[]>([])
+    const [query, setQuery] = useState('')
 
-    const { inputValue, setInputValue } = useInput()
-
-    const handleChangeInputValue = useCallback(
+    const handleChangeQuery = useCallback(
         (text: string) => {
-            setInputValue(text)
+            setQuery(text)
 
-            const filteredContacts = contacts?.filter((contact) => {
-                return contact.name.toLowerCase().includes(text.toLowerCase())
-            })
-            setFilteredContacts(filteredContacts)
+            // Макет ищет и по имени, и по номеру: пользователь помнит
+            // либо одно, либо другое.
+            const search = text.toLowerCase()
+            setFilteredContacts(
+                contacts.filter(
+                    (contact) =>
+                        contact.name.toLowerCase().includes(search) ||
+                        contact.phone.includes(text)
+                )
+            )
         },
         [contacts]
     )
@@ -45,7 +45,7 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
                 params: { name, phone },
             })
         },
-        []
+        [router, onSelectLink]
     )
 
     const fetchContacts = useCallback(async () => {
@@ -56,17 +56,23 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
     }, [])
 
     const styles = StyleSheet.create({
+        // Экран открыт с hideScroll, но контент всё равно лежит внутри
+        // KeyboardAwareScrollView — flex: 1 там схлопнулся бы в ноль и
+        // FlashList не получил бы высоты. Поэтому высота задаётся явно.
         wrapper: {
             height: SIZES.HEIGHT(0.8),
+            gap: SPACING.ROW_GAP * SIZES.PX,
         },
-        contacts: {
-            gap: 10 * SIZES.PX,
-        },
-        contactsWrapper: {
+        list: {
             flex: 1,
-            backgroundColor: COLORS.BACKGROUND.Tertiary,
-            borderRadius: SIZES.PX * 11,
-            paddingVertical: SIZES.PX * 5,
+        },
+        listContent: {
+            paddingBottom: SPACING.SECTION * SIZES.PX,
+        },
+        // FlashList не разносит элементы через gap контейнера —
+        // зазор макета (10) даёт разделитель.
+        separator: {
+            height: SPACING.ROW_GAP * SIZES.PX,
         },
     })
 
@@ -76,47 +82,34 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
 
     return (
         <View style={styles.wrapper}>
-            <CustomInput
-                onChangeText={(text: string) => {
-                    handleChangeInputValue(text)
-                }}
-                value={inputValue}
-                placeholder="Введите имя"
-                styled={{
-                    width: { type: 'absolute', value: '100%' },
-                    marginsPaddings: { mb: 10 },
-                }}
+            <GlassInput
+                height={SEARCH_HEIGHT}
+                keepSpaces
+                onChangeText={handleChangeQuery}
+                value={query}
+                placeholder="Поиск по имени или номеру"
+                icon={<Icon name="person" size={18} opacity={0.5} />}
             />
 
-            <View style={styles.contactsWrapper}>
-                {filteredContacts?.length === 0 ? (
-                    <Typography
-                        color="secondary"
-                        marginsPaddings={{ mt: 100 }}
-                        textAlign="center"
-                    >
-                        КОНТАКТЫ НЕ НАЙДЕНЫ
-                    </Typography>
-                ) : (
-                    <FlashList
-                        contentContainerStyle={{
-                            paddingHorizontal: 10,
-                        }}
-                        style={styles.contacts}
-                        showsVerticalScrollIndicator={false}
-                        data={filteredContacts}
-                        renderItem={({ item }) => (
-                            <ContactItem
-                                onPress={handlePressOnContact}
-                                {...item}
-                                key={Math.random()}
-                            />
-                        )}
-                    />
-                )}
-            </View>
-
-            <View></View>
+            {filteredContacts.length === 0 ? (
+                <CenteredState variant="empty" title="Контакты не найдены" />
+            ) : (
+                <FlashList
+                    contentContainerStyle={styles.listContent}
+                    style={styles.list}
+                    showsVerticalScrollIndicator={false}
+                    data={filteredContacts}
+                    // id генерируется на клиенте до похода на get_contacts/,
+                    // в ответе он не гарантирован — телефон как запасной ключ.
+                    keyExtractor={(item) => String(item.id ?? item.phone)}
+                    ItemSeparatorComponent={() => (
+                        <View style={styles.separator} />
+                    )}
+                    renderItem={({ item }) => (
+                        <ContactItem onPress={handlePressOnContact} {...item} />
+                    )}
+                />
+            )}
         </View>
     )
 })

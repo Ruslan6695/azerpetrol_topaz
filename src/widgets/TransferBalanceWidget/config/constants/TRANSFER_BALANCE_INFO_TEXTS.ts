@@ -1,7 +1,7 @@
-import { IInfoBlock } from '../../../entities/InfoBlock'
-import { AZS_NAME } from '../../../shared'
+import { IInfoCard } from '../../../../entities/InfoCard'
+import { AZS_NAME } from '../../../../shared'
 
-export const TRANSFER_BALANCE_INFO_TEXTS: IInfoBlock[] = [
+export const TRANSFER_BALANCE_INFO_TEXTS: IInfoCard[] = [
     {
         title: `Перевод средств на счет ${AZS_NAME}`,
         info: `Перевод средств выполняется только между пользователями приложения ${AZS_NAME}. Для этого вы можете выбрать пользователя из своей телефонной книги или найти по номеру телефона.`,

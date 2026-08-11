@@ -14,6 +14,8 @@ type Props = {
     suffix?: string
     /** 'left' — ширина по контенту (замена width: fit-content из макета) */
     align?: 'left' | 'center'
+    /** Растянуть бокс на всю ширину родителя, не трогая выравнивание текста */
+    fullWidth?: boolean
     /** В лестнице Typography нет 800/34, поэтому размер числа задаётся числом */
     fontSize?: number
     radius?: number
@@ -30,6 +32,7 @@ export const AmountField = memo(
         onChangeValue,
         suffix = '₽',
         align = 'left',
+        fullWidth,
         fontSize = 34,
         radius = RADII.INPUT,
         minWidth = 130,
@@ -46,7 +49,8 @@ export const AmountField = memo(
                 // поэтому число и суффикс выравниваются по нижнему краю
                 alignItems: 'flex-end',
                 gap: SPACING.XS * SIZES.PX,
-                alignSelf: align === 'center' ? 'stretch' : 'flex-start',
+                alignSelf:
+                    fullWidth || align === 'center' ? 'stretch' : 'flex-start',
                 justifyContent: align === 'center' ? 'center' : 'flex-start',
                 backgroundColor: COLORS.GLASS.Primary,
                 borderWidth: 1.5 * SIZES.PX,
@@ -56,6 +60,9 @@ export const AmountField = memo(
                 paddingHorizontal: SPACING.LG * SIZES.PX,
             },
             input: {
+                // На всю ширину число занимает остаток строки,
+                // а суффикс прижимается к правому краю бокса.
+                flex: fullWidth ? 1 : undefined,
                 minWidth: minWidth * SIZES.PX,
                 padding: 0,
                 textAlign: align === 'center' ? 'center' : 'left',

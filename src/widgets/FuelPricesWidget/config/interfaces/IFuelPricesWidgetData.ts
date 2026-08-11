@@ -1,7 +1,8 @@
-import { IFuelPricesPriceBlock } from '../../../../entities/FuelPrices/FuelPricesPriceBlock'
-import { IInfoBlock } from '../../../../entities/InfoBlock'
+import { IInfoCard } from '../../../../entities/InfoCard'
+import { IFuelPriceItem } from './IFuelPriceItem'
 
 export interface IFuelPricesWidgetData {
-    prices: IFuelPricesPriceBlock[]
-    info: IInfoBlock
+    prices: IFuelPriceItem[]
+    /** Блок пояснения под списком. В ответе есть не всегда */
+    info?: IInfoCard
 }

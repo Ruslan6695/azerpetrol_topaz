@@ -57,7 +57,7 @@ CSS-переменные макета соответствуют палитре 
 
 | Вес макета | Типы |
 |-----------|------|
-| 800 | `h1 h2 h3 h4 h5 h6`, `num20 num18 num16 num15` |
+| 800 | `h1 h2 h3 h4 h5 h6`, `num20 num18 num17 num16 num15 num12` |
 | 700 | `rowTitle`, `label14`, `label13` |
 | 600 | `body14 body13 body125`, `caption12 caption11 caption10`, `tabLabel`, `eyebrow` |
 

@@ -1,8 +1,6 @@
 import { memo } from 'react'
 import { CustomModal } from '../../CustomModal'
 import { StyleSheet, View } from 'react-native'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { QrCode } from './QrCode'
 import QRCode from 'react-native-qrcode-svg'
 import { SIZES } from '../../common/config/constants/sizes'
 

@@ -1,9 +1,10 @@
 import { PermissionStatus } from 'expo-contacts'
 import { memo, useEffect } from 'react'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
 import { GetContactsPermission } from '../../../features/Contacts/GetContactsPermission'
-import { MapContacts } from '../../../features/Contacts/MapContacts'
-import { checkIsContactInSystem } from '../../../features/Contacts/MapContacts/lib/helpers/checkIsContactsInSystem'
+import {
+    MapContacts,
+    checkIsContactInSystem,
+} from '../../../features/Contacts/MapContacts'
 import {
     TContactsScreenParams,
     useGetContactsPermission,
@@ -25,19 +26,13 @@ export const ContactsWidget = memo(({ params }: Props) => {
             //@ts-ignore
             checkIsContactInSystem(contactsPermission?.status)
     }, [contactsPermission])
-    return (
-        <>
-            <ScreenTitle title="Выберите" />
-            {contactsPermission?.status == PermissionStatus.DENIED ? (
-                <>
-                    <GetContactsPermission
-                        fetchPermission={fetchContactsPermission}
-                        onAllowPermission={fetchContactsPermissionOnPress}
-                    />
-                </>
-            ) : (
-                <MapContacts onSelectLink={params.onSelectLink} />
-            )}
-        </>
+    // Заголовок «Контакты» приходит из шапки InternalPagesHeader
+    return contactsPermission?.status == PermissionStatus.DENIED ? (
+        <GetContactsPermission
+            fetchPermission={fetchContactsPermission}
+            onAllowPermission={fetchContactsPermissionOnPress}
+        />
+    ) : (
+        <MapContacts onSelectLink={params.onSelectLink} />
     )
 })
