@@ -1,5 +1,5 @@
 import { FlashList } from '@shopify/flash-list'
-import { useRouter } from 'expo-router'
+import { Href, useRouter } from 'expo-router'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ContactItem, IContactItem } from '../../../../entities/ContactItem'
@@ -40,10 +40,14 @@ export const MapContacts = memo(({ onSelectLink }: Props) => {
 
     const handlePressOnContact = useCallback(
         ({ name, phone }: IContactItem) => {
+            // Экран возврата известен только в рантайме — приходит
+            // route-параметром. В объектной форме href typedRoutes требует,
+            // чтобы pathname был одним литералом, а здесь это union маршрутов,
+            // поэтому тип href указывается явно.
             router.navigate({
                 pathname: onSelectLink || ESCREENS.TRANSFER_BALANCE,
                 params: { name, phone },
-            })
+            } as Href)
         },
         [router, onSelectLink]
     )

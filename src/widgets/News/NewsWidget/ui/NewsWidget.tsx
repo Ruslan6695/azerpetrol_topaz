@@ -40,13 +40,13 @@ export const NewsWidget = memo(({ variant = 'list' }: Props) => {
 
     const styles = StyleSheet.create({
         container: {
-            gap: SIZES.PX * 10,
+            gap: SPACING.ROW_GAP * SIZES.PX,
         },
         section: {
             gap: SPACING.MD * SIZES.PX,
         },
         carouselContent: {
-            gap: 10 * SIZES.PX,
+            gap: SPACING.ROW_GAP * SIZES.PX,
             paddingBottom: 2 * SIZES.PX,
         },
     })

@@ -1,6 +1,6 @@
 import NetInfo from '@react-native-community/netinfo'
 import * as Notifications from 'expo-notifications'
-import { Stack, useRouter } from 'expo-router'
+import { Href, Stack, useRouter } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import * as TaskManager from 'expo-task-manager'
 import React, { useEffect } from 'react'
@@ -74,9 +74,11 @@ export default function Layout() {
             registerForPushNotificationsAsync()
 
             function redirect(notification: Notifications.Notification) {
+                // Маршрут приходит в payload пуша, то есть с бэкенда:
+                // typedRoutes его проверить не может, отсюда явный тип.
                 const url = notification.request.content.data?.url
-                if (url) {
-                    router.navigate(url)
+                if (typeof url === 'string') {
+                    router.navigate(url as Href)
                 }
             }
 

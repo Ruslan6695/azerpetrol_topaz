@@ -70,7 +70,7 @@ export const BalanceCard = memo(
             },
             actionsRow: {
                 flexDirection: 'row',
-                gap: 10 * SIZES.PX,
+                gap: SPACING.ROW_GAP * SIZES.PX,
                 marginTop: SPACING.XL * SIZES.PX,
             },
         })

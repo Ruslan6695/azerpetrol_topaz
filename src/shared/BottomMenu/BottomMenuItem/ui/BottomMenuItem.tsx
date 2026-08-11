@@ -22,7 +22,6 @@ export const BottomMenuItem = memo(
         const router = useRouter()
 
         const handlePress = useCallback(() => {
-            //@ts-ignore пути приходят из ESCREENS, typedRoutes их не выводит
             router.navigate(link)
         }, [router, link])
 
