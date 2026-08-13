@@ -1,20 +1,24 @@
-import { memo, useCallback, useEffect, useState } from 'react'
+import { useFocusEffect } from 'expo-router'
+import { memo, useCallback, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import { IProfileJoinAccountItem } from '../../../entities/Profile/ProfileJoinAccountItem'
+import { ScreenTitle } from '../../../entities/ScreenTitle'
+import { ChangeColorTheme } from '../../../features/ChangeColorTheme'
 import { DeleteJoinAccountModal } from '../../../features/Profile/DeleteJoinAccountModal'
-import { UserStore, useFetchData, useModal } from '../../../shared'
+import {
+    SIZES,
+    SPACING,
+    UserStore,
+    useFetchData,
+    useModal,
+} from '../../../shared'
 import { ProfileJoinAccountsWidget } from '../../../widgets/Profile/ProfileJoinAccountsWidget'
+import { ProfileLinksWidget } from '../../../widgets/Profile/ProfileLinksWidget'
 import { ProfileWidget } from '../../../widgets/Profile/ProfileWidget'
 import { profileApi } from '../api/profileApi'
-import { ProfileLinksWidget } from '../../../widgets/Profile/ProfileLinksWidget'
-import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
-import { useFocusEffect } from 'expo-router'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
-import { View } from 'react-native'
-import { ChangeColorTheme } from '../../../features/ChangeColorTheme'
 
-type Props = {}
-
-export const Profile = memo((props: Props) => {
+export const Profile = memo(() => {
     const setBalance = UserStore.useSetBalance()
     const { data, errorText, fetchData, setData, isDataLoading } = useFetchData(
         {
@@ -36,7 +40,7 @@ export const Profile = memo((props: Props) => {
             setAccountToDelete(account)
             handleOpenDeleteJoinAccountModal()
         },
-        []
+        [handleOpenDeleteJoinAccountModal]
     )
 
     const handleDeleteJoinAccount = useCallback(() => {
@@ -51,7 +55,7 @@ export const Profile = memo((props: Props) => {
             return
         })
         setAccountToDelete(null)
-    }, [accountToDelete])
+    }, [setData, accountToDelete])
 
     const handleReloadData = useCallback(() => {
         fetchData({
@@ -64,25 +68,22 @@ export const Profile = memo((props: Props) => {
             },
             hideToastOnError: true,
         })
-    }, [])
+    }, [fetchData, setBalance])
 
     useFocusEffect(
         useCallback(() => {
             handleReloadData()
-        }, [])
+        }, [handleReloadData])
     )
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.MD * SIZES.PX,
+        },
+    })
+
     return (
-        <>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
-                <ScreenTitle mb={32} title="Профиль" />
-                <ChangeColorTheme />
-            </View>
+        <View style={styles.container}>
+            <ScreenTitle title="Профиль" />
 
             {errorText ? (
                 <ErrorWhileFetchingForm
@@ -97,6 +98,7 @@ export const Profile = memo((props: Props) => {
                         name={data?.name}
                         phone={data?.phone}
                     />
+                    <ChangeColorTheme />
                     <ProfileJoinAccountsWidget
                         isDataLoading={!data && isDataLoading}
                         onReloadData={handleReloadData}
@@ -117,6 +119,6 @@ export const Profile = memo((props: Props) => {
                     handleClose={handleCloseDeleteJoinAccountModal}
                 />
             )}
-        </>
+        </View>
     )
 })

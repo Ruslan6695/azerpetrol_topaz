@@ -15,11 +15,15 @@ type Props = {
     description?: string
     /** Содержимое круга. Если не передано — берётся символ по варианту */
     icon?: ReactNode
+    /** Диаметр круга в единицах макета. По умолчанию 96 */
+    circleSize?: number
     action?: {
         label: string
         onPress: () => void
         /** По умолчанию 'elevated'; 'primary' — когда состояние ведёт к главному действию */
         variant?: TPillButtonVariants
+        loading?: boolean
+        disabled?: boolean
     }
     secondaryAction?: {
         label: string
@@ -34,6 +38,7 @@ export const CenteredState = memo(
         title,
         description,
         icon,
+        circleSize = 96,
         action,
         secondaryAction,
     }: Props) => {
@@ -63,8 +68,8 @@ export const CenteredState = memo(
                 paddingVertical: 60 * SIZES.PX,
             },
             circle: {
-                width: 96 * SIZES.PX,
-                height: 96 * SIZES.PX,
+                width: circleSize * SIZES.PX,
+                height: circleSize * SIZES.PX,
                 borderRadius: RADII.PILL,
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -122,6 +127,8 @@ export const CenteredState = memo(
                                 title={action.label}
                                 onPress={action.onPress}
                                 variant={action.variant ?? 'elevated'}
+                                loading={action.loading}
+                                disabled={action.disabled}
                                 fullWidth={false}
                                 style={styles.actionButton}
                             />

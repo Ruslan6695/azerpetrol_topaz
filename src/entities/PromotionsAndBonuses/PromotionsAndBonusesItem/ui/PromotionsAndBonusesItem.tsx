@@ -1,43 +1,23 @@
-import { memo, useCallback } from 'react'
-import { Image, StyleSheet, View } from 'react-native'
-import { IPromotionsAndBonusesItem } from '../config/interfaces/IPromotionsAndBonusesItem'
 import { useRouter } from 'expo-router'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { ESCREENS, SIZES } from '../../../../shared'
+import { memo, useCallback } from 'react'
+import { ESCREENS } from '../../../../shared'
+import { IPromotionsAndBonusesItem } from '../config/interfaces/IPromotionsAndBonusesItem'
+import { HomePromotionCard } from './HomePromotionCard'
 
 interface IProps extends IPromotionsAndBonusesItem {}
-export const PromotionsAndBonusesItem = memo(
-    ({ id, img, date_create, header, html_text, page_link }: IProps) => {
-        const router = useRouter()
 
-        const handlePress = useCallback(() => {
-            router.navigate({
-                pathname: ESCREENS.PROMOTIONS_AND_BONUSES_DETAILS,
-                params: { date_create, html_text, img, header, page_link },
-            })
-        }, [date_create, html_text, img, header])
-        return (
-            <View style={styles.container}>
-                <CustomTouchableOpacity
-                    onPress={handlePress}
-                    activeOpacity={0.8}
-                >
-                    <Image style={styles.img} source={{ uri: img }} />
-                </CustomTouchableOpacity>
-            </View>
-        )
-    }
-)
+// Акция в списке экрана /bonuses и в карусели стартовой модалки. Вид карточки
+// общий с главной — им заведует HomePromotionCard, здесь только переход.
+export const PromotionsAndBonusesItem = memo((props: IProps) => {
+    const router = useRouter()
+    const { date_create, html_text, img, header, page_link } = props
 
-const styles = StyleSheet.create({
-    container: {
-        borderRadius: 20 * SIZES.PX,
-        height: 155 * SIZES.PX,
-        overflow: 'hidden',
-    },
-    img: {
-        width: '100%',
-        height: 155 * SIZES.PX,
-        objectFit: 'contain',
-    },
+    const handlePress = useCallback(() => {
+        router.navigate({
+            pathname: ESCREENS.PROMOTIONS_AND_BONUSES_DETAILS,
+            params: { date_create, html_text, img, header, page_link },
+        })
+    }, [router, date_create, html_text, img, header, page_link])
+
+    return <HomePromotionCard {...props} onPress={handlePress} />
 })

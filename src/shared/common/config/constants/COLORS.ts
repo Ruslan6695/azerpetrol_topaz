@@ -61,6 +61,11 @@ export const COLORS = {
         SolidPrimary: '#EBEFE6',
         SolidSecondary: '#F0F3EC',
         Surface: '#F2F5EC',
+        // Тонировки внутри плитки связанного аккаунта: круг под иконкой и
+        // кружок «✕». Лежат поверх лайма или стекла, поэтому в обеих темах
+        // одинаковы — как ACCENT.Lime и STATE.DestructiveSoft.
+        TileAvatar: 'rgba(255,255,255,0.25)',
+        TileClose: 'rgba(0,0,0,0.2)',
     },
     ACCENT: {
         Primary: '#00C12A',
@@ -85,6 +90,10 @@ export const COLORS = {
         Warning: '#F5A623',
         WarningSoft: 'rgba(245,166,35,0.15)',
         Disabled: 'rgba(10,32,51,0.06)',
+        // Выключенный трек свитча. Включённый — ACCENT.Primary.
+        SwitchTrackOff: 'rgba(10,32,51,0.2)',
+        // Ручка свитча белая в обеих темах — так в макете.
+        SwitchKnob: '#FFFFFF',
     },
     // Цвета фоновых блобов (shared/AmbientBackground).
     AMBIENT: {
@@ -102,6 +111,9 @@ export const COLORS = {
         // экрана, поэтому в обеих палитрах одинаковый.
         ScrimFrom: 'rgba(10,14,11,0.05)',
         ScrimTo: 'rgba(10,14,11,0.85)',
+        // Затемнение под модалкой. Одинаково в обеих темах: это затемнение
+        // экрана, а не поверхность.
+        Backdrop: 'rgba(0,0,0,0.49)',
     },
 }
 
@@ -152,6 +164,8 @@ export const COLORS_DARK = {
         SolidPrimary: '#12170F',
         SolidSecondary: '#1A1F17',
         Surface: '#141A15',
+        TileAvatar: 'rgba(255,255,255,0.25)',
+        TileClose: 'rgba(0,0,0,0.2)',
     },
     ACCENT: {
         Primary: '#00C12A',
@@ -171,6 +185,10 @@ export const COLORS_DARK = {
         Warning: '#F5A623',
         WarningSoft: 'rgba(245,166,35,0.15)',
         Disabled: 'rgba(242,246,238,0.10)',
+        // В макете свитч в тёмной теме всегда включён — цвет выключенного
+        // трека подобран к палитре, макетного значения для него нет.
+        SwitchTrackOff: 'rgba(255,255,255,0.2)',
+        SwitchKnob: '#FFFFFF',
     },
     AMBIENT: {
         BlobA: '#00C12A',
@@ -185,5 +203,6 @@ export const COLORS_DARK = {
         BlurIntensity: 20,
         ScrimFrom: 'rgba(10,14,11,0.05)',
         ScrimTo: 'rgba(10,14,11,0.85)',
+        Backdrop: 'rgba(0,0,0,0.49)',
     },
 }

@@ -7,6 +7,7 @@ import React, { useEffect } from 'react'
 import {
     AppStore,
     ESCREENS,
+    FuelStore,
     SCREENS_TITLES,
     ThemeStore,
     UserStore,
@@ -37,6 +38,7 @@ export default function Layout() {
     const isGetUserLoading = UserStore.useGetUserIsLoadung()
     const fontIsLoaded = useSetFonts()
     const getColorTheme = ThemeStore.useGetColoreTheme()
+    const getTankVolume = FuelStore.useGetTankVolume()
     /*   useEffect(() => {
         let isMounted = true
 
@@ -68,6 +70,7 @@ export default function Layout() {
     }, []) */
     useEffect(() => {
         getColorTheme()
+        getTankVolume()
         let isMounted = true
         let subscription: any
         if (isHasNet) {
@@ -274,6 +277,12 @@ export default function Layout() {
                                 headerShown: false,
                             }}
                             name={'settings/index'}
+                        />
+                        <Stack.Screen
+                            options={{
+                                headerShown: false,
+                            }}
+                            name={'delete_account/index'}
                         />
                         <Stack.Screen
                             options={{

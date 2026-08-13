@@ -1,50 +1,83 @@
 import { useRouter } from 'expo-router'
-import React, { useCallback, useMemo } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { StyleSheet } from 'react-native'
-import { ESCREENS, SIZES, ThemeStore } from '../../../../shared'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import {
+    ESCREENS,
+    PRESS_SCALE,
+    RADII,
+    SIZES,
+    SPACING,
+    formatNewsDate,
+    stripHtml,
+} from '../../../../shared'
+import { GlassCard } from '../../../../shared/GlassCard'
+import { PressableScale } from '../../../../shared/PressableScale'
 import { Typography } from '../../../../shared/Typography'
 import { INewsItem } from '../config/interfaces/INewsItem'
 
 interface IProps extends INewsItem {}
 
-export const NewsItem = ({ date_create, header, html_text, id }: IProps) => {
+// Карточка вертикального списка экрана /news (по макету r24, padding 18).
+// Горизонтальная карусель главной рисует NewsCard — она компактнее.
+const CARD_PADDING = 18
+
+export const NewsItem = memo(({ date_create, header, html_text }: IProps) => {
     const router = useRouter()
-    const COLORS = ThemeStore.useCOLORS()
+
     const handlePress = useCallback(() => {
         router.navigate({
             pathname: ESCREENS.NEWS_DETAILS,
             params: { date_create, html_text, header },
         })
-    }, [date_create, html_text, header])
+    }, [router, date_create, html_text, header])
+
+    // Превью бэкенд не отдаёт — снимаем разметку с полного текста новости.
+    const preview = useMemo(() => stripHtml(html_text), [html_text])
+    const date = useMemo(() => formatNewsDate(date_create), [date_create])
 
     const styles = useMemo(
         () =>
             StyleSheet.create({
-                container: {
-                    borderRadius: SIZES.PX * 20,
-                    padding: SIZES.PX * 16,
-                    backgroundColor: COLORS.BACKGROUND.Tertiary,
+                title: {
+                    lineHeight: 20.8 * SIZES.PX,
                 },
-                img: {
-                    width: '100%',
-                    height: 155 * SIZES.PX,
-                    objectFit: 'contain',
+                preview: {
+                    lineHeight: 17 * SIZES.PX,
                 },
             }),
-        [COLORS]
+        []
     )
 
     return (
-        <CustomTouchableOpacity
-            style={styles.container}
-            onPress={handlePress}
-            activeOpacity={0.8}
-        >
-            <Typography marginsPaddings={{ mb: 8 }}>{header}</Typography>
-            <Typography color="secondary" type="caption">
-                {date_create}
-            </Typography>
-        </CustomTouchableOpacity>
+        <PressableScale onPress={handlePress} scaleTo={PRESS_SCALE.CARD}>
+            <GlassCard
+                variant="glass2"
+                radius={RADII.CARD}
+                padding={CARD_PADDING}
+            >
+                <Typography type="caption11" color="secondary">
+                    {date}
+                </Typography>
+                <Typography
+                    type="label16"
+                    marginsPaddings={{ mt: SPACING.XS }}
+                    numberOfLines={2}
+                    style={styles.title}
+                >
+                    {header}
+                </Typography>
+                {!!preview && (
+                    <Typography
+                        type="body125"
+                        color="secondary"
+                        marginsPaddings={{ mt: SPACING.XS }}
+                        numberOfLines={2}
+                        style={styles.preview}
+                    >
+                        {preview}
+                    </Typography>
+                )}
+            </GlassCard>
+        </PressableScale>
     )
-}
+})

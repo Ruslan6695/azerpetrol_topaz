@@ -9,6 +9,13 @@ export interface IFuelStore {
     rubles: number | null;
     fuelOnDebt: boolean;
   };
+  /**
+   * Объём бака пользователя из Настроек. Лежит рядом со state, а не внутри:
+   * clearState() чистит параметры налива, а настройка переживает заправку.
+   */
+  tankVolume: number;
+  changeTankVolume: (volume: number) => void;
+  getTankVolume: () => Promise<void>;
   clearState: () => void;
   changeAzs: (azs: IAzs) => void;
   changeColumn: (column: IColumn) => void;

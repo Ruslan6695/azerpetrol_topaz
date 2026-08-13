@@ -1,47 +1,55 @@
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { memo, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { SIZES, ThemeStore, UserStore } from '../../../../shared'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { ArrowIcon } from '../../../../shared/Icons/ArrowIcon'
+import { StyleSheet } from 'react-native'
+import {
+    PRESS_SCALE,
+    SIZES,
+    ThemeStore,
+    UserStore,
+    useModal,
+} from '../../../../shared'
+import { ConfirmDialog } from '../../../../shared/ConfirmDialog'
+import { PressableScale } from '../../../../shared/PressableScale'
 import { Typography } from '../../../../shared/Typography'
 
-type Props = {}
-
-export const ExitFromProfile = memo((props: Props) => {
+export const ExitFromProfile = memo(() => {
     const COLORS = ThemeStore.useCOLORS()
     const logout = UserStore.useLogout()
-    const onPress = useCallback(() => {
+    const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
+
+    const handleConfirm = useCallback(() => {
         logout()
-    }, [])
+    }, [logout])
 
     const styles = StyleSheet.create({
-        exitContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingVertical: SIZES.PX * 16,
-            paddingHorizontal: SIZES.PX * 12,
-            borderBottomColor: COLORS.BACKGROUND.Tertiary,
-            borderBottomWidth: 2 * SIZES.PX,
-        },
-        left: {
-            flexDirection: 'row',
-            alignItems: 'center',
+        container: {
+            padding: 6 * SIZES.PX,
         },
     })
+
     return (
-        <CustomTouchableOpacity
-            activeOpacity={0.6}
-            onPress={onPress}
-            style={styles.exitContainer}
-        >
-            <View style={styles.left}>
-                <Typography type="bodyAccentSmall" marginsPaddings={{ ml: 12 }}>
-                    Выйти из аккаунта
+        <>
+            <PressableScale
+                onPress={handleOpenModal}
+                scaleTo={PRESS_SCALE.ROW}
+                style={styles.container}
+            >
+                <Typography
+                    type="label14"
+                    textAlign="center"
+                    customColor={COLORS.STATE.Destructive}
+                >
+                    Выйти
                 </Typography>
-            </View>
-            <ArrowIcon />
-        </CustomTouchableOpacity>
+            </PressableScale>
+
+            <ConfirmDialog
+                isOpened={isShowModal}
+                onClose={handleCloseModal}
+                onConfirm={handleConfirm}
+                title="Выйти из аккаунта?"
+                description="Вы сможете войти снова по номеру телефона."
+                confirmLabel="Выйти"
+            />
+        </>
     )
 })

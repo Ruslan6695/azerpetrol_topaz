@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { StyleSheet, View } from 'react-native'
 import { InternalPagesLayout } from '../../../layouts/InternalPagesLayout'
 import { PromotionsAndBonusesDetailsWidget } from '../../../widgets/PromotionsAndBonusesDetailsWidget'
 import { useLocalSearchParams } from 'expo-router'
@@ -19,8 +18,4 @@ export const PromotionsAndBonusesDetailsScreen = memo((props: Props) => {
             <PromotionsAndBonusesDetailsWidget params={params} />
         </InternalPagesLayout>
     )
-})
-
-const styles = StyleSheet.create({
-    container: {},
 })

@@ -1,6 +1,8 @@
 import { ESCREENS } from '../enums/EScreens'
 
-export const SCREENS_TITLES: any = {
+// Ключ — значение ESCREENS, но индексируем справочник и «сырым» pathname
+// (InternalPagesHeader берёт заголовок по usePathname()), поэтому ключ — string.
+export const SCREENS_TITLES: Record<string, string> = {
     [ESCREENS.PAY_BALANCE]: 'Пополнение баланса',
     [ESCREENS.TRANSFER_BALANCE]: 'Перевод средств',
     [ESCREENS.CONTACTS]: 'Контакты',
@@ -16,6 +18,7 @@ export const SCREENS_TITLES: any = {
     [ESCREENS.ABOUT_APP]: 'О приложении',
     [ESCREENS.ABOUT_COMPANY]: 'О компании',
     [ESCREENS.SETTINGS]: 'Настройки',
+    [ESCREENS.DELETE_ACCOUNT]: 'Удаление аккаунта',
     [ESCREENS.NEWS]: 'Новости',
     [ESCREENS.NEWS_DETAILS]: 'Новости',
     [ESCREENS.FUEL_PRICES]: 'Цены на топливо',

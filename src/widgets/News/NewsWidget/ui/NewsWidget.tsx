@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 import {
@@ -27,29 +27,34 @@ export const NewsWidget = memo(({ variant = 'list' }: Props) => {
     const handleReloadData = useCallback(() => {
         fetchData({
             args: undefined,
-            afterDataCallback(data) {},
             hideToastOnError: true,
         })
-    }, [])
+    }, [fetchData])
 
     useEffect(() => {
         handleReloadData()
-    }, [])
+    }, [handleReloadData])
 
     const isCarousel = variant === 'carousel'
 
-    const styles = StyleSheet.create({
-        container: {
-            gap: SPACING.ROW_GAP * SIZES.PX,
-        },
-        section: {
-            gap: SPACING.MD * SIZES.PX,
-        },
-        carouselContent: {
-            gap: SPACING.ROW_GAP * SIZES.PX,
-            paddingBottom: 2 * SIZES.PX,
-        },
-    })
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                // Зазор между карточками экрана /news — 12 по макету,
+                // у карусели главной он свой (10).
+                container: {
+                    gap: SPACING.MD * SIZES.PX,
+                },
+                section: {
+                    gap: SPACING.MD * SIZES.PX,
+                },
+                carouselContent: {
+                    gap: SPACING.ROW_GAP * SIZES.PX,
+                    paddingBottom: 2 * SIZES.PX,
+                },
+            }),
+        []
+    )
 
     const content = errorText ? (
         <ErrorWhileFetchingForm
@@ -92,7 +97,7 @@ export const NewsWidget = memo(({ variant = 'list' }: Props) => {
 
     return (
         <>
-            <Typography marginsPaddings={{ mb: 10 }} type="headlineSmall">
+            <Typography marginsPaddings={{ mb: SPACING.MD }} type="num18">
                 Новости
             </Typography>
             {isEmpty ? <WithoutNewsBlock /> : content}

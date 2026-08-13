@@ -1,4 +1,4 @@
-import { IPromotionsAndBonusesItem } from '../../../../entities/PromotionsAndBonusesItem'
+import { IPromotionsAndBonusesItem } from '../../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
 
 export interface IPromotionsAndBonusesWidgetData {
     promotions: IPromotionsAndBonusesItem[]
