@@ -1,14 +1,14 @@
 import { memo } from 'react'
-import Skeleton from '../../../../shared/Skeleton/ui/Skeletons'
-import { SIZES } from '../../../../shared'
+import { RADII, SIZES } from '../../../../shared'
+import { Skeleton } from '../../../../shared/Skeleton'
 
-type Props = {}
-
-export const ProfileJoinAccountsWidgetSkeleton = memo((props: Props) => {
+// Высота под карточку: паддинги 16×2 + заголовок 15 + плитка 100 + ссылка.
+export const ProfileJoinAccountsWidgetSkeleton = memo(() => {
     return (
         <Skeleton
-            height={150 * SIZES.PX}
+            height={196 * SIZES.PX}
             width={SIZES.WIDTH(1) - SIZES.PX * 40}
+            style={{ borderRadius: RADII.CARD * SIZES.PX }}
         />
     )
 })

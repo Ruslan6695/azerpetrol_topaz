@@ -1,7 +1,13 @@
-import React from 'react'
+import { memo } from 'react'
 import { StyleSheet } from 'react-native'
-import { useModal } from '../../../../shared'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
+import {
+    PRESS_SCALE,
+    SIZES,
+    SPACING,
+    ThemeStore,
+    useModal,
+} from '../../../../shared'
+import { PressableScale } from '../../../../shared/PressableScale'
 import { Typography } from '../../../../shared/Typography'
 import { LeaveFromProfileJoinAccountsModal } from './LeaveFromProfileJoinAccountsModal'
 
@@ -9,19 +15,31 @@ type Props = {
     onLeave: () => void
 }
 
-export const LeaveFromProfileJoinAccounts = ({ onLeave }: Props) => {
+export const LeaveFromProfileJoinAccounts = memo(({ onLeave }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
     const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
+
+    const styles = StyleSheet.create({
+        container: {
+            alignSelf: 'flex-start',
+            marginTop: SPACING.MD * SIZES.PX,
+        },
+    })
+
     return (
         <>
-            <CustomTouchableOpacity
+            <PressableScale
                 onPress={handleOpenModal}
-                activeOpacity={0.6}
+                scaleTo={PRESS_SCALE.ROW}
                 style={styles.container}
             >
-                <Typography color="error" type="bodyAccentSmall">
+                <Typography
+                    type="label13"
+                    customColor={COLORS.STATE.Destructive}
+                >
                     Покинуть группу
                 </Typography>
-            </CustomTouchableOpacity>
+            </PressableScale>
 
             <LeaveFromProfileJoinAccountsModal
                 onLeave={onLeave}
@@ -30,12 +48,4 @@ export const LeaveFromProfileJoinAccounts = ({ onLeave }: Props) => {
             />
         </>
     )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingBottom: 0,
-    },
 })

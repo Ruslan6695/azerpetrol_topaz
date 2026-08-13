@@ -1,9 +1,6 @@
 import { memo, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { SIZES, useSendFetch } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { CustomModal } from '../../../../shared/CustomModal'
-import { Loader } from '../../../../shared/Loader'
+import { useSendFetch } from '../../../../shared'
+import { ConfirmDialog } from '../../../../shared/ConfirmDialog'
 import { leaveFromProfileJoinAccountsApi } from '../api/leaveFromProfileJoinAccountsApi'
 
 type Props = {
@@ -14,7 +11,7 @@ type Props = {
 
 export const LeaveFromProfileJoinAccountsModal = memo(
     ({ handleClose, isOpened, onLeave }: Props) => {
-        const { errorText, isSendFetchLoading, sendFetch } = useSendFetch({
+        const { isSendFetchLoading, sendFetch } = useSendFetch({
             apiCallback: leaveFromProfileJoinAccountsApi.leave,
             errorText: 'Ошибка при выходе из группы',
         })
@@ -22,57 +19,25 @@ export const LeaveFromProfileJoinAccountsModal = memo(
         const handleSubmit = useCallback(() => {
             sendFetch({
                 args: undefined,
-                afterDataCallback(data) {
+                afterDataCallback() {
                     onLeave()
                 },
                 finalyCallback() {
                     handleClose()
                 },
             })
-        }, [onLeave])
+        }, [sendFetch, onLeave, handleClose])
+
         return (
-            <CustomModal
-                title="Подтвердите выход из группы"
-                bgDark
-                handleClose={handleClose}
-                isModalOpened={isOpened}
-            >
-                <View style={styles.container}>
-                    {isSendFetchLoading ? (
-                        <Loader />
-                    ) : (
-                        <>
-                            <CustomButton
-                                onPress={handleSubmit}
-                                styled={{
-                                    width: { type: 'absolute', value: '100%' },
-                                }}
-                            >
-                                Подтвердить
-                            </CustomButton>
-                            <CustomButton
-                                onPress={handleClose}
-                                styled={{
-                                    type: 'secondary',
-                                    marginsPaddings: { mt: 10 },
-                                    width: { type: 'absolute', value: '100%' },
-                                }}
-                            >
-                                Отменить
-                            </CustomButton>
-                        </>
-                    )}
-                </View>
-            </CustomModal>
+            <ConfirmDialog
+                isOpened={isOpened}
+                onClose={handleClose}
+                onConfirm={handleSubmit}
+                title="Покинуть группу?"
+                description="Вы потеряете доступ к общему счёту и его бонусам."
+                confirmLabel="Покинуть"
+                loading={isSendFetchLoading}
+            />
         )
     }
 )
-
-const styles = StyleSheet.create({
-    container: {
-        width: SIZES.WIDTH(0.85),
-        alignItems: 'center',
-        height: 150 * SIZES.PX,
-        justifyContent: 'center',
-    },
-})

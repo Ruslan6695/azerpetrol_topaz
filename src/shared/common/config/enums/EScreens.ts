@@ -37,6 +37,7 @@ export const ESCREENS = {
     ABOUT_APP: '/about_app',
     ABOUT_COMPANY: '/about_company',
     SETTINGS: '/settings',
+    DELETE_ACCOUNT: '/delete_account',
 } as const
 
 // Union всех маршрутов. Им типизируются route-параметры (TSuccessScreenParams,

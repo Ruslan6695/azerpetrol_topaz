@@ -1,21 +1,16 @@
 import { memo } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { NewsGif } from '../../../../shared/NewsGif'
-import { Typography } from '../../../../shared/Typography'
+import { CenteredState } from '../../../../shared/CenteredState'
 
 type Props = {}
 
+// Пустого экрана новостей в макете «21 Век» нет — берём его общий паттерн
+// центрированного состояния, как на остальных переделанных экранах.
 export const WithoutNewsBlock = memo((props: Props) => {
     return (
-        <View style={styles.container}>
-            <NewsGif />
-            <Typography textAlign="center">Новостей пока нет</Typography>
-        </View>
+        <CenteredState
+            variant="empty"
+            title="Новостей пока нет"
+            description="Здесь появятся объявления и события компании"
+        />
     )
-})
-
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-    },
 })

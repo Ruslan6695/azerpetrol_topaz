@@ -1,66 +1,16 @@
-import { memo, useMemo } from 'react'
-import {
-    IProfileLinkItem,
-    ProfileLinkItem,
-} from '../../../../entities/Profile/ProfileLinkItem'
-import { COLORS, ESCREENS, SIZES } from '../../../../shared'
-import AboutAppSvg from '../assets/about_app.svg'
-import AboutCompanySvg from '../assets/about_company.svg'
-import HistorySvg from '../assets/history.svg'
-import NewsSvg from '../assets/news.svg'
-import SettingsSvg from '../assets/settings.svg'
-import SupportSvg from '../assets/support.svg'
-import DeleteAccSvg from '../assets/delete_acc.svg'
-import { StyleSheet, View } from 'react-native'
-type Props = {
-    onDeleteAccount: () => void
-}
+import { memo } from 'react'
+import { PROFILE_LINK_ITEMS } from '../config/constants/PROFILE_LINK_ITEMS'
+import { ProfileLinkRow } from './ProfileLinkRow'
 
-const items: IProfileLinkItem[] = [
-    { icon: HistorySvg, link: ESCREENS.HISTORY, title: 'История операций' },
-    { icon: NewsSvg, link: ESCREENS.NEWS, title: 'Новости компании' },
-    { icon: AboutAppSvg, link: ESCREENS.ABOUT_APP, title: 'О приложении' },
-    {
-        icon: AboutCompanySvg,
-        link: ESCREENS.ABOUT_COMPANY,
-        title: 'О компании',
-    },
-    { icon: DeleteAccSvg, link: ESCREENS.SETTINGS, title: 'Удаление аккаунта' },
-    { icon: SupportSvg, link: ESCREENS.HELP, title: 'Помощь' },
-]
-export const MapProfileLinkItems = memo(({ onDeleteAccount }: Props) => {
-    const items = useMemo<IProfileLinkItem[]>(() => {
-        return [
-            {
-                icon: HistorySvg,
-                link: ESCREENS.HISTORY,
-                title: 'История операций',
-            },
-            { icon: NewsSvg, link: ESCREENS.NEWS, title: 'Новости компании' },
-            {
-                icon: AboutAppSvg,
-                link: ESCREENS.ABOUT_APP,
-                title: 'О приложении',
-            },
-            {
-                icon: AboutCompanySvg,
-                link: ESCREENS.ABOUT_COMPANY,
-                title: 'О компании',
-            },
-            {
-                icon: DeleteAccSvg,
-                link: ESCREENS.SETTINGS,
-                title: 'Удаление аккаунта',
-                onPress: onDeleteAccount,
-            },
-            { icon: SupportSvg, link: ESCREENS.HELP, title: 'Помощь' },
-        ]
-    }, [onDeleteAccount])
-
+export const MapProfileLinkItems = memo(() => {
     return (
-        < >
-            {items.map((item) => (
-                <ProfileLinkItem {...item} key={item.link} />
+        <>
+            {PROFILE_LINK_ITEMS.map((item, index) => (
+                <ProfileLinkRow
+                    key={item.link}
+                    {...item}
+                    last={index === PROFILE_LINK_ITEMS.length - 1}
+                />
             ))}
         </>
     )

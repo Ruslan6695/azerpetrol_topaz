@@ -5,4 +5,5 @@ export enum EAsyncStoreKeys {
     PUSH_NOTIFICATION = 'pushNotification',
     COLOR_THEME = 'colorTheme',
     IS_BALANCE_HIDDEN = 'isBalanceHidden',
+    TANK_VOLUME = 'tankVolume',
 }

@@ -1,1 +1,1 @@
-export * from './ui/DeleteAccountModal'
+export * from './ui/DeleteAccount'

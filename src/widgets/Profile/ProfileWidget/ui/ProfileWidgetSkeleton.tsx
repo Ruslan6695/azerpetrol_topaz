@@ -1,22 +1,17 @@
-import React from 'react'
+import { memo } from 'react'
 import { SIZES } from '../../../../shared'
-import Skeleton from '../../../../shared/Skeleton/ui/Skeletons'
+import { Skeleton } from '../../../../shared/Skeleton'
 
-type Props = {}
-
-export const ProfileWidgetSkeleton = (props: Props) => {
+// Полосы под h5 (24) и body14 (14) — размеры имени и телефона в ProfileWidget.
+export const ProfileWidgetSkeleton = memo(() => {
     return (
         <>
             <Skeleton
-                margins={{ mt: 10, mb: 10 }}
-                width={200 * SIZES.PX}
-                height={30 * SIZES.PX}
+                margins={{ mt: 4 }}
+                width={140 * SIZES.PX}
+                height={24 * SIZES.PX}
             />
-            <Skeleton
-                margins={{ mb: 20 }}
-                width={150 * SIZES.PX}
-                height={20 * SIZES.PX}
-            />
+            <Skeleton width={110 * SIZES.PX} height={16 * SIZES.PX} />
         </>
     )
-}
+})

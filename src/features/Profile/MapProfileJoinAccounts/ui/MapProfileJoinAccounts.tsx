@@ -1,10 +1,10 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
+import { ScrollView, StyleSheet } from 'react-native'
 import {
     IProfileJoinAccountItem,
     ProfileJoinAccountItem,
 } from '../../../../entities/Profile/ProfileJoinAccountItem'
-import { FlatList, StyleSheet } from 'react-native'
-import { SIZES } from '../../../../shared'
+import { SIZES, SPACING } from '../../../../shared'
 
 type Props = {
     joinAccounts: IProfileJoinAccountItem[]
@@ -15,32 +15,42 @@ type Props = {
 
 export const MapProfileJoinAccounts = memo(
     ({ joinAccounts, onDeleteAccount, balanceCreatorId, profileId }: Props) => {
+        // Копия перед reverse(): исходный массив лежит в data хука useFetchData,
+        // мутировать его нельзя.
+        const accounts = useMemo(
+            () => [...joinAccounts].reverse(),
+            [joinAccounts]
+        )
+
+        const styles = StyleSheet.create({
+            scroll: {
+                marginTop: SPACING.MD * SIZES.PX,
+            },
+            content: {
+                gap: SPACING.ROW_GAP * SIZES.PX,
+            },
+        })
+
         return (
-            <FlatList
-                style={{ marginTop: SIZES.PX * 12 }}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.container}
+            <ScrollView
                 horizontal
-                data={joinAccounts.reverse()}
-                renderItem={({ item }) => (
+                showsHorizontalScrollIndicator={false}
+                style={styles.scroll}
+                contentContainerStyle={styles.content}
+            >
+                {accounts.map((account) => (
                     <ProfileJoinAccountItem
-                        isCreator={balanceCreatorId === item.id}
+                        key={account.id}
+                        isCreator={balanceCreatorId === account.id}
                         deleteDisabled={
-                            item.id === balanceCreatorId ||
-                            item.id === profileId
+                            account.id === balanceCreatorId ||
+                            account.id === profileId
                         }
                         onDeleteAccount={onDeleteAccount}
-                        {...item}
-                        key={item.id}
+                        {...account}
                     />
-                )}
-            />
+                ))}
+            </ScrollView>
         )
     }
 )
-
-const styles = StyleSheet.create({
-    container: {
-        gap: 10,
-    },
-})

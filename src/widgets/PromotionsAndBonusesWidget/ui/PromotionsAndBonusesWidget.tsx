@@ -1,14 +1,17 @@
-import { memo, useCallback, useEffect } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import { PromotionsAndBonusesItem } from '../../../entities/PromotionsAndBonuses/PromotionsAndBonusesItem'
 import { WithoutPromotionsAndBonusesBlock } from '../../../entities/PromotionsAndBonuses/WithoutPromotionsAndBonusesBlock'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
-import { SIZES, useFetchData } from '../../../shared'
-import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
+import { RADII, SIZES, SPACING, useFetchData } from '../../../shared'
+import { Skeleton } from '../../../shared/Skeleton'
 import { promotionsAndBonusesWidgetApi } from '../api/promotionsAndBonusesWidgetApi'
 
 type Props = {}
+
+// Высота карточки акции с картинкой (PromotionImageCard) — скелетон повторяет
+// её вместе с радиусом, иначе список дёргается в момент подмены загрузки.
+const CARD_HEIGHT = 150
 
 export const PromotionsAndBonusesWidget = memo((props: Props) => {
     const { data, errorText, fetchData, isDataLoading } = useFetchData({
@@ -20,18 +23,30 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
         fetchData({
             args: undefined,
             hideToastOnError: true,
-            afterDataCallback(data) {
-            },
         })
-    }, [])
+    }, [fetchData])
 
     useEffect(() => {
         handleReloadData()
-    }, [])
+    }, [handleReloadData])
+
+    const styles = useMemo(
+        () =>
+            StyleSheet.create({
+                promotions: {
+                    gap: SPACING.MD * SIZES.PX,
+                },
+                skeleton: {
+                    borderRadius: RADII.CARD * SIZES.PX,
+                },
+            }),
+        []
+    )
 
     return (
         <>
-            <ScreenTitle title="Акции и бонусы" />
+            {/* Заголовок «Акции и Бонусы» рисует шапка экрана
+                (InternalPagesHeader через SCREENS_TITLES) — свой не нужен. */}
             {errorText ? (
                 <ErrorWhileFetchingForm
                     margins={{ mt: 100 }}
@@ -43,8 +58,9 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
                     {[1, 2, 3].map((pr) => (
                         <Skeleton
                             key={pr}
-                            height={155 * SIZES.PX}
+                            height={CARD_HEIGHT * SIZES.PX}
                             width={SIZES.WIDTH(1) - SIZES.PX * 40}
+                            style={styles.skeleton}
                         />
                     ))}
                 </View>
@@ -61,9 +77,4 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
             )}
         </>
     )
-})
-const styles = StyleSheet.create({
-    promotions: {
-        gap: SIZES.PX * 10,
-    },
 })

@@ -26,16 +26,16 @@ export const ShowMainPromotions = memo((props: Props) => {
                 args: undefined,
                 hideToastOnError: true,
                 afterDataCallback(data) {
+                    const modalPromotions = data.promotions.filter(
+                        (prom) => prom.show_modal === true
+                    )
+
                     setData({
                         promotions: data.promotions.filter(
                             (prom) => prom.show_main === true
                         ),
                     })
-                    setModalPromotions(
-                        data.promotions.filter(
-                            (prom) => prom.show_modal === true
-                        )
-                    )
+                    setModalPromotions(modalPromotions)
                 },
             })
     }, [isTokenRefreshed])

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import { StyleSheet } from 'react-native'
 import {
     ESCREENS,
@@ -7,6 +7,7 @@ import {
     RADII,
     SIZES,
     SPACING,
+    formatNewsDate,
 } from '../../../../shared'
 import { GlassCard } from '../../../../shared/GlassCard'
 import { PressableScale } from '../../../../shared/PressableScale'
@@ -26,6 +27,12 @@ export const NewsCard = memo(({ date_create, header, html_text }: IProps) => {
         })
     }, [router, date_create, html_text, header])
 
+    // В карусели дата без года — так в макете.
+    const date = useMemo(
+        () => formatNewsDate(date_create, false),
+        [date_create]
+    )
+
     const styles = StyleSheet.create({
         card: {
             width: 200 * SIZES.PX,
@@ -44,7 +51,7 @@ export const NewsCard = memo(({ date_create, header, html_text }: IProps) => {
                 style={styles.card}
             >
                 <Typography type="caption10" color="secondary">
-                    {date_create}
+                    {date}
                 </Typography>
                 <Typography
                     type="label13"
