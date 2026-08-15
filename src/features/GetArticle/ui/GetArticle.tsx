@@ -1,18 +1,21 @@
 import { memo, useCallback, useEffect } from 'react'
-import RenderHTML from 'react-native-render-html'
-import { EColorThemes, SIZES, ThemeStore, useFetchData } from '../../../shared'
-import { getArticleApi } from '../api/getArticleApi'
-import { Loader } from '../../../shared/Loader'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
-import { StyleSheet, View, ViewBase } from 'react-native'
+import { RADII, useFetchData } from '../../../shared'
+import { GlassCard } from '../../../shared/GlassCard'
+import { HtmlContent } from '../../../shared/HtmlContent'
+import { getArticleApi } from '../api/getArticleApi'
+import { ARTICLE_CARD_PADDING } from '../config/constants/ARTICLE_CARD'
 import { EGetAricleIds } from '../config/enums/EGetAricleIds'
+import { GetArticleSkeleton } from './GetArticleSkeleton'
 
 type Props = {
     id: EGetAricleIds
 }
 
+// Заголовок статьи выводит шапка экрана (SCREENS_TITLES → InternalPagesHeader),
+// поэтому data.header внутри карточки не дублируем. Типографику разметки с
+// бэкенда целиком держит shared/HtmlContent — здесь только рамка.
 export const GetArticle = memo(({ id }: Props) => {
-    const colorTheme = ThemeStore.useTheme()
     const { data, errorText, fetchData, isDataLoading } = useFetchData({
         apiCallback: getArticleApi.getArticle,
         errorText: 'Ошибка при получении данных',
@@ -22,54 +25,38 @@ export const GetArticle = memo(({ id }: Props) => {
         fetchData({
             args: { id },
             hideToastOnError: true,
-            onErrorCallback(error) {},
         })
-    }, [id])
+    }, [fetchData, id])
 
     useEffect(() => {
         handleReloadData()
-    }, [])
+    }, [handleReloadData])
+
     if (isDataLoading) {
-        return (
-            <View style={styles.center}>
-                <Loader />
-            </View>
-        )
+        return <GetArticleSkeleton />
     }
+
     if (errorText) {
         return (
-            <View style={styles.center}>
-                <ErrorWhileFetchingForm
-                    onReload={handleReloadData}
-                    message={errorText}
-                />
-            </View>
+            <ErrorWhileFetchingForm
+                onReload={handleReloadData}
+                message={errorText}
+                margins={{ mt: 40 }}
+            />
         )
+    }
+
+    if (!data?.html_text) {
+        return null
     }
 
     return (
-        <>
-            {data?.html_text ? (
-                <RenderHTML
-                    baseStyle={{
-                        color:
-                            colorTheme == EColorThemes.DARK
-                                ? 'white'
-                                : undefined,
-                    }}
-                    contentWidth={SIZES.WIDTH(1)}
-                    source={{ html: data?.html_text }}
-                ></RenderHTML>
-            ) : (
-                <></>
-            )}
-        </>
+        <GlassCard
+            variant="glass2"
+            radius={RADII.CARD}
+            padding={ARTICLE_CARD_PADDING}
+        >
+            <HtmlContent html={data.html_text} />
+        </GlassCard>
     )
-})
-
-const styles = StyleSheet.create({
-    center: {
-        justifyContent: 'center',
-        height: SIZES.HEIGHT(0.7),
-    },
 })

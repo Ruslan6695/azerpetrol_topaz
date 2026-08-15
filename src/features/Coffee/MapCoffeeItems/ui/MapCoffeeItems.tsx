@@ -1,7 +1,7 @@
 import { memo } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { CoffeeItem, ICoffeeItem } from '../../../../entities/Coffee/CoffeeItem'
-import { SIZES } from '../../../../shared'
+import { SIZES, SPACING } from '../../../../shared'
 import { MapCoffeeItemsSkeleton } from './MapCoffeeItemsSkeleton'
 
 type Props = {
@@ -11,6 +11,8 @@ type Props = {
     bonus?: boolean
 }
 
+// Сетка макета — display:grid в две колонки. В RN её заменяет
+// flexWrap: ширину плитки считает сам CoffeeItem.
 export const MapCoffeeItems = memo(
     ({ items, isItemsLoading, onBuyCoffee, bonus }: Props) => {
         if (isItemsLoading) {
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: SIZES.PX * 20,
-        marginBottom: SIZES.PX * 20,
+        gap: SPACING.MD * SIZES.PX,
     },
 })

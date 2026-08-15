@@ -1,12 +1,9 @@
-import React from 'react'
-import BonusSvg from '../assets/bonus.svg'
+import { memo } from 'react'
+import { StyleSheet } from 'react-native'
 import { SIZES } from '../../common/config/constants/sizes'
-import Foundation from '@expo/vector-icons/Foundation'
-import { COLORS } from '../../common/config/constants/COLORS'
-import { MPLayout } from '../../MpLayout'
-import Feather from '@expo/vector-icons/Feather'
 import { ThemeStore } from '../../common/model/themeStore'
-import { EColorThemes } from '../../common/config/enums/EColorThemes'
+import { MPLayout } from '../../MpLayout'
+import { Typography } from '../../Typography'
 
 type Props = {
     size?: number
@@ -16,38 +13,35 @@ type Props = {
     mt?: number
 }
 
-export const BonusIcon = ({ size, color, bold, ml, mt }: Props) => {
-    const colorTheme = ThemeStore.useTheme()
-    if (bold) {
-        return (
-            <MPLayout mt={mt} ml={ml ?? 5}>
-                <Foundation
-                    name="bold"
-                    size={size || 24 * SIZES.PX}
-                    color={
-                        color
-                            ? color
-                            : colorTheme === EColorThemes.DARK
-                            ? COLORS.TEXT.Invert
-                            : COLORS.TEXT.Primary
-                    }
-                />
-            </MPLayout>
-        )
-    }
+// Знак валюты рядом с суммой. Раньше здесь стояла иконка «B» из
+// @expo/vector-icons; теперь это символ ₽ шрифтом Manrope — так он совпадает
+// по начертанию с числом, к которому приписан.
+//
+// Размер приходит пропом size (компонент подстраивается под соседний текст),
+// поэтому тип из лестницы Typography перекрывается своим fontSize —
+// единственный способ сохранить прежний контракт всех восьми мест вызова.
+const DEFAULT_SIZE = 16
+const DEFAULT_BOLD_SIZE = 24
+
+export const BonusIcon = memo(({ size, color, bold, ml, mt }: Props) => {
+    const COLORS = ThemeStore.useCOLORS()
+
+    const styles = StyleSheet.create({
+        sign: {
+            fontSize:
+                size ?? (bold ? DEFAULT_BOLD_SIZE : DEFAULT_SIZE) * SIZES.PX,
+        },
+    })
+
     return (
-        <MPLayout mt={mt} ml={ml || 3}>
-            <Feather
-                name="bold"
-                size={size || 16 * SIZES.PX}
-                color={
-                    color
-                        ? color
-                        : colorTheme === EColorThemes.DARK
-                        ? COLORS.TEXT.Invert
-                        : COLORS.TEXT.Primary
-                }
-            />
+        <MPLayout mt={mt} ml={ml ?? (bold ? 5 : 3)}>
+            <Typography
+                type={bold ? 'num16' : 'label14'}
+                customColor={color ?? COLORS.TEXT.Primary}
+                style={styles.sign}
+            >
+                ₽
+            </Typography>
         </MPLayout>
     )
-}
+})

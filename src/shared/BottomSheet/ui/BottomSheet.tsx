@@ -7,8 +7,8 @@ import Animated, {
     useSharedValue,
     withSpring,
 } from 'react-native-reanimated'
+import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
-import { COLORS } from '../../common/config/constants/COLORS'
 import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
 import { ThemeStore } from '../../common/model/themeStore'
 
@@ -74,7 +74,7 @@ const BottomSheet = ({
             height: SIZES.HEIGHT(1),
             justifyContent: 'flex-end',
             alignItems: 'center',
-            backgroundColor: bgDark ? 'rgba(0, 0, 0, 0.49)' : undefined,
+            backgroundColor: bgDark ? COLORS.EFFECTS.Backdrop : undefined,
         },
         container: {
             position: 'absolute',
@@ -82,8 +82,8 @@ const BottomSheet = ({
 
             // Всплывающая панель над бэкдропом — только непрозрачная поверхность.
             backgroundColor: COLORS.GLASS.Surface,
-            borderTopLeftRadius: SIZES.PX * 40,
-            borderTopRightRadius: SIZES.PX * 40,
+            borderTopLeftRadius: RADII.SHEET * SIZES.PX,
+            borderTopRightRadius: RADII.SHEET * SIZES.PX,
 
             elevation: 10,
         },
