@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { StyleProp, StyleSheet, TextInput, View, ViewStyle } from 'react-native'
 import { FONTS } from '../../common/config/constants/FONTS'
 import { RADII } from '../../common/config/constants/RADII'
@@ -22,6 +22,10 @@ type Props = {
     minWidth?: number
     min?: number
     max?: number
+    /** Дробное значение с шагом 0.5 (литры). По умолчанию только целые */
+    decimal?: boolean
+    /** Цвет числа и суффикса. По умолчанию TEXT.Primary / secondary */
+    color?: string
     style?: StyleProp<ViewStyle>
 }
 
@@ -38,6 +42,8 @@ export const AmountField = memo(
         minWidth = 130,
         min = 0,
         max,
+        decimal,
+        color,
         style,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
@@ -68,40 +74,88 @@ export const AmountField = memo(
                 textAlign: align === 'center' ? 'center' : 'left',
                 fontFamily: FONTS.EXTRABOLD,
                 fontSize: fontSize * SIZES.PX,
-                color: COLORS.TEXT.Primary,
+                color: color ?? COLORS.TEXT.Primary,
             },
             suffix: {
                 paddingBottom: 4 * SIZES.PX,
             },
         })
 
-        // Из ввода остаются только цифры, результат зажимается в [min, max]:
-        // иначе в запрос может уйти сумма, которую бэкенд не примет.
+        // В дробном режиме поле держит собственный текст: если показывать
+        // разобранное число, набранная точка («20.») тут же пропадала бы.
+        const [text, setText] = useState(String(value))
+
+        useEffect(() => {
+            if (!decimal) {
+                return
+            }
+            // Значение пришло снаружи (слайдер, чипы) — перебиваем набранное.
+            if (parseFloat(text) !== value) {
+                setText(String(value))
+            }
+        }, [value, decimal])
+
+        // Из ввода остаются только цифры (и точка в дробном режиме),
+        // результат зажимается в [min, max]: иначе в запрос может уйти
+        // значение, которое бэкенд не примет.
         const handleChangeText = useCallback(
-            (text: string) => {
-                const parsed = parseInt(text.replace(/\D/g, ''), 10)
-                const next = isNaN(parsed) ? min : parsed
+            (next: string) => {
+                const cleaned = decimal
+                    ? next.replace(',', '.').replace(/[^\d.]/g, '')
+                    : next.replace(/\D/g, '')
+                const parsed = decimal
+                    ? parseFloat(cleaned)
+                    : parseInt(cleaned, 10)
+
+                if (decimal) {
+                    setText(cleaned)
+                    // Нижнюю границу применяем на потере фокуса: иначе
+                    // «0.5» при min = 1 не дать набрать.
+                    if (!isNaN(parsed)) {
+                        onChangeValue(
+                            max !== undefined ? Math.min(max, parsed) : parsed
+                        )
+                    }
+                    return
+                }
+
+                const value = isNaN(parsed) ? min : parsed
                 onChangeValue(
                     max !== undefined
-                        ? Math.max(min, Math.min(max, next))
-                        : Math.max(min, next)
+                        ? Math.max(min, Math.min(max, value))
+                        : Math.max(min, value)
                 )
             },
-            [min, max, onChangeValue]
+            [min, max, decimal, onChangeValue]
         )
+
+        const handleBlur = useCallback(() => {
+            if (!decimal) {
+                return
+            }
+            const parsed = parseFloat(text)
+            const bounded = Math.max(min, isNaN(parsed) ? min : parsed)
+            setText(String(bounded))
+            onChangeValue(bounded)
+        }, [decimal, text, min, onChangeValue])
 
         return (
             <View style={[styles.field, style]}>
                 <TextInput
-                    value={String(value)}
+                    value={decimal ? text : String(value)}
                     onChangeText={handleChangeText}
-                    keyboardType="number-pad"
+                    onBlur={handleBlur}
+                    keyboardType={decimal ? 'decimal-pad' : 'number-pad'}
                     selectTextOnFocus
                     style={styles.input}
                 />
                 {suffix ? (
                     <View style={styles.suffix}>
-                        <Typography type="num18" color="secondary">
+                        <Typography
+                            type="num18"
+                            color={color ? undefined : 'secondary'}
+                            customColor={color}
+                        >
                             {suffix}
                         </Typography>
                     </View>

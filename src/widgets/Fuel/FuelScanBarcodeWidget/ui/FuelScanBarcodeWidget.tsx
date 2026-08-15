@@ -1,7 +1,13 @@
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
-import { FuelStore, SIZES, UserStore, useSendFetch } from '../../../../shared'
+import {
+    FuelStore,
+    SIZES,
+    TFuelRoad,
+    UserStore,
+    useSendFetch,
+} from '../../../../shared'
 import { CameraScanner } from '../../../../shared/CameraScanner'
 import { CustomButton } from '../../../../shared/CustomButton'
 import { Typography } from '../../../../shared/Typography'
@@ -9,15 +15,7 @@ import { fuelScanBarcodeWidgetApi } from '../api/fuelScanBarcodeWidgetApi'
 import { FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS'
 
 type Props = {
-    setRoad: React.Dispatch<
-        React.SetStateAction<
-            | 'main'
-            | 'selectAzsAndColumn'
-            | 'scan'
-            | 'selectTrkType'
-            | 'selectLiters'
-        >
-    >
+    setRoad: React.Dispatch<React.SetStateAction<TFuelRoad>>
 }
 
 export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
@@ -29,24 +27,27 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
     const changeAzs = FuelStore.useChangeAzs()
     const setBalance = UserStore.useSetBalance()
 
-    const handleSubmit = useCallback((code: string) => {
-        sendFetch({
-            args: { code },
-            afterDataCallback(data) {
-                changeColumn(data.trc)
-                changeAzs(data.azs)
-                setBalance({
-                    balance: data.balance,
-                    bonus_balance: data.bonus_balance,
-                })
-                setRoad('selectTrkType')
-            },
-            onErrorCallback(error) {},
-        })
-    }, [])
-    const onGoBack = useCallback(() => {
+    const handleSubmit = useCallback(
+        (code: string) => {
+            sendFetch({
+                args: { code },
+                afterDataCallback(data) {
+                    changeColumn(data.trc)
+                    changeAzs(data.azs)
+                    setBalance({
+                        balance: data.balance,
+                        bonus_balance: data.bonus_balance,
+                    })
+                    setRoad('selectTrkType')
+                },
+            })
+        },
+        [sendFetch, changeColumn, changeAzs, setBalance, setRoad]
+    )
+
+    const handleGoBack = useCallback(() => {
         setRoad('main')
-    }, [])
+    }, [setRoad])
     return (
         <>
             <View style={styles.container}>
@@ -61,7 +62,7 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
                 </View>
 
                 <CustomButton
-                    onPress={onGoBack}
+                    onPress={handleGoBack}
                     styled={{
                         type: 'secondary',
                         width: { type: 'absolute', value: '100%' },

@@ -1,6 +1,6 @@
-import { IInfoBlock } from '../../../../../entities/InfoBlock'
+import { IInfoCard } from '../../../../../entities/InfoCard'
 
-export const FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS: IInfoBlock[] = [
+export const FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS: IInfoCard[] = [
     {
         title: 'Выберите АЗС и номер колонки',
         info: 'Для начала налива выберите вручную азс и номер колонки и перейдите далее.',

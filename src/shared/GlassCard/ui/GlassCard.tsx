@@ -24,6 +24,8 @@ type Props = {
     blur?: boolean
     bordered?: boolean
     onPress?: () => void
+    /** Масштаб нажатия из PRESS_SCALE: у плиток он заметнее, чем у карточек */
+    pressScale?: number
     style?: StyleProp<ViewStyle>
 }
 
@@ -44,6 +46,7 @@ export const GlassCard = memo(
         blur,
         bordered = true,
         onPress,
+        pressScale = PRESS_SCALE.CARD,
         style,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
@@ -75,25 +78,33 @@ export const GlassCard = memo(
                 overflow: 'hidden',
                 borderWidth: bordered ? 1 : 0,
                 // У градиентных карточек макета своя лаймовая рамка,
-                // а не общий GLASS.Border.
-                borderColor: 'rgba(184,245,60,0.28)',
+                // а не общий GLASS.Border. У bonus она чуть слабее.
+                borderColor:
+                    variant === 'bonus'
+                        ? COLORS.GRADIENT.BorderSoft
+                        : COLORS.GRADIENT.Border,
                 ...paddings,
             },
         })
 
-        // hero и lime — непрозрачные градиенты, блюр им не нужен.
-        if (variant === 'hero' || variant === 'lime') {
+        // hero, lime и bonus — непрозрачные градиенты, блюр им не нужен.
+        if (variant === 'hero' || variant === 'lime' || variant === 'bonus') {
             const colors =
                 variant === 'hero'
                     ? ([
-                          'rgba(0,193,42,0.28)',
-                          'rgba(184,245,60,0.10)',
+                          COLORS.GRADIENT.HeroFrom,
+                          COLORS.GRADIENT.HeroMid,
                           COLORS.GLASS.Primary,
                       ] as const)
-                    : ([
-                          'rgba(184,245,60,0.22)',
-                          COLORS.GLASS.Primary,
-                      ] as const)
+                    : variant === 'bonus'
+                      ? ([
+                            COLORS.GRADIENT.BonusFrom,
+                            COLORS.GLASS.Primary,
+                        ] as const)
+                      : ([
+                            COLORS.GRADIENT.LimeFrom,
+                            COLORS.GLASS.Primary,
+                        ] as const)
 
             const content = (
                 <LinearGradient
@@ -108,7 +119,7 @@ export const GlassCard = memo(
             )
 
             return onPress ? (
-                <PressableScale onPress={onPress} scaleTo={PRESS_SCALE.CARD}>
+                <PressableScale onPress={onPress} scaleTo={pressScale}>
                     {content}
                 </PressableScale>
             ) : (
@@ -129,7 +140,7 @@ export const GlassCard = memo(
         )
 
         return onPress ? (
-            <PressableScale onPress={onPress} scaleTo={PRESS_SCALE.CARD}>
+            <PressableScale onPress={onPress} scaleTo={pressScale}>
                 {card}
             </PressableScale>
         ) : (

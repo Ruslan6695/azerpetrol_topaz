@@ -1,98 +1,109 @@
-import { memo, useCallback, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import { ErrorWhileFetchingForm } from "../../../../entities/ErrorWhileFetchingForm";
-import { TrkTypeBlock } from "../../../../entities/Fuel/TrkTypeBlock";
+import { memo, useCallback, useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
+import { ScreenTitle } from '../../../../entities/ScreenTitle'
+import { StepHeader } from '../../../../entities/StepHeader'
 import {
-  IAzs,
-  IColumn,
-  ITrkType,
-  SIZES,
-  UserStore,
-  useFetchData,
-} from "../../../../shared";
-import { CustomButton } from "../../../../shared/CustomButton";
-import { selectTrkTypeApi } from "../api/selectTrkTypeApi";
-import { SelectTrkTypeFormSkeleton } from "./SelectTrkTypeFormSkeleton";
-import { FuelStore } from "../../../../shared/common/model/fuelStore";
+    FuelStore,
+    IAzs,
+    IColumn,
+    ITrkType,
+    SIZES,
+    SPACING,
+    UserStore,
+    useFetchData,
+} from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { selectTrkTypeApi } from '../api/selectTrkTypeApi'
+import { ISelectTrkTypeData } from '../config/interfaces/ISelectTrkTypeData'
+import { SelectTrkTypeFormSkeleton } from './SelectTrkTypeFormSkeleton'
+import { TrkTypeRow } from './TrkTypeRow'
 
 type Props = {
-  column: IColumn;
-  azs: IAzs;
-  onSelectTrkType: (trkType: ITrkType) => void;
-  selectedTrkType: ITrkType | null;
-  onGoBack: () => void;
-};
+    column: IColumn
+    azs: IAzs
+    onSelectTrkType: (trkType: ITrkType) => void
+    onGoBack: () => void
+}
 
 export const SelectTrkTypeForm = memo(
-  ({ azs, column, onSelectTrkType, selectedTrkType, onGoBack }: Props) => {
-    const setBalance = UserStore.useSetBalance();
-    const changeFuelOnDebt = FuelStore.useChangeFuelOnDebt();
+    ({ azs, column, onSelectTrkType, onGoBack }: Props) => {
+        const setBalance = UserStore.useSetBalance()
+        const changeFuelOnDebt = FuelStore.useChangeFuelOnDebt()
 
-    const { data, errorText, fetchData, isDataLoading } = useFetchData({
-      apiCallback: selectTrkTypeApi.getTrkTypes,
-      errorText: "Не удалось получить типы топлива",
-    });
+        const { data, errorText, fetchData, isDataLoading } = useFetchData<
+            ISelectTrkTypeData,
+            { azsId: number; columnId: number }
+        >({
+            apiCallback: selectTrkTypeApi.getTrkTypes,
+            errorText: 'Не удалось получить типы топлива',
+        })
 
-    const handleReloadData = useCallback(() => {
-      fetchData({
-        args: { azsId: azs.id, columnId: column.id },
-        hideToastOnError: true,
-        afterDataCallback(data) {
-          setBalance({
-                                balance: data.balance,
-                                bonus_balance: data.bonus_balance,
-                            });
-          changeFuelOnDebt(data.fuel_on_debt);
-        },
-      });
-    }, [azs, column]);
+        const handleReloadData = useCallback(() => {
+            fetchData({
+                args: { azsId: azs.id, columnId: column.id },
+                hideToastOnError: true,
+                afterDataCallback(data) {
+                    setBalance({
+                        balance: data.balance,
+                        bonus_balance: data.bonus_balance,
+                    })
+                    changeFuelOnDebt(data.fuel_on_debt)
+                },
+            })
+        }, [azs, column, fetchData, setBalance, changeFuelOnDebt])
 
-    useEffect(() => {
-      handleReloadData();
-    }, []);
+        useEffect(() => {
+            handleReloadData()
+        }, [])
 
-    return (
-      <>
-        <View style={styles.selectTrkTypeBlock}>
-          {errorText ? (
-            <ErrorWhileFetchingForm
-              buttonProps={{
-                width: { type: "absolute", value: "100%" },
-              }}
-              onReload={handleReloadData}
-              margins={{ mt: -30 }}
-              message={errorText}
-            />
-          ) : isDataLoading ? (
-            <SelectTrkTypeFormSkeleton />
-          ) : (
-            data?.trc_types?.map((trk) => (
-              <TrkTypeBlock
-                isSelected={trk.id === selectedTrkType?.id}
-                onPress={onSelectTrkType}
-                key={trk.id}
-                {...trk}
-              />
-            ))
-          )}
-        </View>
+        const styles = StyleSheet.create({
+            list: {
+                gap: SPACING.ROW_GAP * SIZES.PX,
+            },
+        })
 
-        <CustomButton
-          onPress={onGoBack}
-          styled={{
-            type: "secondary",
-            marginsPaddings: { mt: 16 },
-          }}
-        >
-          ВЕРНУТЬСЯ НАЗАД
-        </CustomButton>
-      </>
-    );
-  }
-);
+        return (
+            <>
+                <StepHeader title="Выбор топлива" onBack={onGoBack} />
+                <ScreenTitle
+                    title="Выберите топливо"
+                    type="h6"
+                    ml={SPACING.XS}
+                />
 
-const styles = StyleSheet.create({
-  selectTrkTypeBlock: {
-    gap: 8 * SIZES.PX,
-  },
-});
+                {errorText ? (
+                    <ErrorWhileFetchingForm
+                        buttonProps={{
+                            width: { type: 'absolute', value: '100%' },
+                        }}
+                        onReload={handleReloadData}
+                        message={errorText}
+                    />
+                ) : isDataLoading ? (
+                    <SelectTrkTypeFormSkeleton />
+                ) : !data?.trc_types?.length ? (
+                    <CenteredState
+                        variant="empty"
+                        title="Топливо не загрузилось"
+                        description="Попробуйте обновить экран позже."
+                        action={{
+                            label: 'Обновить',
+                            onPress: handleReloadData,
+                        }}
+                    />
+                ) : (
+                    <View style={styles.list}>
+                        {data.trc_types.map((trk) => (
+                            <TrkTypeRow
+                                key={trk.id}
+                                trkType={trk}
+                                onSelect={onSelectTrkType}
+                            />
+                        ))}
+                    </View>
+                )}
+            </>
+        )
+    }
+)

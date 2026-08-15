@@ -1,82 +1,56 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { EColorThemes, SIZES, ThemeStore } from '../../../../shared'
-import { FuelMainBlock } from '../../../../entities/Fuel/FuelMainBlock'
-import ScanSvg from '../assets/scanColumn.svg'
-import ScanDarkSvg from '../assets/scanColumnDark.svg'
-import SelectSvg from '../assets/selectColumn.svg'
-import SelectDarkSvg from '../assets/selectColumnDark.svg'
-import HelpSvg from '../assets/help.svg'
-import HelpDark from '../assets/helpDark.svg'
+import { FuelMethodTile } from '../../../../entities/Fuel/FuelMethodTile'
+import { FuelMainHero } from '../../../../entities/Fuel/FuelMainHero'
+import { SIZES, SPACING } from '../../../../shared'
+
 type Props = {
     onSelectColumn: () => void
     onScanColumn: () => void
     onNeedHelp: () => void
 }
 
+// Раскладка макета: герой «Выбрать колонку», под ним ряд из двух плиток.
 export const MapFuelMainBlocks = memo(
     ({ onNeedHelp, onScanColumn, onSelectColumn }: Props) => {
-        const colorTheme = ThemeStore.useTheme()
+        const styles = StyleSheet.create({
+            container: {
+                gap: SPACING.MD * SIZES.PX,
+            },
+            row: {
+                flexDirection: 'row',
+                gap: SPACING.MD * SIZES.PX,
+            },
+            // Ширину плиткам задаёт обёртка: GlassCard сам не растягивается.
+            tile: {
+                flex: 1,
+            },
+        })
+
         return (
             <View style={styles.container}>
-                <FuelMainBlock
-                    onPress={onScanColumn}
-                    title={`Сканируйте QR-код\nс колонки`}
-                    icon={
-                        colorTheme === EColorThemes.LIGHT ? (
-                            <ScanSvg
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        ) : (
-                            <ScanDarkSvg
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        )
-                    }
-                />
-                <FuelMainBlock
-                    onPress={onSelectColumn}
-                    title={`Выбрать колонку\nиз списка`}
-                    icon={
-                        colorTheme === EColorThemes.LIGHT ? (
-                            <SelectSvg
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        ) : (
-                            <SelectDarkSvg
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        )
-                    }
-                />
-                <FuelMainBlock
-                    onPress={onNeedHelp}
-                    title={`Мне нужна\nпомощь`}
-                    icon={
-                        colorTheme === EColorThemes.LIGHT ? (
-                            <HelpSvg
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        ) : (
-                            <HelpDark
-                                height={SIZES.PX * 32}
-                                width={SIZES.PX * 32}
-                            />
-                        )
-                    }
-                />
+                <FuelMainHero onPress={onSelectColumn} />
+                <View style={styles.row}>
+                    <View style={styles.tile}>
+                        <FuelMethodTile
+                            icon="fuel_scan"
+                            variant="glass2"
+                            title="Сканировать QR"
+                            subtitle="С колонки"
+                            onPress={onScanColumn}
+                        />
+                    </View>
+                    <View style={styles.tile}>
+                        <FuelMethodTile
+                            icon="fuel_help"
+                            variant="glass"
+                            title="Нужна помощь"
+                            subtitle="Подсказки, контакты"
+                            onPress={onNeedHelp}
+                        />
+                    </View>
+                </View>
             </View>
         )
     }
 )
-
-const styles = StyleSheet.create({
-    container: {
-        gap: 12 * SIZES.PX,
-    },
-})

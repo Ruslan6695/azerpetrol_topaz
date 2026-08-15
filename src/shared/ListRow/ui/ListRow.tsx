@@ -16,6 +16,8 @@ type Props = {
     right?: ReactNode | 'chevron' | 'none'
     /** Значение справа (для строк ключ/значение) */
     value?: string
+    /** Акцентное значение: num16 цветом ACCENT.Primary (итоговая сумма, dc.html:595) */
+    valueAccent?: boolean
     onPress?: () => void
     destructive?: boolean
     /** Последняя строка группы — без нижнего разделителя */
@@ -29,6 +31,7 @@ export const ListRow = memo(
         left,
         right = 'none',
         value,
+        valueAccent,
         onPress,
         destructive,
         last,
@@ -77,7 +80,16 @@ export const ListRow = memo(
                     )}
                 </View>
 
-                {value && <Typography type="label14">{value}</Typography>}
+                {value && (
+                    <Typography
+                        type={valueAccent ? 'num16' : 'label14'}
+                        customColor={
+                            valueAccent ? COLORS.ACCENT.Primary : undefined
+                        }
+                    >
+                        {value}
+                    </Typography>
+                )}
 
                 {right === 'chevron' ? (
                     <Typography type="label13" color="secondary">

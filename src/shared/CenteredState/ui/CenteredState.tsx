@@ -4,8 +4,7 @@ import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
 import { SPACING } from '../../common/config/constants/SPACING'
 import { ThemeStore } from '../../common/model/themeStore'
-import { PillButton } from '../../PillButton'
-import { TPillButtonVariants } from '../../PillButton/config/types/TPillButtonVariants'
+import { PillButton, TPillButtonVariants } from '../../PillButton'
 import { Typography } from '../../Typography'
 import { TCenteredStateVariants } from '../config/types/TCenteredStateVariants'
 
@@ -13,6 +12,8 @@ type Props = {
     variant?: TCenteredStateVariants
     title: string
     description?: string
+    /** Текст ошибки под описанием, цветом STATE.Destructive */
+    error?: string | null
     /** Содержимое круга. Если не передано — берётся символ по варианту */
     icon?: ReactNode
     /** Диаметр круга в единицах макета. По умолчанию 96 */
@@ -37,6 +38,7 @@ export const CenteredState = memo(
         variant = 'empty',
         title,
         description,
+        error,
         icon,
         circleSize = 96,
         action,
@@ -116,6 +118,18 @@ export const CenteredState = memo(
                             textAlign="center"
                         >
                             {description}
+                        </Typography>
+                    </View>
+                )}
+
+                {error && (
+                    <View style={styles.description}>
+                        <Typography
+                            type="body14"
+                            customColor={COLORS.STATE.Destructive}
+                            textAlign="center"
+                        >
+                            {error}
                         </Typography>
                     </View>
                 )}

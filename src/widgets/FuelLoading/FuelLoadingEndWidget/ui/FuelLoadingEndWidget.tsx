@@ -1,70 +1,88 @@
-import { useRouter } from "expo-router";
-import { memo, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
-import { COLORS, SIZES, ThemeStore } from "../../../../shared";
-import { SuccessImage } from "../../../../shared/SuccessImage";
-import { Typography } from "../../../../shared/Typography";
-import { FuelLoadingEndTotals } from "../../../../entities/FuelLoading/FuelLoadingEndInfoItem";
+import { useRouter } from 'expo-router'
+import { memo, useCallback, useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { FuelLoadingResultHeader } from '../../../../entities/FuelLoading/FuelLoadingResultHeader'
+import { StepHeader } from '../../../../entities/StepHeader'
+import {
+    divideNumber,
+    ESCREENS,
+    FuelStore,
+    IFuellingTotals,
+    SIZES,
+    SPACING,
+    useGetBalance,
+} from '../../../../shared'
+import { ListGroup, ListRow } from '../../../../shared/ListRow'
+import { PillButton } from '../../../../shared/PillButton'
 
 type Props = {
-  rubles: number;
-  volume: number;
-  balance: number;
-};
+    totals: IFuellingTotals
+}
 
-export const FuelLoadingEndWidget = memo(
-  ({ balance, rubles, volume }: Props) => {
-    const COLORS = ThemeStore.useCOLORS();
-    const topValue = useSharedValue(-500 * SIZES.PX);
+// Итоги налива (dc.html:585–599). Экран не центрированный — обычная колонка.
+export const FuelLoadingEndWidget = memo(({ totals }: Props) => {
+    const router = useRouter()
+    const { azs, column, trkType } = FuelStore.useState()
+    const clearState = FuelStore.useClearState()
+    const { balance, fetchBalance } = useGetBalance()
 
-    const animStyle = useAnimatedStyle(() => {
-      return { top: topValue.value };
-    }, []);
+    // Баланс в сторе остался догрузочным: списание произошло уже после
+    // того, как процесс подтянул его на фокусе.
+    useEffect(() => {
+        fetchBalance({ args: undefined, hideToastOnError: true })
+    }, [])
+
+    const handleGoHome = useCallback(() => {
+        clearState()
+        router.navigate(ESCREENS.HOME)
+    }, [clearState, router])
 
     const styles = StyleSheet.create({
-      wrapper: {
-        width: SIZES.WIDTH(1),
-        height: SIZES.HEIGHT(1),
-        backgroundColor: COLORS.BACKGROUND.Primary,
-        paddingVertical: SIZES.PX * 40,
-        paddingHorizontal: SIZES.PX * 20,
-        alignItems: "center",
-        justifyContent: "center",
-      },
-      content: {
-        alignItems: "center",
-        justifyContent: "center",
-        top: 0,
-      },
+        section: {
+            marginTop: SPACING.LG * SIZES.PX,
+        },
+    })
 
-      row: {
-        flexDirection: "row",
-        alignItems: "center",
-      },
-    });
-
-    useEffect(() => {
-      topValue.value = withSpring(0, { damping: 50 });
-    }, []);
     return (
-      <View style={styles.wrapper}>
-        <Animated.View style={[styles.content, animStyle]}>
-          <SuccessImage />
-          <Typography marginsPaddings={{ mt: 16, mb: 8 }} type="displayMedium">
-            Автомобиль заправлен
-          </Typography>
-          <Typography marginsPaddings={{ mb: 200 }}>
-            Спасибо, что вы с нами.
-          </Typography>
-        </Animated.View>
+        <>
+            <StepHeader title="Итоги налива" />
+            <FuelLoadingResultHeader title="Налив завершён" />
 
-        <FuelLoadingEndTotals balance={balance} sum={rubles} liters={volume} />
-      </View>
-    );
-  }
-);
+            <View style={styles.section}>
+                <ListGroup level="secondary">
+                    <ListRow title="АЗС" value={azs?.name ?? '—'} />
+                    <ListRow
+                        title="Топливо"
+                        value={
+                            trkType && column
+                                ? `${trkType.name} · Колонка ${column.name}`
+                                : '—'
+                        }
+                    />
+                    <ListRow
+                        title="Литры"
+                        value={`${totals.volume.toFixed(1)} л`}
+                    />
+                    <ListRow
+                        title="Списано"
+                        value={`${divideNumber(+totals.sum.toFixed(2))} ₽`}
+                        valueAccent
+                    />
+                    <ListRow
+                        title="Остаток на балансе"
+                        value={`${divideNumber(balance)} ₽`}
+                        last
+                    />
+                </ListGroup>
+            </View>
+
+            <View style={styles.section}>
+                <PillButton
+                    title="На главную"
+                    variant="elevated"
+                    onPress={handleGoHome}
+                />
+            </View>
+        </>
+    )
+})

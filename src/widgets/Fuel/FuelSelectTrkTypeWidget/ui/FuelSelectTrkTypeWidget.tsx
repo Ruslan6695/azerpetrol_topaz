@@ -1,49 +1,71 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { InfoCard } from '../../../../entities/InfoCard'
 import { SelectTrkTypeForm } from '../../../../features/Fuel/SelectTrkTypeForm'
-import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
-import { FuelStore, ITrkType } from '../../../../shared'
-import { FUEL_SELECT_TRK_TYPE_INFO_TEXTS } from '../config/constants/FUEL_MAIN_WIDGET_INFO_TEXTS'
-import { ScreenTitle } from '../../../../entities/ScreenTitle'
+import {
+    FuelStore,
+    ITrkType,
+    SIZES,
+    SPACING,
+    TFuelRoad,
+} from '../../../../shared'
+import { MPLayout } from '../../../../shared/MpLayout'
+import { FUEL_SELECT_TRK_TYPE_INFO_TEXTS } from '../config/constants/FUEL_SELECT_TRK_TYPE_INFO_TEXTS'
 
 type Props = {
-    setRoad: React.Dispatch<
-        React.SetStateAction<
-            | 'main'
-            | 'selectAzsAndColumn'
-            | 'scan'
-            | 'selectTrkType'
-            | 'selectLiters'
-        >
-    >
+    setRoad: React.Dispatch<React.SetStateAction<TFuelRoad>>
 }
 
 export const FuelSelectTrkTypeWidget = memo(({ setRoad }: Props) => {
     const fuelStore = FuelStore.useState()
     const changeTrkType = FuelStore.useChangeTrkType()
-    if (!fuelStore.azs || !fuelStore.column) {
-        setRoad('selectAzsAndColumn')
-        return <></>
-    }
 
-    const handleSelectTrkType = useCallback((trkType: ITrkType) => {
-        changeTrkType(trkType)
-        setRoad('selectLiters')
-    }, [])
+    const handleSelectTrkType = useCallback(
+        (trkType: ITrkType) => {
+            changeTrkType(trkType)
+            setRoad('selectLiters')
+        },
+        [changeTrkType, setRoad]
+    )
 
     const handleGoBack = useCallback(() => {
         setRoad('selectAzsAndColumn')
-    }, [])
+    }, [setRoad])
+
+    // Шаг открыт без выбранной колонки — возвращаемся назад.
+    // Именно в эффекте: setRoad во время рендера ронял порядок хуков.
+    const isReady = Boolean(fuelStore.azs && fuelStore.column)
+    useEffect(() => {
+        if (!isReady) {
+            setRoad('selectAzsAndColumn')
+        }
+    }, [isReady, setRoad])
+
+    const styles = StyleSheet.create({
+        info: {
+            gap: SPACING.ROW_GAP * SIZES.PX,
+        },
+    })
+
+    if (!fuelStore.azs || !fuelStore.column) {
+        return null
+    }
+
     return (
         <>
-            <ScreenTitle title="Выберите тип топлива" />
             <SelectTrkTypeForm
                 onGoBack={handleGoBack}
-                selectedTrkType={fuelStore.trkType}
                 onSelectTrkType={handleSelectTrkType}
                 azs={fuelStore.azs}
                 column={fuelStore.column}
             />
-            <MapInfoBlocks infoBlocks={FUEL_SELECT_TRK_TYPE_INFO_TEXTS} />
+            <MPLayout mt={SPACING.SECTION}>
+                <View style={styles.info}>
+                    {FUEL_SELECT_TRK_TYPE_INFO_TEXTS.map((info) => (
+                        <InfoCard key={info.title} {...info} />
+                    ))}
+                </View>
+            </MPLayout>
         </>
     )
 })

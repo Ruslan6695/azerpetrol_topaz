@@ -1,22 +1,16 @@
-import { useCallback, useState } from 'react'
-import { FuelMainWidget } from '../../../widgets/Fuel/FuelMainWidget'
-import { FuelSelectAzsAndColumnWidget } from '../../../widgets/Fuel/FuelSelectAzsAndColumnWidget'
-import { FuelSelectTrkTypeWidget } from '../../../widgets/Fuel/FuelSelectTrkTypeWidget'
-import { FuelSelectLitersWidget } from '../../../widgets/Fuel/FuelSelectLitersWidget'
+import { memo, useCallback, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
+import { FuelMainWidget } from '../../../widgets/Fuel/FuelMainWidget'
 import { FuelScanBarcodeWidget } from '../../../widgets/Fuel/FuelScanBarcodeWidget'
-import { useGetBalance } from '../../../shared'
+import { FuelSelectAzsAndColumnWidget } from '../../../widgets/Fuel/FuelSelectAzsAndColumnWidget'
+import { FuelSelectLitersWidget } from '../../../widgets/Fuel/FuelSelectLitersWidget'
+import { FuelSelectTrkTypeWidget } from '../../../widgets/Fuel/FuelSelectTrkTypeWidget'
+import { TFuelRoad, useGetBalance } from '../../../shared'
 
 type Props = {}
 
-export const Fuel = (props: Props) => {
-    const [road, setRoad] = useState<
-        | 'main'
-        | 'selectAzsAndColumn'
-        | 'scan'
-        | 'selectTrkType'
-        | 'selectLiters'
-    >('main')
+export const Fuel = memo((props: Props) => {
+    const [road, setRoad] = useState<TFuelRoad>('main')
     const { fetchBalance } = useGetBalance()
 
     useFocusEffect(
@@ -37,4 +31,4 @@ export const Fuel = (props: Props) => {
         case 'scan':
             return <FuelScanBarcodeWidget setRoad={setRoad} />
     }
-}
+})

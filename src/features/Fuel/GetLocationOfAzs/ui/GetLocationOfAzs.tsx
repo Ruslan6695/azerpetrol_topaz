@@ -3,11 +3,13 @@ import { memo, useCallback, useEffect, useState } from 'react'
 import {
     IAzs,
     PermissionsStatuses,
+    SPACING,
     ThemeStore,
     useGetLocationPermission,
 } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
 import { Icon } from '../../../../shared/Icons'
+import { MPLayout } from '../../../../shared/MpLayout'
+import { PillButton } from '../../../../shared/PillButton'
 import { ToastBlock } from '../../../../shared/ToastBlock'
 import { getLocationOfAzsApi } from '../api/getLocationOfAzsApi'
 import * as Location from 'expo-location'
@@ -69,16 +71,13 @@ export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {
                     }}
                     type="error"
                 />
-                <CustomButton
-                    onPress={fetchLocationOnPress}
-                    styled={{
-                        type: 'secondary',
-                        marginsPaddings: { mb: 30 },
-                        height: { value: 56, type: 'px' },
-                    }}
-                >
-                    Включить
-                </CustomButton>
+                <MPLayout mb={SPACING.SECTION}>
+                    <PillButton
+                        title="Включить"
+                        variant="elevated"
+                        onPress={fetchLocationOnPress}
+                    />
+                </MPLayout>
             </>
         )
     }
