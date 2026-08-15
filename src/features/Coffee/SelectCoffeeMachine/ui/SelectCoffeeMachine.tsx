@@ -1,42 +1,43 @@
-import React from 'react'
+import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { CoffeeMachineItem } from '../../../../entities/Coffee/CoffeeMachineItem'
-import { SIZES } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
+import {
+    CoffeeMachineRow,
+    CoffeeMachineRowSkeleton,
+} from '../../../../entities/Coffee/CoffeeMachineRow'
+import { SIZES, SPACING } from '../../../../shared'
 import { CoffeeMachinesStore } from '../model/coffeeMachinesStore'
 
 type Props = {
-    onGoBack: () => void
     onSelect: (id: number) => void
 }
 
-export const SelectCoffeeMachine = ({ onGoBack, onSelect }: Props) => {
+const PLACEHOLDERS = [1, 2, 3]
+
+// Список кофемашин (dc.html:498–503). Кнопки «Вернуться назад» здесь нет:
+// возврат даёт StepHeader над списком.
+export const SelectCoffeeMachine = memo(({ onSelect }: Props) => {
     const coffeeMachines = CoffeeMachinesStore.useCoffeeMachines()
+    const isLoading = CoffeeMachinesStore.useIsLoading()
+
     return (
-        <>
-            <View style={styles.container}>
-                {coffeeMachines?.map((cm) => (
-                    <CoffeeMachineItem onPress={onSelect} {...cm} key={cm.id} />
-                ))}
-                <CustomButton
-                    onPress={onGoBack}
-                    styled={{
-                        type: 'secondary',
-                        width: { type: 'absolute', value: '100%' },
-                    }}
-                >
-                    Вернуться назад
-                </CustomButton>
-            </View>
-        </>
+        <View style={styles.container}>
+            {isLoading
+                ? PLACEHOLDERS.map((item) => (
+                      <CoffeeMachineRowSkeleton key={item} />
+                  ))
+                : coffeeMachines?.map((cm) => (
+                      <CoffeeMachineRow
+                          onPress={onSelect}
+                          {...cm}
+                          key={cm.id}
+                      />
+                  ))}
+        </View>
     )
-}
+})
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 15 * SIZES.PX,
+        gap: SPACING.ROW_GAP * SIZES.PX,
     },
 })

@@ -1,15 +1,19 @@
 import { memo, useCallback, useEffect, useState } from 'react'
-import { MyCoffeeQr } from '../../../../entities/Coffee/MyCoffeeQr'
 import { StyleSheet, View } from 'react-native'
-import { MapMyCoffeeItems } from '../../../../features/Coffee/MapMyCoffeeItems'
-import { myCoffeeWidgetApi } from '../api/myCoffeeWidgetApi'
-import { useFetchData } from '../../../../shared'
 import { IMyCoffeeItem } from '../../../../entities/Coffee/MyCoffeeItem'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
+import { QrBlock } from '../../../../entities/QrBlock'
+import { MapMyCoffeeItems } from '../../../../features/Coffee/MapMyCoffeeItems'
+import { RADII, SIZES, SPACING, useFetchData } from '../../../../shared'
+import { Typography } from '../../../../shared/Typography'
+import { myCoffeeWidgetApi } from '../api/myCoffeeWidgetApi'
 
-type Props = {}
+// Размеры кофейного QR из макета (dc.html:210–218): карточка меньше
+// балансной, сам код 150.
+const QR_SIZE = 150
+const QR_CARD_PADDING = 22
 
-export const MyCoffeeWidget = memo((props: Props) => {
+export const MyCoffeeWidget = memo(() => {
     const { data, errorText, fetchData, isDataLoading } = useFetchData({
         apiCallback: myCoffeeWidgetApi.getCoffee,
         errorText: 'Ошибка при получении кофе',
@@ -36,6 +40,19 @@ export const MyCoffeeWidget = memo((props: Props) => {
         handleReloadData()
     }, [])
 
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.SECTION * SIZES.PX,
+        },
+        qr: {
+            alignItems: 'center',
+            gap: SPACING.MD * SIZES.PX,
+        },
+        caption: {
+            maxWidth: 260 * SIZES.PX,
+        },
+    })
+
     if (errorText) {
         return (
             <ErrorWhileFetchingForm
@@ -45,20 +62,38 @@ export const MyCoffeeWidget = memo((props: Props) => {
             />
         )
     }
+
+    const hasCoffee = !data || data.coffee.length > 0
+
     return (
         <View style={styles.container}>
-            <MyCoffeeQr qr={selectedCoffee?.qr} />
-            
-                <MapMyCoffeeItems
-                    selectedCoffeeId={selectedCoffee?.id}
-                    onChangeSelectedCoffee={handleChangeSelectedCoffee}
-                    coffee={data?.coffee}
-                />
-            
+            {hasCoffee && (
+                <View style={styles.qr}>
+                    <QrBlock
+                        qr={selectedCoffee?.qr}
+                        qrIsLoading={isDataLoading}
+                        qrSize={QR_SIZE}
+                        radius={RADII.HERO_SM}
+                        padding={QR_CARD_PADDING}
+                    />
+                    <Typography
+                        type="caption12"
+                        color="secondary"
+                        textAlign="center"
+                        style={styles.caption}
+                    >
+                        {selectedCoffee
+                            ? `Покажите QR на кофемашине, чтобы налить «${selectedCoffee.name}»`
+                            : 'Покажите QR на кофемашине, чтобы налить напиток'}
+                    </Typography>
+                </View>
+            )}
+
+            <MapMyCoffeeItems
+                selectedCoffeeId={selectedCoffee?.id}
+                onChangeSelectedCoffee={handleChangeSelectedCoffee}
+                coffee={data?.coffee}
+            />
         </View>
     )
-})
-
-const styles = StyleSheet.create({
-    container: {},
 })

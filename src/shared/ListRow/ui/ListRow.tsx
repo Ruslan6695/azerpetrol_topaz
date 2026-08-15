@@ -22,6 +22,8 @@ type Props = {
     destructive?: boolean
     /** Последняя строка группы — без нижнего разделителя */
     last?: boolean
+    /** Выбранная строка группы: подсвечивается фоном (dc.html:978) */
+    selected?: boolean
 }
 
 export const ListRow = memo(
@@ -35,6 +37,7 @@ export const ListRow = memo(
         onPress,
         destructive,
         last,
+        selected,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
 
@@ -47,6 +50,9 @@ export const ListRow = memo(
                 paddingHorizontal: 18 * SIZES.PX,
                 borderBottomWidth: last ? 0 : 1,
                 borderBottomColor: COLORS.GLASS.Border,
+                backgroundColor: selected
+                    ? COLORS.GLASS.Secondary
+                    : 'transparent',
             },
             body: {
                 flex: 1,

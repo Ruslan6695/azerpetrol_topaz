@@ -1,4 +1,4 @@
-import { ICoffeeMachineItem } from '../../../../../entities/Coffee/CoffeeMachineItem'
+import { ICoffeeMachineItem } from '../../../../../entities/Coffee/CoffeeMachineRow'
 import { IGetCoffeeMachinesData } from './IGetCoffeeMachinesData'
 
 export interface ICoffeeMachinesStore {

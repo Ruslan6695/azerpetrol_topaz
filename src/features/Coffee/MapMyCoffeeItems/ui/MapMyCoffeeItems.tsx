@@ -4,7 +4,10 @@ import {
     IMyCoffeeItem,
     MyCoffeeItem,
 } from '../../../../entities/Coffee/MyCoffeeItem'
-import { SIZES } from '../../../../shared'
+import { SIZES, SPACING } from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { Icon } from '../../../../shared/Icons'
+import { ListGroup } from '../../../../shared/ListRow'
 import { Typography } from '../../../../shared/Typography'
 import { MapMyCoffeeItemsSkeleton } from './MapMyCoffeeItemsSkeleton'
 
@@ -14,40 +17,41 @@ type Props = {
     selectedCoffeeId: number | undefined
 }
 
+// Группа строк макета (dc.html:220–227): стеклянная карточка без внутреннего
+// паддинга, строки внутри разделены линиями.
 export const MapMyCoffeeItems = memo(
     ({ coffee, onChangeSelectedCoffee, selectedCoffeeId }: Props) => {
+        if (!coffee) {
+            return <MapMyCoffeeItemsSkeleton />
+        }
+
+        if (coffee.length === 0) {
+            return (
+                <CenteredState
+                    variant="empty"
+                    icon={<Icon name="home_coffee" size={44} />}
+                    title="Нет активных кофе"
+                    description="Купленные напитки появятся здесь и будут доступны 24 часа"
+                />
+            )
+        }
+
         return (
             <View style={styles.container}>
-                <Typography
-                    marginsPaddings={{ mb: 2 }}
-                    color="secondary"
-                    type="displaySmall"
-                >
+                <Typography type="label14" marginsPaddings={{ ml: SPACING.XS }}>
                     Вы покупали за 24 часа
                 </Typography>
-                {coffee ? (
-                    coffee.length == 0 ? (
-                        <Typography
-                            color="secondary"
-                            type="caption"
-                            marginsPaddings={{ mt: 70 }}
-                            textAlign="center"
-                        >
-                            НЕТ АКТИВНЫХ КОФЕ
-                        </Typography>
-                    ) : (
-                        coffee?.map((coffee) => (
-                            <MyCoffeeItem
-                                isSelected={coffee.id === selectedCoffeeId}
-                                onPress={onChangeSelectedCoffee}
-                                {...coffee}
-                                key={coffee.id}
-                            />
-                        ))
-                    )
-                ) : (
-                    <MapMyCoffeeItemsSkeleton />
-                )}
+                <ListGroup>
+                    {coffee.map((item, index) => (
+                        <MyCoffeeItem
+                            isSelected={item.id === selectedCoffeeId}
+                            last={index === coffee.length - 1}
+                            onPress={onChangeSelectedCoffee}
+                            {...item}
+                            key={item.id}
+                        />
+                    ))}
+                </ListGroup>
             </View>
         )
     }
@@ -55,7 +59,6 @@ export const MapMyCoffeeItems = memo(
 
 const styles = StyleSheet.create({
     container: {
-        gap: SIZES.PX * 16,
-        marginBottom: SIZES.PX * 20,
+        gap: SPACING.ROW_GAP * SIZES.PX,
     },
 })

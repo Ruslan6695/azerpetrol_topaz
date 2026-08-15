@@ -48,6 +48,7 @@ export * from "./common/config/lib/helpers/stripHtml";
 export * from "./common/config/lib/helpers/formatFuelModifier";
 export type { TFuelModifier } from "./common/config/types/TFuelModifier";
 export type { TFuelRoad } from "./common/config/types/TFuelRoad";
+export type { TCoffeeRoad } from "./common/config/types/TCoffeeRoad";
 export type { TFuelLoadingRoad } from "./common/config/types/TFuelLoadingRoad";
 export * from "./common/config/interfaces/IFuellingTotals";
 export * from "./common/config/enums/EFuellingErrorKind";

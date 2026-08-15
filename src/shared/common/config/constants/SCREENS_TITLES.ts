@@ -7,7 +7,7 @@ export const SCREENS_TITLES: Record<string, string> = {
     [ESCREENS.TRANSFER_BALANCE]: 'Перевод средств',
     [ESCREENS.CONTACTS]: 'Контакты',
     [ESCREENS.FUEL]: 'Топливо',
-    [ESCREENS.COFFEE]: 'Коффе',
+    [ESCREENS.COFFEE]: 'Кофе',
     [ESCREENS.HELP]: 'Помощь',
     [ESCREENS.HISTORY]: 'История',
     [ESCREENS.HISTORY_DETAILS]: 'История',

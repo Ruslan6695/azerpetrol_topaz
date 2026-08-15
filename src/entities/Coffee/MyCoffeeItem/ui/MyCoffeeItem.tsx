@@ -1,63 +1,73 @@
 import { memo, useCallback } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { COLORS, SIZES } from '../../../../shared'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { NoImageIcon } from '../../../../shared/Icons/NoImageIcon'
-import { MPLayout } from '../../../../shared/MpLayout'
-import { Typography } from '../../../../shared/Typography'
+import { RADII, SIZES, ThemeStore } from '../../../../shared'
+import { Icon } from '../../../../shared/Icons'
+import { ListRow } from '../../../../shared/ListRow'
 import { IMyCoffeeItem } from '../config/interfaces/IMyCoffeeItem'
 
 interface IProps extends IMyCoffeeItem {
     onPress: (coffee: IMyCoffeeItem) => void
     isSelected: boolean
+    /** Последняя строка группы — без нижнего разделителя */
+    last?: boolean
 }
+
+const THUMB = 40
+
+// Строка списка «мой кофе» (dc.html:222–225). Даты сгорания, нарисованной
+// в макете, API не отдаёт — строка несёт миниатюру, название напитка
+// и кофемашину, на которой он куплен.
 export const MyCoffeeItem = memo(
-    ({ id, img, name, onPress, qr, isSelected }: IProps) => {
+    ({
+        id,
+        img,
+        name,
+        onPress,
+        qr,
+        coffee_machine_name,
+        isSelected,
+        last,
+    }: IProps) => {
+        const COLORS = ThemeStore.useCOLORS()
+
         const handlePress = useCallback(() => {
-            onPress({ id, img, name, qr })
-        }, [id, onPress])
+            onPress({ id, img, name, qr, coffee_machine_name })
+        }, [id, img, name, qr, coffee_machine_name, onPress])
+
         const styles = StyleSheet.create({
-            container: {
-                backgroundColor: isSelected ? COLORS.BRAND.Primary : undefined,
-                width: '100%',
-                padding: SIZES.PX * 10,
-                borderRadius: SIZES.PX * 10,
-                flexDirection: 'row',
+            thumb: {
+                width: THUMB * SIZES.PX,
+                height: THUMB * SIZES.PX,
+                borderRadius: RADII.CHIP_SM * SIZES.PX,
+                backgroundColor: COLORS.GLASS.Primary,
                 alignItems: 'center',
-            },
-            imageContainer: {
-                backgroundColor: COLORS.BACKGROUND.Tertiary,
-                borderRadius: SIZES.PX * 8,
                 justifyContent: 'center',
-                alignItems: 'center',
-                width: 48 * SIZES.PX,
-                height: 48 * SIZES.PX,
+                overflow: 'hidden',
             },
-            image: {
+            img: {
+                width: THUMB * SIZES.PX,
+                height: THUMB * SIZES.PX,
                 objectFit: 'contain',
-                width: SIZES.PX * 45,
-                height: SIZES.PX * 45,
             },
         })
+
         return (
-            <CustomTouchableOpacity
+            <ListRow
+                title={name}
+                subtitle={coffee_machine_name ?? undefined}
+                selected={isSelected}
+                last={last}
                 onPress={handlePress}
-                activeOpacity={0.6}
-                style={styles.container}
-            >
-                <MPLayout mr={15}>
-                    <View style={styles.imageContainer}>
+                left={
+                    <View style={styles.thumb}>
                         {img ? (
-                            <Image style={styles.image} source={{ uri: img }} />
+                            <Image style={styles.img} source={{ uri: img }} />
                         ) : (
-                            <NoImageIcon width={48} height={48} />
+                            <Icon name="home_coffee" size={22} opacity={0.85} />
                         )}
                     </View>
-                </MPLayout>
-                <Typography color={isSelected ? 'invert' : undefined}>
-                    {name}
-                </Typography>
-            </CustomTouchableOpacity>
+                }
+            />
         )
     }
 )

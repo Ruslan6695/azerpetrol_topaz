@@ -143,7 +143,9 @@ export const SelectLiters = memo(
                                         suffix="л"
                                         decimal
                                         min={MIN_LITERS}
-                                        max={tankVolume}
+                                        // Верхней границы у ручного ввода нет:
+                                        // объём бака — это пресет для слайдера
+                                        // и чипа, а не лимит налива.
                                         minWidth={86}
                                         radius={RADII.BADGE}
                                         style={styles.field}
@@ -175,9 +177,6 @@ export const SelectLiters = memo(
                                         suffix="₽"
                                         fontSize={28}
                                         min={0}
-                                        max={Math.round(
-                                            tankVolume * trkType.price
-                                        )}
                                         minWidth={92}
                                         radius={RADII.BADGE}
                                         color={COLORS.ACCENT.Primary}

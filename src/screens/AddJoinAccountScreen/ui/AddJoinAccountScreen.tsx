@@ -1,17 +1,15 @@
-import { memo } from 'react'
-import { AddJoinAccountWidget } from '../../../widgets/AddJoinAccountWidget'
-import { InternalPagesLayout } from '../../../layouts/InternalPagesLayout'
-import { ScreenTitle } from '../../../entities/ScreenTitle'
 import { useLocalSearchParams } from 'expo-router'
+import { memo } from 'react'
+import { InternalPagesLayout } from '../../../layouts/InternalPagesLayout'
 import { TAddJoinAccountScreenParams } from '../../../shared'
+import { AddJoinAccountWidget } from '../../../widgets/AddJoinAccountWidget'
 
-type Props = {}
-
-export const AddJoinAccountScreen = memo((props: Props) => {
+// Заголовок экрана рисует InternalPagesHeader из SCREENS_TITLES —
+// своего ScreenTitle здесь не нужно.
+export const AddJoinAccountScreen = memo(() => {
     const params = useLocalSearchParams<TAddJoinAccountScreenParams>()
     return (
         <InternalPagesLayout>
-            <ScreenTitle title="Пригласить пользов." />
             <AddJoinAccountWidget params={params} />
         </InternalPagesLayout>
     )

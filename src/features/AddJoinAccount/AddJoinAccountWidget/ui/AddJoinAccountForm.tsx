@@ -1,92 +1,82 @@
 import { useRouter } from 'expo-router'
-import { memo, useEffect, useMemo } from 'react'
+import { memo, useCallback, useEffect } from 'react'
 import { StyleSheet, View } from 'react-native'
-import {
-    ESCREENS,
-    SIZES,
-    ThemeStore
-} from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { CustomInput, useInput } from '../../../../shared/CustomInput'
-import { CustomTouchableOpacity } from '../../../../shared/CustomTouchableOpacity'
-import { ContactsIcon } from '../../../../shared/Icons/ContactsIcon'
+import { ESCREENS, SIZES, SPACING } from '../../../../shared'
+import { useInput } from '../../../../shared/CustomInput'
+import { GlassInput } from '../../../../shared/GlassInput'
+import { Icon } from '../../../../shared/Icons'
+import { PillButton } from '../../../../shared/PillButton'
 import { showError } from '../../../../shared/ToastComponent'
+import { Typography } from '../../../../shared/Typography'
+import { TAddJoinAccountDraft } from '../config/types/TAddJoinAccountDraft'
 
 type Props = {
     name?: string
     phone?: string
-    onSubmit: (p: { name?: string; phone: string }) => void
+    onSubmit: (draft: TAddJoinAccountDraft) => void
 }
 
 export const AddJoinAccountForm = memo(({ onSubmit, name, phone }: Props) => {
-    const COLORS = ThemeStore.useCOLORS()
     const route = useRouter()
     const {
         handleChangeInputValue: handleChangePhoneValue,
         inputValue: phoneValue,
     } = useInput()
 
-    const openContacts = () => {
+    // Цель возврата передаём явно: экран контактов подставит номер обратно
+    // именно в эту форму.
+    const handleOpenContacts = useCallback(() => {
         route.navigate({
             pathname: ESCREENS.CONTACTS,
             params: { onSelectLink: ESCREENS.ADD_JOIN_AСCOUNT },
         })
-    }
+    }, [route])
 
-    const handleSubmit = () => {
+    const handleSubmit = useCallback(() => {
         if (phoneValue.length > 0) {
             onSubmit({ phone: phoneValue, name })
         } else {
             showError({ text: 'Введите номер телефона' })
         }
-    }
+    }, [phoneValue, name, onSubmit])
 
+    // Номер, выбранный на экране контактов, приходит route-параметром.
     useEffect(() => {
         if (phone) handleChangePhoneValue(phone)
-    }, [phone])
+    }, [phone, handleChangePhoneValue])
 
-    const styles = useMemo(
-        () =>
-            StyleSheet.create({
-                phoneContainer: {
-                    flexDirection: 'row',
-                    width: '100%',
-                    backgroundColor: COLORS.BACKGROUND.Tertiary,
-                    alignItems: 'center',
-                    marginBottom: SIZES.PX * 16,
-                    borderRadius: SIZES.PX * 12,
-                    paddingRight: SIZES.PX * 14,
-                },
-            }),
-        [COLORS]
-    )
+    const styles = StyleSheet.create({
+        container: {
+            gap: SPACING.LG * SIZES.PX,
+        },
+    })
 
     return (
-        <>
-            <View style={styles.phoneContainer}>
-                <CustomInput
-                    onSubmitEditing={handleSubmit}
-                    mask="8 999 999 99 99"
-                    keyboardType="numeric"
-                    onChangeText={handleChangePhoneValue}
-                    value={phoneValue}
-                    styled={{
-                        width: {
-                            type: 'absolute',
-                            value: SIZES.WIDTH(1) - 83 * SIZES.PX,
-                        },
-                    }}
-                    placeholder="Пригласить по номеру"
-                />
-                <CustomTouchableOpacity
-                    style={{ padding: SIZES.PX * 5 }}
-                    onPress={openContacts}
-                >
-                    <ContactsIcon />
-                </CustomTouchableOpacity>
-            </View>
+        <View style={styles.container}>
+            <Typography type="body13" color="secondary">
+                Привязанный аккаунт будет тратить и получать бонусы с вашего
+                общего счёта.
+            </Typography>
 
-            <CustomButton onPress={handleSubmit}>Пригласить</CustomButton>
-        </>
+            <GlassInput
+                onSubmitEditing={handleSubmit}
+                mask="8 999 999 99 99"
+                keyboardType="numeric"
+                onChangeText={handleChangePhoneValue}
+                value={phoneValue}
+                placeholder="Введите номер телефона"
+                icon={<Icon name="phone" size={20} opacity={0.6} />}
+            />
+
+            <PillButton
+                title="Выбрать из контактов"
+                variant="secondary"
+                size="md"
+                onPress={handleOpenContacts}
+                icon={<Icon name="person" size={18} />}
+            />
+
+            <PillButton title="Отправить приглашение" onPress={handleSubmit} />
+        </View>
     )
 })
