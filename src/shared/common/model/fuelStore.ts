@@ -70,7 +70,9 @@ const store = create<IFuelStore>()(
             set((state) => {
                 state.state.azs = null
                 state.state.column = null
+                state.state.trkType = null
                 state.state.liters = null
+                state.state.rubles = null
                 state.state.fuelOnDebt = false
             })
         },

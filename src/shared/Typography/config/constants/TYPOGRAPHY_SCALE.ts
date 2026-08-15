@@ -41,6 +41,7 @@ export const TYPOGRAPHY_SCALE = {
     h4: { ff: FONTS.EXTRABOLD, fz: 26 },
     h5: { ff: FONTS.EXTRABOLD, fz: 24 },
     h6: { ff: FONTS.EXTRABOLD, fz: 22 },
+    num28: { ff: FONTS.EXTRABOLD, fz: 28 },
     num20: { ff: FONTS.EXTRABOLD, fz: 20 },
     num18: { ff: FONTS.EXTRABOLD, fz: 18 },
     num17: { ff: FONTS.EXTRABOLD, fz: 17 },

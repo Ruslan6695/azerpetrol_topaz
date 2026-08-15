@@ -1,6 +1,13 @@
 import { memo, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { RADII, SIZES, SPACING, ThemeStore } from '../../../../shared'
+import {
+    collectFuelModifiers,
+    formatFuelModifier,
+    RADII,
+    SIZES,
+    SPACING,
+    ThemeStore,
+} from '../../../../shared'
 import { GlassCard } from '../../../../shared/GlassCard'
 import { Typography } from '../../../../shared/Typography'
 import { IFuelPriceRow } from '../config/interfaces/IFuelPriceRow'
@@ -14,10 +21,33 @@ type Props = IFuelPriceRow
 // цена справа. Скидку и кэшбек макет не рисует — они приходят с бэкенда
 // и дорисованы языком макета.
 export const FuelPriceRow = memo(
-    ({ name, price, discount, bonus, unit = '₽', onPress }: Props) => {
+    ({
+        name,
+        price,
+        discount,
+        cashback,
+        bonus,
+        unit = '₽',
+        onPress,
+    }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
 
         const badge = useMemo(() => getFuelBadge(name), [name])
+
+        // Скидка в этот список не входит: она видна по перечёркнутой цене.
+        const modifiers = useMemo(
+            () =>
+                collectFuelModifiers({ cashback, bonus }, [
+                    'cashback',
+                    'bonus',
+                ]).map(({ kind, modifier }) => ({
+                    kind,
+                    // Рубли в модификаторе — всегда за литр, поэтому подпись
+                    // не зависит от unit строки («₽» на экране цен).
+                    text: formatFuelModifier(kind, modifier, '₽/л'),
+                })),
+            [cashback, bonus]
+        )
 
         const discountPrice = useMemo(() => {
             if (!discount) {
@@ -69,17 +99,16 @@ export const FuelPriceRow = memo(
                             <Typography type="rowTitle" numberOfLines={2}>
                                 {name}
                             </Typography>
-                            {bonus ? (
+                            {modifiers.map(({ kind, text }) => (
                                 <Typography
+                                    key={kind}
                                     type="caption11"
                                     customColor={COLORS.STATE.Positive}
                                     marginsPaddings={{ mt: 2 }}
                                 >
-                                    {`Кэшбек ${bonus.value} ${
-                                        bonus.type === 'rubles' ? unit : '%'
-                                    }`}
+                                    {text}
                                 </Typography>
-                            ) : null}
+                            ))}
                         </View>
                     </View>
 

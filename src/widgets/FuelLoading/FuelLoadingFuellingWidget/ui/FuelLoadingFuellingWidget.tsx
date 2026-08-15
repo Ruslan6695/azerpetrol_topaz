@@ -1,75 +1,65 @@
-import { memo, useEffect, useMemo, useRef } from 'react'
-import { AnimateFuelLoading } from '../../../../features/FuelLoading/AnimateFuelLoading'
-import { FuelStore, useFetchData } from '../../../../shared'
-import { fuelLoadingFuellingApi } from '../api/fuelLoadingFuellingApi'
-import { IFuelLoadingFuellingData } from '../config/interfaces/IFuelLoadingFuellingData'
+import { memo, useEffect } from 'react'
+import { BackHandler } from 'react-native'
+import { FuelPouringProgress } from '../../../../entities/FuelLoading/FuelPouringProgress'
+import { StepHeader } from '../../../../entities/StepHeader'
+import {
+    EFuellingErrorKind,
+    FuelStore,
+    IFuellingTotals,
+} from '../../../../shared'
+import {
+    FUELLING_STATUS_PENDING_TEXT,
+    FUELLING_STATUS_TEXTS,
+} from '../config/constants/FUELLING_STATUS_TEXTS'
 import { EFuelLoadingFuellingStatuses } from '../config/enums/EFuelLoadingFuellingStatuses'
+import { useFuellingPolling } from '../lib/useFuellingPolling'
 
 type Props = {
-    setRoad: React.Dispatch<React.SetStateAction<'start' | 'fuelling' | 'end'>>
-    onEndFuelling: (volume: number) => void
+    onEndFuelling: (totals: IFuellingTotals) => void
+    onError: (kind: EFuellingErrorKind) => void
 }
 
 export const FuelLoadingFuellingWidget = memo(
-    ({ setRoad, onEndFuelling }: Props) => {
-        const state = FuelStore.useState()
-        const intervalRef = useRef<any>()
-        const { data, errorText, fetchData, setErrorText } = useFetchData<
-            IFuelLoadingFuellingData,
-            { columnDevice: number; azsId: number }
-        >({
-            apiCallback: fuelLoadingFuellingApi.getStatus,
-            errorText: 'Произошла ошибка',
-        })
-        const procents = useMemo(() => {
-            return data ? (data.volume * 100) / Number(state.liters) : 0
-        }, [data, state.liters])
+    ({ onEndFuelling, onError }: Props) => {
+        const { azs, column, trkType, liters } = FuelStore.useState()
 
+        // Хук вызывается до любых return, чтобы не ронять порядок хуков,
+        // а от опроса колонки с пустыми параметрами защищает enabled.
+        const { status, volume } = useFuellingPolling({
+            enabled: Boolean(azs && column),
+            azsId: azs?.id ?? 0,
+            columnDevice: column?.device ?? '',
+            onComplete: onEndFuelling,
+            onError,
+        })
+
+        // Уйти с экрана во время налива нельзя: сессия на колонке уже открыта,
+        // а вернуться в неё приложению неоткуда.
         useEffect(() => {
-            intervalRef.current = setInterval(() => {
-                fetchData({
-                    args: {
-                        //@ts-ignore
-                        azsId: state.azs?.id,
-                        //@ts-ignore
-                        columnDevice: state.column?.device,
-                    },
-                    hideToastOnError: true,
-                    afterDataCallback(data) {
-                        switch (data.status) {
-                            case EFuelLoadingFuellingStatuses.ERROR: {
-                                setErrorText('Ошибка колонки')
-                                break
-                            }
-                            case EFuelLoadingFuellingStatuses.LOCKED: {
-                                setErrorText('Колонка заблокирована')
-                                break
-                            }
-                            case EFuelLoadingFuellingStatuses.COMPLETE: {
-                                onEndFuelling(data.volume)
-                                setRoad('end')
-                                break
-                            }
-                        }
-                    },
-                })
-            }, 1000)
-            return function () {
-                if (intervalRef.current) clearInterval(intervalRef.current)
-            }
+            const subscription = BackHandler.addEventListener(
+                'hardwareBackPress',
+                () => true
+            )
+            return () => subscription.remove()
         }, [])
 
-        if (!state.liters || !state.rubles) {
-            return <></>
-        }
+        if (!azs || !column || !trkType || !liters) return null
+
+        const statusText = status
+            ? (FUELLING_STATUS_TEXTS[status] ?? FUELLING_STATUS_PENDING_TEXT)
+            : FUELLING_STATUS_PENDING_TEXT
+
         return (
-            <AnimateFuelLoading
-                rubles={data ? data.volume * data.price : 0}
-                liters={state.liters}
-                percent={procents}
-                volume={data?.volume}
-                trkType={state.trkType}
-            />
+            <>
+                <StepHeader title="Идёт налив" />
+                <FuelPouringProgress
+                    volume={volume}
+                    target={liters}
+                    statusText={statusText}
+                    details={`Колонка ${column.name} · ${trkType.name} · не отходите от авто`}
+                    alarming={status === EFuelLoadingFuellingStatuses.HALTED}
+                />
+            </>
         )
     }
 )

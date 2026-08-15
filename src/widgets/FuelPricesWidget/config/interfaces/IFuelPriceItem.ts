@@ -1,4 +1,4 @@
-import { TFuelModifier } from '../../../../entities/Fuel/FuelPriceRow'
+import { TFuelModifier } from '../../../../shared'
 
 // Элемент прайса из ответа get_fuel_prices/.
 export interface IFuelPriceItem {
@@ -6,5 +6,6 @@ export interface IFuelPriceItem {
     name: string
     price: number
     discount?: TFuelModifier
+    cashback?: TFuelModifier
     bonus?: TFuelModifier
 }

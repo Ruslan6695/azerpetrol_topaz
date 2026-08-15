@@ -1,5 +1,4 @@
 import { memo } from 'react'
-import { View } from 'react-native'
 import { Fuel } from '../../../proccesses/Fuel'
 
 type Props = {}

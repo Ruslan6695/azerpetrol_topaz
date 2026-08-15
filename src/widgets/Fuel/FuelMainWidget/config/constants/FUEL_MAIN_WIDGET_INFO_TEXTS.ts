@@ -1,12 +1,12 @@
-import { IInfoBlock } from '../../../../../entities/InfoBlock'
+import { IInfoCard } from '../../../../../entities/InfoCard'
 
-export const FUEL_MAIN_WIDGET_INFO_TEXTS: IInfoBlock[] = [
+export const FUEL_MAIN_WIDGET_INFO_TEXTS: IInfoCard[] = [
     {
         title: 'Выберите метод определения колонки',
         info: 'Для начала налива выберите один из методов определения колонки.',
     },
     {
-        title: 'Cканируйте QR-КОД с колонки',
+        title: 'Сканируйте QR-КОД с колонки',
         info: 'Просканируйте Qr-код наклеенный на колонке. Азс и номер колонки определятся автоматически.',
     },
     {

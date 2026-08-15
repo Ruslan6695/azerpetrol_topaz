@@ -101,8 +101,8 @@ const Blob = memo(({ color, opacity, size, duration, reverse }: BlobProps) => {
 })
 
 // Амбиентный фон макета: три медленно дрейфующих размытых пятна позади контента.
-// Заменяет BackgroundImage в лэйаутах; сам BackgroundImage остаётся для экранов,
-// где он используется как декор.
+// Единственный фон приложения: старый BackgroundImage удалён вместе с последними
+// его потребителями в ветке налива.
 export const AmbientBackground = memo(() => {
     const COLORS = ThemeStore.useCOLORS()
 

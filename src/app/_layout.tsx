@@ -233,6 +233,9 @@ export default function Layout() {
                         <Stack.Screen
                             options={{
                                 headerShown: false,
+                                // Свайп назад увёл бы с идущего налива:
+                                // выход с этого роута только кнопками шага.
+                                gestureEnabled: false,
                             }}
                             name={'fuelLoading/index'}
                         />

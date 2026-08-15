@@ -9,6 +9,7 @@ export const RADII = {
     TABBAR: 30,
     HERO_SM: 28,
     CARD: 24,
+    TILE: 22,
     ROW: 20,
     INPUT: 16,
     BADGE: 14,

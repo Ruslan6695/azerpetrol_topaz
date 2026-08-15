@@ -1,129 +1,235 @@
-import { useRouter } from "expo-router";
-import { memo, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
-import { FuelLitersSelector } from "../../../../entities/Fuel/FuelLitersSelector";
+import { useRouter } from 'expo-router'
+import { memo, useCallback, useMemo, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { StepHeader } from '../../../../entities/StepHeader'
 import {
-  ESCREENS,
-  FuelStore,
-  IAzs,
-  IColumn,
-  ITrkType,
-  SIZES,
-  UserStore,
-} from "../../../../shared";
-import { CustomButton } from "../../../../shared/CustomButton";
-import { useInput } from "../../../../shared/CustomInput";
-import { showError } from "../../../../shared/ToastComponent";
-import { Typography } from "../../../../shared/Typography";
-import { SelectLitersForm } from "./SelectLitersForm";
+    ESCREENS,
+    FuelStore,
+    IAzs,
+    IColumn,
+    ITrkType,
+    RADII,
+    SIZES,
+    SPACING,
+    ThemeStore,
+    UserStore,
+} from '../../../../shared'
+import { AmountField } from '../../../../shared/AmountField'
+import { GlassCard } from '../../../../shared/GlassCard'
+import { ListGroup, ListRow } from '../../../../shared/ListRow'
+import { PillButton } from '../../../../shared/PillButton'
+import { Slider } from '../../../../shared/Slider'
+import {
+    ITabWithBackground,
+    TabBarWithBackground,
+} from '../../../../shared/TabBarWithBackground'
+import { showError } from '../../../../shared/ToastComponent'
+import { Typography } from '../../../../shared/Typography'
+import { LITERS_STEP, MIN_LITERS } from '../config/constants/LITERS'
+import { FuelBonusCard } from './FuelBonusCard'
+import { LitersPresets } from './LitersPresets'
 
 type Props = {
-  column: IColumn;
-  azs: IAzs;
-  trkType: ITrkType;
-  onSubmit: (props: { liters: number; rubles: number }) => void;
-  onGoBack: () => void;
-};
+    column: IColumn
+    azs: IAzs
+    trkType: ITrkType
+    onSubmit: (props: { liters: number; rubles: number }) => void
+    onGoBack: () => void
+}
+
+const MODES: ITabWithBackground[] = [
+    { label: 'Литры', value: 0 },
+    { label: 'Сумма', value: 1 },
+]
 
 export const SelectLiters = memo(
-  ({ azs, column, trkType, onSubmit, onGoBack }: Props) => {
-    const fuelOnDebt = FuelStore.useState().fuelOnDebt;
+    ({ azs, column, trkType, onSubmit, onGoBack }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
+        const router = useRouter()
+        const fuelOnDebt = FuelStore.useState().fuelOnDebt
+        const tankVolume = FuelStore.useTankVolume()
+        const balance = UserStore.useBalance()
 
-    const balance = UserStore.useBalance();
-    const router = useRouter();
-    const {
-      handleChangeInputValue: handleChangeLitersValue,
-      inputValue: litersValue,
-      setInputValue: setLitersValue,
-    } = useInput({
-      onChangeValue(value) {
-        setRublesValue((+value * trkType.price).toFixed(2));
-      },
-    });
+        const [mode, setMode] = useState<ITabWithBackground>(MODES[0])
+        const [liters, setLiters] = useState(
+            Math.min(20, tankVolume) || MIN_LITERS
+        )
 
-    const {
-      inputValue: rublesValue,
-      setInputValue: setRublesValue,
-      handleChangeInputValue: handleChangeRublesValue,
-    } = useInput({
-      onChangeValue(value) {
-        setLitersValue((+value / trkType.price).toFixed(2));
-      },
-    });
+        const isLitersMode = mode.value === MODES[0].value
+        const rubles = useMemo(
+            () => Math.round(liters * trkType.price),
+            [liters, trkType.price]
+        )
 
-    const handleSubmit = useCallback(() => {
-      let rubles = +rublesValue;
-      let liters = +litersValue;
-      if (liters >= 1) {
-        if (rubles <= balance || fuelOnDebt) {
-          onSubmit({
-            rubles: +rublesValue,
-            liters: +litersValue,
-          });
-        } else {
-          showError({ text: "Недостаточно средств" });
-          router.navigate({
-            pathname: ESCREENS.PAY_BALANCE,
-            params: {
-              sum: Math.ceil(rubles - balance),
-              backLink: ESCREENS.FUEL,
+        const handleChangeLiters = useCallback((value: number) => {
+            setLiters(Number(value.toFixed(2)))
+        }, [])
+
+        // Сумма редактируется в рублях, но состояние одно — литры.
+        const handleChangeRubles = useCallback(
+            (value: number) => {
+                setLiters(Number((value / trkType.price).toFixed(2)))
             },
-          });
-        }
-      } else {
-        showError({ text: "Минимальная сумма для налива - 1 л." });
-      }
-    }, [onSubmit, rublesValue, litersValue, balance]);
+            [trkType.price]
+        )
 
-    return (
-      <View style={styles.container}>
-        <Typography type="displayMedium">{trkType.name}</Typography>
-        <Typography marginsPaddings={{ mb: 44 }}>
-          Колонка {column.name}
-        </Typography>
-        <View style={styles.row}>
-          <FuelLitersSelector
-            litersValue={litersValue}
-            fuelPrice={trkType.price}
-            onChangeLitersValue={handleChangeLitersValue}
-          />
-          <SelectLitersForm
-            rublesValue={rublesValue}
-            onChangeRublesValue={handleChangeRublesValue}
-            litersValue={litersValue}
-            onChangeLitersValue={handleChangeLitersValue}
-          />
-        </View>
+        const handleSubmit = useCallback(() => {
+            if (liters < MIN_LITERS) {
+                showError({
+                    text: `Минимальный объём налива — ${MIN_LITERS} л.`,
+                })
+                return
+            }
 
-        <CustomButton
-          onPress={handleSubmit}
-          styled={{
-            marginsPaddings: { mb: 10, mt: 50 },
-          }}
-        >
-          Начать налив
-        </CustomButton>
-        <CustomButton
-          onPress={onGoBack}
-          styled={{
-            type: "secondary",
-          }}
-        >
-          Вернуться назад
-        </CustomButton>
-      </View>
-    );
-  }
-);
+            if (rubles > balance && !fuelOnDebt) {
+                showError({ text: 'Недостаточно средств' })
+                router.navigate({
+                    pathname: ESCREENS.PAY_BALANCE,
+                    params: {
+                        sum: Math.ceil(rubles - balance),
+                        backLink: ESCREENS.FUEL,
+                    },
+                })
+                return
+            }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: SIZES.WIDTH(1) - SIZES.PX * 40,
-  },
-});
+            onSubmit({ liters, rubles })
+        }, [liters, rubles, balance, fuelOnDebt, onSubmit, router])
+
+        const styles = StyleSheet.create({
+            amounts: {
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                justifyContent: 'space-between',
+                gap: SPACING.MD * SIZES.PX,
+            },
+            amountRight: {
+                alignItems: 'flex-end',
+            },
+            section: {
+                marginTop: SPACING.LG * SIZES.PX,
+            },
+            // Отступ поля от надстрочника (dc.html:535).
+            field: {
+                marginTop: 6 * SIZES.PX,
+            },
+        })
+
+        return (
+            <>
+                <StepHeader title="Сумма и литры" onBack={onGoBack} />
+
+                <TabBarWithBackground
+                    tabs={MODES}
+                    selectedTab={mode}
+                    onChangeSelectedTab={setMode}
+                    styled={{ width: { type: 'absolute', value: '100%' } }}
+                />
+
+                <View style={styles.section}>
+                    <GlassCard
+                        variant="glass2"
+                        radius={RADII.HERO_SM}
+                        paddingVertical={22}
+                        paddingHorizontal={SPACING.SCREEN}
+                    >
+                        <View style={styles.amounts}>
+                            <View>
+                                <Typography type="eyebrow">Литры</Typography>
+                                {isLitersMode ? (
+                                    <AmountField
+                                        value={liters}
+                                        onChangeValue={handleChangeLiters}
+                                        suffix="л"
+                                        decimal
+                                        min={MIN_LITERS}
+                                        max={tankVolume}
+                                        minWidth={86}
+                                        radius={RADII.BADGE}
+                                        style={styles.field}
+                                    />
+                                ) : (
+                                    <Typography
+                                        type="h2"
+                                        marginsPaddings={{ mt: 2 }}
+                                    >
+                                        {`${liters.toFixed(1)} л`}
+                                    </Typography>
+                                )}
+                            </View>
+
+                            <View style={styles.amountRight}>
+                                <Typography type="eyebrow">Сумма</Typography>
+                                {isLitersMode ? (
+                                    <Typography
+                                        type="num28"
+                                        customColor={COLORS.ACCENT.Primary}
+                                        marginsPaddings={{ mt: 2 }}
+                                    >
+                                        {`${rubles} ₽`}
+                                    </Typography>
+                                ) : (
+                                    <AmountField
+                                        value={rubles}
+                                        onChangeValue={handleChangeRubles}
+                                        suffix="₽"
+                                        fontSize={28}
+                                        min={0}
+                                        max={Math.round(
+                                            tankVolume * trkType.price
+                                        )}
+                                        minWidth={92}
+                                        radius={RADII.BADGE}
+                                        color={COLORS.ACCENT.Primary}
+                                        style={styles.field}
+                                    />
+                                )}
+                            </View>
+                        </View>
+                    </GlassCard>
+                </View>
+
+                <View style={styles.section}>
+                    <Slider
+                        value={liters}
+                        onChangeValue={handleChangeLiters}
+                        min={MIN_LITERS}
+                        max={tankVolume}
+                        step={LITERS_STEP}
+                    />
+                </View>
+
+                <View style={styles.section}>
+                    <LitersPresets
+                        liters={liters}
+                        tankVolume={tankVolume}
+                        onSelect={handleChangeLiters}
+                    />
+                </View>
+
+                <View style={styles.section}>
+                    <ListGroup>
+                        <ListRow title="АЗС" value={azs.name} />
+                        <ListRow
+                            title="Топливо"
+                            value={`${trkType.name} · Колонка ${column.name}`}
+                        />
+                        <ListRow
+                            title="Цена за литр"
+                            value={`${trkType.price} ₽`}
+                            last
+                        />
+                    </ListGroup>
+                </View>
+
+                <View style={styles.section}>
+                    <FuelBonusCard trkType={trkType} liters={liters} />
+                </View>
+
+                <View style={styles.section}>
+                    <PillButton title="Начать налив" onPress={handleSubmit} />
+                </View>
+            </>
+        )
+    }
+)

@@ -1,119 +1,93 @@
-import { memo, useCallback, useMemo } from 'react'
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { StepHeader } from '../../../../entities/StepHeader'
 import {
-    COLORS,
     FuelStore,
     SIZES,
-    ThemeStore,
+    TFuelLoadingRoad,
     useSendFetch,
 } from '../../../../shared'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { Loader } from '../../../../shared/Loader'
-import { Typography } from '../../../../shared/Typography'
-import { WarningImage } from '../../../../shared/WarningImage'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { Icon } from '../../../../shared/Icons'
 import { fuelLoadingStartApi } from '../api/fuelLoadingStartApi'
-import { BackgroundImage } from '../../../../shared/BackgroundImage'
-import { BonusIcon } from '../../../../shared/BonusIcon'
+
 type Props = {
-    setRoad: React.Dispatch<React.SetStateAction<'start' | 'fuelling' | 'end'>>
+    setRoad: React.Dispatch<React.SetStateAction<TFuelLoadingRoad>>
 }
 
+// Шаг «Запуск налива» (dc.html:564–572). Разметка целиком ложится
+// на CenteredState: круг 96 с иконкой, заголовок, сводка, пара кнопок.
 export const FuelLoadingStartWidget = memo(({ setRoad }: Props) => {
-    const COLORS = ThemeStore.useCOLORS()
-    const state = FuelStore.useState()
-    const { sendFetch, errorText, isSendFetchLoading } = useSendFetch({
+    const router = useRouter()
+    const { azs, column, trkType, liters, rubles } = FuelStore.useState()
+    const { sendFetch, isSendFetchLoading, errorText } = useSendFetch({
         apiCallback: fuelLoadingStartApi.startFuelling,
         errorText: 'Не удалось начать налив',
     })
 
     const handleStartFuelling = useCallback(async () => {
+        // Гард вместо восьми //@ts-ignore: без любого из параметров
+        // fuelling/start/ всё равно не примет запрос.
+        if (!azs || !column || !trkType || !rubles) return
+
         await sendFetch({
             args: {
-                //@ts-ignore
-                azsId: state.azs?.id,
-                //@ts-ignore
-                columnDevice: state.column?.device,
-                //@ts-ignore
-                sumRub: state.rubles,
-                //@ts-ignore
-                trkTypeArt: state.trkType?.art,
-                //@ts-ignore
-                trkTypeName: state.trkType?.name,
-                //@ts-ignore
-                trkTypeNozzleId: state.trkType?.nozzle_id,
-                //@ts-ignore
-                trkTypePetrolId: state.trkType?.petrol_id,
-                //@ts-ignore
-                trkTypePrice: state.trkType?.price,
+                azsId: azs.id,
+                columnDevice: column.device,
+                sumRub: rubles,
+                trkTypeArt: trkType.art,
+                trkTypeName: trkType.name,
+                trkTypeNozzleId: trkType.nozzle_id,
+                trkTypePetrolId: trkType.petrol_id,
+                trkTypePrice: trkType.price,
             },
+            // Ошибку колонки показываем текстом на самом экране, а не тостом:
+            // сообщения бэка длинные и объясняют, что сделать с пистолетом.
             hideToastOnError: true,
-            onErrorCallback(error) {},
-            afterDataCallback(data) {
+            afterDataCallback() {
                 setRoad('fuelling')
             },
         })
-    }, [state])
+    }, [azs, column, trkType, rubles, sendFetch, setRoad])
 
-    const styles = useMemo(() => {
-        return StyleSheet.create({
-            wrapper: {
-                width: SIZES.WIDTH(1),
-                height: '100%',
-                backgroundColor: COLORS.BACKGROUND.Primary,
-                paddingVertical: SIZES.PX * 60,
-                paddingHorizontal: SIZES.PX * 20,
-                alignItems: 'center',
-            },
-            content: {
-                alignItems: 'center',
-                flex: 1,
-                justifyContent: 'center',
-            },
-            row: {
-                flexDirection: 'row',
-                alignItems: 'center',
-            },
-        })
-    }, [COLORS])
+    const handleCancel = useCallback(() => {
+        router.back()
+    }, [router])
+
+    const styles = StyleSheet.create({
+        // CenteredState тянется по flex, а вокруг — скролл лэйаута:
+        // без минимальной высоты состояние прижалось бы к шапке.
+        container: {
+            minHeight: SIZES.HEIGHT(0.7),
+        },
+    })
+
+    // Сюда нельзя попасть в обход шагов выбора, но роут внешний —
+    // на всякий случай не рендерим сводку из пустого стора.
+    if (!azs || !column || !trkType || !liters || !rubles) return null
 
     return (
-        <View style={styles.wrapper}>
-            <BackgroundImage bottom={103} right={10} />
-            <View style={styles.content}>
-                <WarningImage />
-                <Typography
-                    type="displayLarge"
-                    textAlign="center"
-                    marginsPaddings={{ mb: 8, mt: 34 }}
-                >
-                    {state.trkType?.name}
-                </Typography>
-
-                <>
-                    <View style={styles.row}>
-                        <Typography>
-                            {state.liters} л/{state.rubles}
-                        </Typography>
-                        <BonusIcon ml={0} mt={2} />
-                    </View>
-
-                    <Typography
-                        color="secondary"
-                        type="bodyMedium"
-                        textAlign="center"
-                    >
-                        {errorText ||
-                            'Для начала налива топлива необходимо поставить пистолет в автомобиль'}
-                    </Typography>
-                </>
+        <>
+            <StepHeader title="Запуск налива" onBack={handleCancel} />
+            <View style={styles.container}>
+                <CenteredState
+                    icon={<Icon name="tab_fuel" size={44} />}
+                    title="Готовы начать налив?"
+                    description={`${azs.name} · Колонка ${column.name} · ${trkType.name} · ${liters.toFixed(1)} л на ${rubles} ₽`}
+                    error={errorText}
+                    action={{
+                        label: 'Запустить колонку',
+                        onPress: handleStartFuelling,
+                        variant: 'primary',
+                        loading: isSendFetchLoading,
+                    }}
+                    secondaryAction={{
+                        label: 'Отмена',
+                        onPress: handleCancel,
+                    }}
+                />
             </View>
-            {isSendFetchLoading ? (
-                <Loader />
-            ) : (
-                <CustomButton onPress={handleStartFuelling}>
-                    Начать налив
-                </CustomButton>
-            )}
-        </View>
+        </>
     )
 })
