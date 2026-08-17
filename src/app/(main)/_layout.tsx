@@ -16,9 +16,15 @@ const Layout = (props: Props) => {
     const COLORS = ThemeStore.useCOLORS()
     const bottomClearance = useBottomMenuClearance()
     const styles = StyleSheet.create({
-        wrapper: {
+        // Фон лежит снаружи SafeAreaView: сферы макета привязаны к краям
+        // экрана, а абсолютные потомки SafeAreaView считаются от её padding-бокса
+        // и уехали бы вниз на высоту статус-бара.
+        screen: {
             flex: 1,
             backgroundColor: COLORS.BACKGROUND.Primary,
+        },
+        wrapper: {
+            flex: 1,
             position: 'relative',
         },
         main: {
@@ -27,15 +33,14 @@ const Layout = (props: Props) => {
         },
     })
     return (
-        <SafeAreaView
-            style={{ flex: 1, backgroundColor: COLORS.BACKGROUND.Primary }}
-            // Низ не в safe-area: контент уходит под плавающий таб-бар,
-            // а его собственный отступ даёт useBottomMenuClearance ниже.
-            edges={['top', 'right', 'left']}
-        >
-            <View style={styles.wrapper}>
-                <AmbientBackground />
-
+        <View style={styles.screen}>
+            <AmbientBackground />
+            <SafeAreaView
+                style={styles.wrapper}
+                // Низ не в safe-area: контент уходит под плавающий таб-бар,
+                // а его собственный отступ даёт useBottomMenuClearance ниже.
+                edges={['top', 'right', 'left']}
+            >
                 <MainHeaderWidget />
                 <KeyboardAwareScrollView
                     showsHorizontalScrollIndicator={false}
@@ -50,8 +55,8 @@ const Layout = (props: Props) => {
                     {!isHasNet ? <CheckNetworkWidget /> : <Slot />}
                 </KeyboardAwareScrollView>
                 <BottomMenu />
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </View>
     )
 }
 

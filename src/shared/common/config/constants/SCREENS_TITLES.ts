@@ -10,7 +10,7 @@ export const SCREENS_TITLES: Record<string, string> = {
     [ESCREENS.COFFEE]: 'Кофе',
     [ESCREENS.HELP]: 'Помощь',
     [ESCREENS.HISTORY]: 'История',
-    [ESCREENS.HISTORY_DETAILS]: 'История',
+    [ESCREENS.HISTORY_DETAILS]: 'Детали операции',
     [ESCREENS.PROMOTIONS_AND_BONUSES]: 'Акции и Бонусы',
     [ESCREENS.PROMOTIONS_AND_BONUSES_DETAILS]: 'Акции и Бонусы',
     [ESCREENS.COFFEE_BONUS]: 'Бонус',

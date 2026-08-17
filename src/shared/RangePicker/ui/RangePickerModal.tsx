@@ -1,20 +1,23 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
 import Calendar from 'react-native-calendar-range-picker'
 import { CloseIcon } from '../../CloseIcon'
-import { COLORS } from '../../common/config/constants/COLORS'
+import { RADII } from '../../common/config/constants/RADII'
+import { SPACING } from '../../common/config/constants/SPACING'
 import { SIZES } from '../../common/config/constants/sizes'
-import { CustomButton } from '../../CustomButton'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
-import { MPLayout } from '../../MpLayout'
+import { ThemeStore } from '../../common/model/themeStore'
+import { PillButton } from '../../PillButton'
+import { PressableScale } from '../../PressableScale'
 import { showError } from '../../ToastComponent'
 import { Typography } from '../../Typography'
+import { formatRangeDate } from '../lib/formatRangeDate'
 
 type Props = {
     isOpened: boolean
     handleClose: () => void
     onSave: (props: { startDate: string; endDate: string }) => void
 }
+
 const LOCALE = {
     monthNames: [
         'Январь',
@@ -34,148 +37,22 @@ const LOCALE = {
     today: '',
     year: '',
 }
+
 export const RangePickerModal = memo(
     ({ handleClose, isOpened, onSave }: Props) => {
+        const COLORS = ThemeStore.useCOLORS()
         const [startDate, setStartDate] = useState<string>()
         const [endDate, setEndDate] = useState<string>()
-        const showedDate = useMemo<string>(() => {
-            let date = ''
-            const startDates = startDate?.split('-')
-            const endDates = endDate?.split('-')
-            let startMonthName = ''
-            let endMonthName = ''
-            if (startDates && endDates) {
-                if (startDates) {
-                    switch (startDates[1]) {
-                        case '01': {
-                            startMonthName = 'Январь'
-                            break
-                        }
-                        case '02': {
-                            startMonthName = 'Февраль'
-                            break
-                        }
-                        case '03': {
-                            startMonthName = 'Март'
-                            break
-                        }
-                        case '04': {
-                            startMonthName = 'Апрель'
-                            break
-                        }
-                        case '05': {
-                            startMonthName = 'Май'
-                            break
-                        }
-                        case '06': {
-                            startMonthName = 'Июль'
-                            break
-                        }
-                        case '07': {
-                            startMonthName = 'Июнь'
-                            break
-                        }
-                        case '08': {
-                            startMonthName = 'Август'
-                            break
-                        }
-                        case '09': {
-                            startMonthName = 'Сентябрь'
-                            break
-                        }
-                        case '10': {
-                            startMonthName = 'Октябрь'
-                            break
-                        }
-                        case '11': {
-                            startMonthName = 'Ноябрь'
-                            break
-                        }
-                        case '12': {
-                            startMonthName = 'Декабрь'
-                            break
-                        }
-                    }
-                }
-                if (endDates) {
-                    switch (endDates[1]) {
-                        case '01': {
-                            endMonthName = 'Январь'
-                            break
-                        }
-                        case '02': {
-                            endMonthName = 'Февраль'
-                            break
-                        }
-                        case '03': {
-                            endMonthName = 'Март'
-                            break
-                        }
-                        case '04': {
-                            endMonthName = 'Апрель'
-                            break
-                        }
-                        case '05': {
-                            endMonthName = 'Май'
-                            break
-                        }
-                        case '06': {
-                            endMonthName = 'Июль'
-                            break
-                        }
-                        case '07': {
-                            endMonthName = 'Июнь'
-                            break
-                        }
-                        case '08': {
-                            endMonthName = 'Август'
-                            break
-                        }
-                        case '09': {
-                            endMonthName = 'Сентябрь'
-                            break
-                        }
-                        case '10': {
-                            endMonthName = 'Октябрь'
-                            break
-                        }
-                        case '11': {
-                            endMonthName = 'Ноябрь'
-                            break
-                        }
-                        case '12': {
-                            endMonthName = 'Декабрь'
-                            break
-                        }
-                    }
-                }
-                if (startDate === endDate) {
-                    date = `${startDates[2]} ${startMonthName} ${startDates[0]}`
-                } else if (
-                    startDates[0] === endDates[0] &&
-                    startDates[1] === endDates[1]
-                ) {
-                    date = `${startDates[2]} - ${endDates[2]} ${endMonthName} ${endDates[0]}`
-                } else {
-                    date = `${startDates[2]} ${startMonthName} ${startDates[0]} - ${endDates[2]} ${endMonthName} ${endDates[0]}`
-                }
-            }
 
-            return date
-        }, [startDate, endDate])
+        const showedDate =
+            startDate && endDate
+                ? `${formatRangeDate(startDate)} — ${formatRangeDate(endDate)}`
+                : ''
 
         const handleChangeDate = useCallback(
-            (startDate: string, endDate: string) => {
-                if (startDate) {
-                    setStartDate(startDate)
-                } else {
-                    setStartDate(undefined)
-                }
-                if (endDate) {
-                    setEndDate(endDate)
-                } else {
-                    setEndDate(undefined)
-                }
+            (start: string | null, end: string | null) => {
+                setStartDate(start ?? undefined)
+                setEndDate(end ?? undefined)
             },
             []
         )
@@ -189,6 +66,36 @@ export const RangePickerModal = memo(
                 handleClose()
             }
         }, [startDate, endDate])
+
+        const styles = StyleSheet.create({
+            wrapper: {
+                flex: 1,
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                backgroundColor: COLORS.EFFECTS.Backdrop,
+            },
+            // Поверхность шита непрозрачная: полупрозрачное стекло над
+            // затемнённым бэкдропом просвечивает и выглядит сломанным.
+            container: {
+                width: '100%',
+                height: '95%',
+                backgroundColor: COLORS.GLASS.Surface,
+                borderTopLeftRadius: RADII.SHEET * SIZES.PX,
+                borderTopRightRadius: RADII.SHEET * SIZES.PX,
+                padding: SPACING.SCREEN * SIZES.PX,
+            },
+            topRow: {
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                width: '100%',
+                alignItems: 'center',
+            },
+            period: {
+                marginTop: SPACING.ROW_GAP * SIZES.PX,
+                marginBottom: SPACING.SCREEN * SIZES.PX,
+            },
+        })
+
         return (
             <Modal
                 transparent
@@ -199,28 +106,26 @@ export const RangePickerModal = memo(
                 <View style={styles.wrapper}>
                     <View style={styles.container}>
                         <View style={styles.topRow}>
-                            <CustomTouchableOpacity onPress={handleClose}>
+                            <PressableScale onPress={handleClose}>
                                 <CloseIcon />
-                            </CustomTouchableOpacity>
-                            <CustomButton
+                            </PressableScale>
+                            <PillButton
+                                title="Сохранить"
                                 onPress={handleSave}
-                                styled={{
-                                    type: 'secondary',
-                                    width: { type: 'px', value: 120 },
-                                    height: { type: 'px', value: 40 },
-                                }}
-                            >
-                                СОХРАНИТЬ
-                            </CustomButton>
+                                size="sm"
+                                fullWidth={false}
+                            />
                         </View>
-                        <MPLayout mt={10} mb={20}>
-                            <Typography color="secondary" type="caption">
-                                Выберите дату:
+
+                        <View style={styles.period}>
+                            <Typography color="secondary" type="caption12">
+                                Выберите период:
                             </Typography>
-                            <Typography type="bodyAccentMedium">
+                            <Typography type="rowTitle">
                                 {showedDate || 'Не выбрано'}
                             </Typography>
-                        </MPLayout>
+                        </View>
+
                         <Calendar
                             startDate={startDate}
                             endDate={endDate}
@@ -244,25 +149,3 @@ export const RangePickerModal = memo(
         )
     }
 )
-
-const styles = StyleSheet.create({
-    wrapper: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.49)',
-    },
-    container: {
-        position: 'relative',
-        width: '100%',
-        backgroundColor: COLORS.BACKGROUND.Tertiary,
-        height: '95%',
-        padding: 20,
-    },
-    topRow: {
-        justifyContent: 'space-between',
-        flexDirection: 'row',
-        width: '100%',
-        alignItems: 'center',
-    },
-})

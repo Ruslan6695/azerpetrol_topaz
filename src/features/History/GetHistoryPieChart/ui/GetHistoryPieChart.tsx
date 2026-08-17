@@ -1,85 +1,117 @@
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { EHistoryItemType } from '../../../../entities/History'
-import { SIZES, ThemeStore } from '../../../../shared'
+import { HistoryChartLegendItem } from '../../../../entities/History/HistoryChartLegendItem'
 import {
-    CustomPieChart,
-    ICustomPieChartData,
-} from '../../../../shared/CustomPieChart'
+    RADII,
+    SIZES,
+    SPACING,
+    ThemeStore,
+    divideNumber,
+} from '../../../../shared'
+import { BonusIcon } from '../../../../shared/BonusIcon'
+import { DonutChart } from '../../../../shared/DonutChart'
+import { GlassCard } from '../../../../shared/GlassCard'
+import { Typography } from '../../../../shared/Typography'
 import { IGetHistoryPieChartData } from '../config/interfaces/IGetHistoryPieChartData'
 import { GetHistoryPieChartWithoutData } from './GetHistoryPieChartWithoutData'
+
 type Props = {
     data: IGetHistoryPieChartData | undefined
 }
 
-export const GetHistoryPieChart = ({ data }: Props) => {
+const TYPE_LABELS: Record<EHistoryItemType, string> = {
+    [EHistoryItemType.PAY_BALANCE]: 'Пополнение баланса',
+    [EHistoryItemType.TRANSFER_BALANCE]: 'Переводы',
+    [EHistoryItemType.FUEL_FILLING]: 'Налив топлива',
+    [EHistoryItemType.BUY_COFFEE]: 'Покупка кофе',
+    [EHistoryItemType.BUY_ON_CASH]: 'Покупка продуктов',
+}
+
+// Сводка за период из макета (dc.html:299–301): кольцо 160 с суммой в центре.
+// Секторов в макете три и проценты в них выдуманы — рисуем честные сегменты
+// по типам операций из history/chart/ и добавляем легенду, без которой
+// пять безымянных цветов не читаются.
+export const GetHistoryPieChart = memo(({ data }: Props) => {
     const COLORS = ThemeStore.useCOLORS()
 
-    const chartData = useMemo<ICustomPieChartData[]>(() => {
-        let arr: ICustomPieChartData[] = []
+    const segments = useMemo(() => {
+        const TYPE_COLORS: Record<EHistoryItemType, string> = {
+            [EHistoryItemType.PAY_BALANCE]: COLORS.HISTORY.PayBalance,
+            [EHistoryItemType.TRANSFER_BALANCE]: COLORS.HISTORY.Transfer,
+            [EHistoryItemType.FUEL_FILLING]: COLORS.HISTORY.Fuel,
+            [EHistoryItemType.BUY_COFFEE]: COLORS.HISTORY.Coffee,
+            [EHistoryItemType.BUY_ON_CASH]: COLORS.HISTORY.Cash,
+        }
 
-        data?.chart.forEach((el) => {
-            switch (el.type) {
-                case EHistoryItemType.FUEL_FILLING:
-                    arr.push({
-                        color: '#fc7f03',
-                        text: 'Налив топлива',
-                        value: el.total < 0 ? el.total * -1 : el.total,
-                    })
-                    break
-                case EHistoryItemType.BUY_COFFEE:
-                    arr.push({
-                        color: COLORS.ERROR.Secondary,
-                        text: 'Покупка кофе',
-                        value: el.total < 0 ? el.total * -1 : el.total,
-                    })
-                    break
-                case EHistoryItemType.BUY_ON_CASH:
-                    arr.push({
-                        color: COLORS.BRAND.Primary,
-                        text: 'Покупка продуктов',
-                        value: el.total < 0 ? el.total * -1 : el.total,
-                    })
-                    break
-                case EHistoryItemType.TRANSFER_BALANCE:
-                    arr.push({
-                        color: '#3269ce',
-                        text: 'Переводы',
-                        value: el.total < 0 ? el.total * -1 : el.total,
-                    })
-                    break
+        return (data?.chart ?? [])
+            .map((item) => ({
+                color: TYPE_COLORS[item.type],
+                label: TYPE_LABELS[item.type],
+                // Списания приходят отрицательными — в долях кольца важен объём
+                value: Math.abs(item.total),
+            }))
+            .filter((item) => Boolean(item.color) && item.value > 0)
+    }, [data, COLORS])
 
-                default:
-                    break
-            }
-        })
+    const styles = StyleSheet.create({
+        chart: {
+            alignItems: 'center',
+            paddingVertical: 6 * SIZES.PX,
+        },
+        center: {
+            alignItems: 'center',
+        },
+        total: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        legend: {
+            gap: SPACING.ROW_GAP * SIZES.PX,
+            marginTop: SPACING.XL * SIZES.PX,
+        },
+    })
 
-        return arr
-    }, [data])
-    const styles = useMemo(() => {
-        return StyleSheet.create({
-            container: {
-                backgroundColor: COLORS.BACKGROUND.Tertiary,
-                width: '100%',
-                paddingHorizontal: SIZES.PX * 30,
-                paddingVertical: SIZES.PX * 30,
-                borderRadius: SIZES.PX * 16,
-                alignItems: 'center',
-            },
-        })
-    }, [])
-    return (
-        <View style={styles.container}>
-            {chartData.length === 0 ? (
+    if (segments.length === 0) {
+        return (
+            <GlassCard radius={RADII.CARD} padding={SPACING.SCREEN}>
                 <GetHistoryPieChartWithoutData />
-            ) : (
-                <CustomPieChart
-                    centerTotal={
-                        data?.total_all ? +data.total_all.toFixed(2) : 0
-                    }
-                    data={chartData}
-                />
-            )}
-        </View>
+            </GlassCard>
+        )
+    }
+
+    return (
+        <GlassCard radius={RADII.CARD} padding={SPACING.SCREEN}>
+            <View style={styles.chart}>
+                <DonutChart segments={segments}>
+                    <View style={styles.center}>
+                        <View style={styles.total}>
+                            <Typography type="num20">
+                                {divideNumber(
+                                    data?.total_all
+                                        ? +data.total_all.toFixed(2)
+                                        : 0
+                                )}
+                            </Typography>
+                            <BonusIcon mt={2} size={14} />
+                        </View>
+                        <Typography type="caption11" color="secondary">
+                            за период
+                        </Typography>
+                    </View>
+                </DonutChart>
+            </View>
+
+            <View style={styles.legend}>
+                {segments.map((segment) => (
+                    <HistoryChartLegendItem
+                        key={segment.label}
+                        color={segment.color}
+                        label={segment.label}
+                        value={segment.value}
+                    />
+                ))}
+            </View>
+        </GlassCard>
     )
-}
+})

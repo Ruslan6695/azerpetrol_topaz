@@ -1,36 +1,37 @@
-import React from 'react'
-import { Image, StyleSheet, View } from 'react-native'
+import { memo } from 'react'
+import { StyleSheet, View } from 'react-native'
 import { SIZES } from '../../../../shared'
-import { MPLayout } from '../../../../shared/MpLayout'
+import { DonutChart } from '../../../../shared/DonutChart'
 import { Typography } from '../../../../shared/Typography'
 
-type Props = {}
+// Пустой период. Кольцо остаётся на месте пустым треком, чтобы блок
+// не прыгал по высоте при смене периода; растровой заглушки blured.png
+// и белой плашки поверх неё больше нет — в тёмной теме они были сломаны.
+export const GetHistoryPieChartWithoutData = memo(() => {
+    const styles = StyleSheet.create({
+        container: {
+            alignItems: 'center',
+            paddingVertical: 6 * SIZES.PX,
+        },
+        center: {
+            alignItems: 'center',
+            paddingHorizontal: 12 * SIZES.PX,
+        },
+    })
 
-export const GetHistoryPieChartWithoutData = (props: Props) => {
     return (
         <View style={styles.container}>
-            <MPLayout mb={-20} mt={-20}>
-                <Image source={require('../assets/blured.png')} />
-            </MPLayout>
-            <View style={styles.textBlock}>
-                <Typography type="caption" textAlign="center">
-                    НЕТ ДАННЫХ ЗА ВЫБРАННЫЙ ПЕРИОД
-                </Typography>
-            </View>
+            <DonutChart segments={[]}>
+                <View style={styles.center}>
+                    <Typography
+                        type="caption11"
+                        color="secondary"
+                        textAlign="center"
+                    >
+                        Нет данных за период
+                    </Typography>
+                </View>
+            </DonutChart>
         </View>
     )
-}
-const styles = StyleSheet.create({
-    container: {
-        position: 'relative',
-    },
-    textBlock: {
-        position: 'absolute',
-        top: '30%',
-        left: '17%',
-        borderRadius: SIZES.PX * 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        paddingVertical: SIZES.PX * 10,
-        paddingHorizontal: 20 * SIZES.PX,
-    },
 })

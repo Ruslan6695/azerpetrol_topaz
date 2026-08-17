@@ -1,43 +1,52 @@
-import { FlashList } from '@shopify/flash-list'
-import { memo } from 'react'
-
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
 import {
     HistoryItem,
     IHistoryItem,
 } from '../../../../entities/History/HistoryItem'
+import { ESCREENS } from '../../../../shared'
+import { CenteredState } from '../../../../shared/CenteredState'
+import { ListGroup } from '../../../../shared/ListRow'
 import { MPLayout } from '../../../../shared/MpLayout'
-import { Typography } from '../../../../shared/Typography'
 
 type Props = {
     items: IHistoryItem[] | undefined
 }
 
+// Стеклянная группа операций из макета (dc.html:302–309). Список рендерится
+// через .map(), а не FlashList: скроллом владеет InternalPagesLayout, а внутри
+// чужого ScrollView измерения FlashList не работают.
 export const MapHistoryItems = memo(({ items }: Props) => {
-    
+    const router = useRouter()
+
+    const handleOpenDetails = useCallback((item: IHistoryItem) => {
+        router.navigate({
+            pathname: ESCREENS.HISTORY_DETAILS,
+            params: { type: item.type, id: item.id },
+        })
+    }, [])
+
+    if (!items || items.length === 0) {
+        return (
+            <CenteredState
+                title="Операций нет"
+                description="За выбранный период операции не найдены"
+            />
+        )
+    }
+
     return (
-        <MPLayout mt={16}>
-            {items && items?.length > 0 ? (
-                <FlashList
-                    scrollEnabled={false}
-                    renderItem={({ item, index }) => (
-                        <HistoryItem
-                            isFirst={index === 0}
-                            isLast={index === items.length - 1}
-                            key={item.date}
-                            {...item}
-                        />
-                    )}
-                    data={items}
-                />
-            ) : (
-                <Typography
-                    color="secondary"
-                    marginsPaddings={{ mt: 100 }}
-                    textAlign="center"
-                >
-                    Иcтория не найдена
-                </Typography>
-            )}
+        <MPLayout mt={12}>
+            <ListGroup>
+                {items.map((item, index) => (
+                    <HistoryItem
+                        key={item.id}
+                        last={index === items.length - 1}
+                        onPress={() => handleOpenDetails(item)}
+                        {...item}
+                    />
+                ))}
+            </ListGroup>
         </MPLayout>
     )
 })

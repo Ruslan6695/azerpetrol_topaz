@@ -1,6 +1,0 @@
-export * from './ui/OpenHistoryDetailsBuyOnCash'
-export * from './ui/OpenHistoryDetailsPayBalance'
-export * from './ui/OpenHistoryDetailsTransferBalance'
-export * from './ui/OpenHistoryDetailsBuyOnCashSkeleton'
-export * from './ui/OpenHistoryDetailsBuyOnCashSkeleton'
-export * from './ui/OpenHistoryDetailsTransferBalanceSkeleton'

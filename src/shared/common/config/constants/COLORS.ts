@@ -37,7 +37,17 @@ export const COLORS = {
         Link: '#9FBB3D',
     },
     BACKGROUND: {
-        Primary: '#E4E9DD',
+        // Фон светлой темы — градиент (см. AmbientBackground). Плоский Primary
+        // равен его верхней точке: им красятся места вне градиентного слоя —
+        // полоса safe-area, вебвью капчи, обводка ручки слайдера.
+        Primary: '#EFF8E2',
+        // Стопы фонового градиента макета: linear-gradient(165deg,
+        // #EFF8E2 0%, #DCEFC6 50%, #C6E4A8 100%). Тремя отдельными токенами,
+        // а не массивом: COLORS_DARK присваивается в поле типа typeof COLORS,
+        // а кортеж для LinearGradient собирается на месте через `as const`.
+        PrimaryGradientFrom: '#EFF8E2',
+        PrimaryGradientMid: '#DCEFC6',
+        PrimaryGradientTo: '#C6E4A8',
         Secondary: 'rgba(10,32,51,0.08)',
         Tertiary: 'rgba(255,255,255,0.55)',
         Invert: '#0A0E0B',
@@ -57,9 +67,10 @@ export const COLORS = {
         Secondary: 'rgba(255,255,255,0.45)',
         Border: 'rgba(255,255,255,0.7)',
         // Непрозрачные подложки для Android — те же стёкла, предкомпозированные
-        // на BACKGROUND.Primary (#E4E9DD).
-        SolidPrimary: '#EBEFE6',
-        SolidSecondary: '#F0F3EC',
+        // на средней точке фонового градиента (#DCEFC6): фон по высоте экрана
+        // меняется, и середина — лучшее одно приближение для всей высоты.
+        SolidPrimary: '#E6F4D6',
+        SolidSecondary: '#ECF6E0',
         Surface: '#F2F5EC',
         // Тонировки внутри плитки связанного аккаунта: круг под иконкой и
         // кружок «✕». Лежат поверх лайма или стекла, поэтому в обеих темах
@@ -113,14 +124,42 @@ export const COLORS = {
         // он сливается с фоном — там берём зелёный акцент палитры.
         SliderFill: '#00C12A',
     },
-    // Цвета фоновых блобов (shared/AmbientBackground).
+    // Сегменты пончика истории по типам операций (EHistoryItemType).
+    // В макете (dc.html:300) секторов три и проценты в них выдуманы, а API
+    // отдаёт до пяти типов — первые два цвета взяты из макета, остальные
+    // подобраны к палитре. В обеих темах одинаковы: это заливки на стекле.
+    HISTORY: {
+        Fuel: '#00C12A',
+        Coffee: '#B8F53C',
+        PayBalance: '#9BD3FF',
+        Transfer: '#FFB443',
+        Cash: '#B47CFF',
+    },
+    // Цвета фоновых сфер (shared/AmbientBackground, dc.html:33–36).
+    // From/Mid/To — стопы радиального градиента, Rim — внутренняя подсветка
+    // края, Depth — внутренняя тень объёма, Drop — падающая тень.
+    // Геометрия сфер одинакова в обеих темах и живёт в компоненте.
     AMBIENT: {
-        BlobA: '#00C12A',
-        BlobAOpacity: 0.26,
-        BlobB: '#B8F53C',
-        BlobBOpacity: 0.3,
-        BlobC: '#00C12A',
-        BlobCOpacity: 0.22,
+        Sphere1From: '#DBEFC0',
+        Sphere1Mid: '#BEDF97',
+        Sphere1To: '#A2CE77',
+        Sphere1Rim: 'rgba(233,252,196,0.9)',
+        Sphere1Depth: 'rgba(128,166,96,0.38)',
+        Sphere1Drop: 'rgba(140,175,108,0.28)',
+
+        Sphere2From: '#D5EBB6',
+        Sphere2Mid: '#B7DA8D',
+        Sphere2To: '#98C86B',
+        Sphere2Rim: 'rgba(236,253,203,0.9)',
+        Sphere2Depth: 'rgba(120,158,90,0.34)',
+        Sphere2Drop: 'rgba(140,175,108,0.24)',
+
+        Sphere3From: '#E1F3CA',
+        Sphere3Mid: '#C5E3A0',
+        Sphere3To: '#A9D27F',
+        Sphere3Rim: 'rgba(239,254,208,0.9)',
+        Sphere3Depth: 'rgba(128,166,96,0.32)',
+        Sphere3Drop: 'rgba(140,175,108,0.22)',
     },
     EFFECTS: {
         BlurTint: 'light' as 'light' | 'dark',
@@ -173,6 +212,11 @@ export const COLORS_DARK = {
     },
     BACKGROUND: {
         Primary: '#0A0E0B',
+        // В тёмной теме макета фон плоский — все три стопа совпадают,
+        // градиентный слой AmbientBackground рисует ровный #0A0E0B.
+        PrimaryGradientFrom: '#0A0E0B',
+        PrimaryGradientMid: '#0A0E0B',
+        PrimaryGradientTo: '#0A0E0B',
         Secondary: 'rgba(255,255,255,0.10)',
         Tertiary: 'rgba(255,255,255,0.06)',
         Invert: '#F2F6EE',
@@ -221,13 +265,35 @@ export const COLORS_DARK = {
         SliderTrack: 'rgba(255,255,255,0.14)',
         SliderFill: '#B8F53C',
     },
+    HISTORY: {
+        Fuel: '#00C12A',
+        Coffee: '#B8F53C',
+        PayBalance: '#9BD3FF',
+        Transfer: '#FFB443',
+        Cash: '#B47CFF',
+    },
+    // Те же сферы в тёмной теме: почти чёрная зелень с лаймовой подсветкой края.
     AMBIENT: {
-        BlobA: '#00C12A',
-        BlobAOpacity: 0.42,
-        BlobB: '#B8F53C',
-        BlobBOpacity: 0.34,
-        BlobC: '#00C12A',
-        BlobCOpacity: 0.26,
+        Sphere1From: '#20361A',
+        Sphere1Mid: '#152510',
+        Sphere1To: '#0B140A',
+        Sphere1Rim: 'rgba(184,245,60,0.5)',
+        Sphere1Depth: 'rgba(0,0,0,0.6)',
+        Sphere1Drop: 'rgba(0,0,0,0.5)',
+
+        Sphere2From: '#1D3218',
+        Sphere2Mid: '#13220F',
+        Sphere2To: '#090F08',
+        Sphere2Rim: 'rgba(184,245,60,0.45)',
+        Sphere2Depth: 'rgba(0,0,0,0.6)',
+        Sphere2Drop: 'rgba(0,0,0,0.45)',
+
+        Sphere3From: '#233A1C',
+        Sphere3Mid: '#162812',
+        Sphere3To: '#0A1209',
+        Sphere3Rim: 'rgba(184,245,60,0.42)',
+        Sphere3Depth: 'rgba(0,0,0,0.55)',
+        Sphere3Drop: 'rgba(0,0,0,0.4)',
     },
     EFFECTS: {
         BlurTint: 'dark' as 'light' | 'dark',

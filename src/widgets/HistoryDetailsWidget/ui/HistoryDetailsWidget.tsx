@@ -1,199 +1,111 @@
-import { ReactNode, memo, useCallback, useEffect, useMemo } from 'react'
+import { memo, useCallback, useEffect, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import {
     EHistoryItemType,
     THistoryDetailsScreenParams,
 } from '../../../entities/History'
-import { HistoryDetailsTitle } from '../../../entities/History/HistoryDetailsTitle'
-import {
-    OpenHistoryDetailsBuyOnCash,
-    OpenHistoryDetailsBuyOnCashSkeleton,
-    OpenHistoryDetailsPayBalance,
-    OpenHistoryDetailsTransferBalance,
-    OpenHistoryDetailsTransferBalanceSkeleton,
-} from '../../../features/History/OpenHistoryDetails'
-import { OpenHistoryDetailsPayBalanceSkeleton } from '../../../features/History/OpenHistoryDetails/ui/OpenHistoryDetailsPayBalanceSkeleton'
-import { SIZES, useFetchData } from '../../../shared'
-import Skeleton from '../../../shared/Skeleton/ui/Skeletons'
+import { SIZES, SPACING, divideNumber, useFetchData } from '../../../shared'
+import { BonusIcon } from '../../../shared/BonusIcon'
+import { CenteredState } from '../../../shared/CenteredState'
+import { ListGroup, ListRow } from '../../../shared/ListRow'
+import { StatusPill } from '../../../shared/StatusPill'
 import { Typography } from '../../../shared/Typography'
 import { historyDetailsWidgetApi } from '../api/historyDetailsWidgetApi'
+import { buildDetailsRows } from '../lib/buildDetailsRows'
+import { HistoryDetailsWidgetSkeleton } from './HistoryDetailsWidgetSkeleton'
 
 type Props = {
     params: Partial<THistoryDetailsScreenParams>
 }
 
+// Детали операции из макета (dc.html:315–324): центрированная шапка
+// «пилюля → сумма → дата» и одна стеклянная группа строк ключ/значение.
+// Раньше под каждый тип операции было своё тело со своей вёрсткой —
+// теперь их различает только buildDetailsRows.
 export const HistoryDetailsWidget = memo(({ params }: Props) => {
+    // Параметры маршрута приходят строками — приводим к енаму в одном месте
+    const type = params.type
+        ? (Number(params.type) as EHistoryItemType)
+        : undefined
+
     const { data, errorText, fetchData, isDataLoading } = useFetchData({
         apiCallback: historyDetailsWidgetApi.getDetails,
         errorText: 'Ошибка при получении данных',
     })
 
     const handleReloadData = useCallback(() => {
-        if (params.id && params.type) {
+        if (params.id && type) {
             fetchData({
-                args: { historyId: params.id, type: params.type },
+                args: { historyId: Number(params.id), type },
                 hideToastOnError: true,
             })
         }
-    }, [params])
+    }, [params.id, type])
 
-    const children = useMemo<ReactNode>(() => {
-        //@ts-ignore
-        switch (+params.type) {
-            case EHistoryItemType.PAY_BALANCE:
-                if (isDataLoading) {
-                    return <OpenHistoryDetailsPayBalanceSkeleton />
-                } else {
-                    if (data)
-                        return <OpenHistoryDetailsPayBalance sum={data?.sum} />
-                }
-
-            case EHistoryItemType.BUY_ON_CASH:
-                if (isDataLoading) {
-                    return <OpenHistoryDetailsBuyOnCashSkeleton />
-                } else {
-                    if (data && data.products)
-                        return (
-                            <OpenHistoryDetailsBuyOnCash
-                                total={data.sum}
-                                products={data.products.map((prod) => ({
-                                    name: prod.product_name,
-                                    price_one: prod.sale / prod.count,
-                                    sum: prod.sale,
-                                    unit: {
-                                        count: prod.count,
-                                        name: prod.unit_name,
-                                    },
-                                }))}
-                            />
-                        )
-                }
-
-            case EHistoryItemType.BUY_COFFEE:
-                if (isDataLoading) {
-                    return <OpenHistoryDetailsBuyOnCashSkeleton />
-                } else {
-                    if (data && data.coffee_name)
-                        return (
-                            <OpenHistoryDetailsBuyOnCash
-                                total={data.sum}
-                                products={[
-                                    {
-                                        name: data.coffee_name,
-                                        price_one: data.sum,
-                                        sum: data.sum,
-                                        unit: { count: 1, name: 'шт.' },
-                                    },
-                                ]}
-                            />
-                        )
-                }
-
-            case EHistoryItemType.TRANSFER_BALANCE:
-                if (isDataLoading) {
-                    return <OpenHistoryDetailsTransferBalanceSkeleton />
-                } else {
-                    if (data && data.receiver_name && data.receiver_phone)
-                        return (
-                            <OpenHistoryDetailsTransferBalance
-                                info={{
-                                    sum: data.sum,
-                                    transfer_name: data?.receiver_name,
-                                    transfer_phone: data?.receiver_phone,
-                                }}
-                            />
-                        )
-                }
-
-            case EHistoryItemType.FUEL_FILLING:
-                if (isDataLoading) {
-                    return <OpenHistoryDetailsBuyOnCashSkeleton />
-                } else {
-                    if (data && data.petrol)
-                        return (
-                            <OpenHistoryDetailsBuyOnCash
-                                total={data.sum}
-                                products={[
-                                    {
-                                        name: data.petrol.name,
-                                        price_one: data.petrol.price,
-                                        sum: data.sum,
-                                        unit: {
-                                            count: data.petrol.liters,
-                                            name: 'л.',
-                                        },
-                                    },
-                                ]}
-                            />
-                        )
-                }
-        }
-        return <></>
-    }, [params.type, data, isDataLoading])
+    const rows = useMemo(() => buildDetailsRows(type, data), [type, data])
 
     useEffect(() => {
         handleReloadData()
-    }, [params])
+    }, [handleReloadData])
+
+    const styles = StyleSheet.create({
+        header: {
+            alignItems: 'center',
+            gap: SPACING.SM * SIZES.PX,
+            paddingVertical: SPACING.SM * SIZES.PX,
+            marginBottom: SPACING.LG * SIZES.PX,
+        },
+        sum: {
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+    })
 
     if (errorText) {
         return (
-            <ErrorWhileFetchingForm
-                margins={{ mt: 100 }}
-                onReload={handleReloadData}
-                message={errorText}
+            <CenteredState
+                variant="error"
+                title="Не удалось загрузить операцию"
+                error={errorText}
+                action={{ label: 'Повторить', onPress: handleReloadData }}
             />
         )
     }
+
+    if (isDataLoading || !data) {
+        return <HistoryDetailsWidgetSkeleton />
+    }
+
     return (
         <View>
-            {isDataLoading ? (
-                <Skeleton
-                    margins={{ mb: 10 }}
-                    width={150 * SIZES.PX}
-                    height={30 * SIZES.PX}
+            <View style={styles.header}>
+                <StatusPill
+                    label={data.text}
+                    tone={data.sum > 0 ? 'positive' : 'destructive'}
                 />
-            ) : (
-                <Typography
-                    marginsPaddings={{ mb: 10 }}
-                    type="bodyAccentMedium"
-                >
-                    {data?.text}
+                {/* Сумма и знак валюты — одним цветом TEXT.Primary, как
+                    в макете: знак операции уже несёт пилюля выше */}
+                <View style={styles.sum}>
+                    <Typography type="h2">{divideNumber(data.sum)}</Typography>
+                    <BonusIcon mt={4} size={24} />
+                </View>
+                <Typography type="caption12" color="secondary">
+                    {data.date}
                 </Typography>
-            )}
-
-            <View style={styles.row}>
-                {isDataLoading ? (
-                    <>
-                        <Skeleton
-                            width={160 * SIZES.PX}
-                            height={15 * SIZES.PX}
-                        />
-                        <Skeleton
-                            width={120 * SIZES.PX}
-                            height={30 * SIZES.PX}
-                        />
-                    </>
-                ) : (
-                    <>
-                        <Typography type="caption">{data?.date}</Typography>
-
-                        <HistoryDetailsTitle
-                            //@ts-ignore
-                            type={+params.type}
-                        />
-                    </>
-                )}
             </View>
-            {children}
+
+            {rows.length > 0 && (
+                <ListGroup level="secondary">
+                    {rows.map((row, index) => (
+                        <ListRow
+                            key={`${row.k}-${index}`}
+                            title={row.k}
+                            value={row.v}
+                            last={index === rows.length - 1}
+                        />
+                    ))}
+                </ListGroup>
+            )}
         </View>
     )
-})
-
-const styles = StyleSheet.create({
-    row: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
 })
