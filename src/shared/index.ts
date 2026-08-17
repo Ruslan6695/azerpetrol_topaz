@@ -40,6 +40,7 @@ export * from "./common/config/lib/hooks/useNotifications";
 export * from "./common/config/lib/hooks/useSendFetch";
 export * from "./common/config/lib/hooks/useGetBalance";
 export * from "./common/config/lib/hooks/useFetchStoreData";
+export * from "./common/config/lib/hooks/useInput";
 export * from "./common/config/types/routeParams/TSuccessScreenParams";
 export * from "./common/config/constants/DOMEN";
 export * from "./common/config/lib/helpers/roundNumber";

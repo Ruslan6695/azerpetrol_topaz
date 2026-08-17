@@ -8,10 +8,10 @@ import {
     IUser,
     TAuthStep,
     useFetchData,
+    useInput,
     UserStore,
     useSendFetch,
 } from '../../../shared'
-import { useInput } from '../../../shared/CustomInput'
 import { showError } from '../../../shared/ToastComponent'
 import { loginWidgetApi } from '../api/loginWidgetApi'
 import { GetCaptcha } from '../../../features/GetCaptcha'
