@@ -8,6 +8,7 @@ import { ESCREENS } from '../../../../shared'
 import { CenteredState } from '../../../../shared/CenteredState'
 import { ListGroup } from '../../../../shared/ListRow'
 import { MPLayout } from '../../../../shared/MpLayout'
+import { StaggerItem, useStagger } from '../../../../shared/Stagger'
 
 type Props = {
     items: IHistoryItem[] | undefined
@@ -18,6 +19,10 @@ type Props = {
 // чужого ScrollView измерения FlashList не работают.
 export const MapHistoryItems = memo(({ items }: Props) => {
     const router = useRouter()
+    // Каскад играет только на первой странице: догруженные пагинацией строки
+    // монтируются позже окна и появляются без задержки, а уже отрисованные
+    // не перемонтируются и анимацию не повторяют.
+    const getEntering = useStagger()
 
     const handleOpenDetails = useCallback((item: IHistoryItem) => {
         router.navigate({
@@ -39,12 +44,13 @@ export const MapHistoryItems = memo(({ items }: Props) => {
         <MPLayout mt={12}>
             <ListGroup>
                 {items.map((item, index) => (
-                    <HistoryItem
-                        key={item.id}
-                        last={index === items.length - 1}
-                        onPress={() => handleOpenDetails(item)}
-                        {...item}
-                    />
+                    <StaggerItem key={item.id} entering={getEntering(index)}>
+                        <HistoryItem
+                            last={index === items.length - 1}
+                            onPress={() => handleOpenDetails(item)}
+                            {...item}
+                        />
+                    </StaggerItem>
                 ))}
             </ListGroup>
         </MPLayout>

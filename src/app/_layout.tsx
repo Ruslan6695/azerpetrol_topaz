@@ -158,9 +158,26 @@ export default function Layout() {
                 </Stack>
             ) : (
                 <>
-                    <Stack>
+                    <Stack
+                        screenOptions={{
+                            // ios_from_right даёт одинаковый iOS-подобный слайд
+                            // на обеих платформах: на iOS резолвится в default
+                            // (со свайпом назад), на Android рисует тот же
+                            // параллакс вместо material-перехода.
+                            animation: 'ios_from_right',
+                            // Без этого на Android между экранами моргает
+                            // системный фон.
+                            contentStyle: {
+                                backgroundColor: COLORS.BACKGROUND.Primary,
+                            },
+                        }}
+                    >
                         <Stack.Screen
-                            options={{ headerShown: false }}
+                            options={{
+                                headerShown: false,
+                                // Пустой роут-редирект, анимировать нечего.
+                                animation: 'none',
+                            }}
                             name="index"
                         />
                         <Stack.Screen
@@ -195,6 +212,14 @@ export default function Layout() {
                                 title: 'Пополнить баланс',
 
                                 headerShown: false,
+                                // Экран итога — это смена состояния, а не
+                                // следующая страница: он проявляется, а не
+                                // въезжает сбоку. Свайпом назад в уже
+                                // отправленную форму возвращаться нельзя.
+                                animation: 'fade',
+                                animationDuration: 260,
+                                animationTypeForReplace: 'push',
+                                gestureEnabled: false,
                             }}
                             name={'success/index'}
                         />
@@ -236,6 +261,11 @@ export default function Layout() {
                                 // Свайп назад увёл бы с идущего налива:
                                 // выход с этого роута только кнопками шага.
                                 gestureEnabled: false,
+                                // Налив перехватывает экран целиком, поэтому
+                                // проявляется, а не приезжает сбоку как
+                                // «ещё одна страница».
+                                animation: 'fade',
+                                animationDuration: 300,
                             }}
                             name={'fuelLoading/index'}
                         />

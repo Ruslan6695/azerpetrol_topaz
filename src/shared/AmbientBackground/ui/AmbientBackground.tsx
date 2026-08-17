@@ -1,8 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { memo } from 'react'
+import { memo, useId } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { SIZES } from '../../common/config/constants/sizes'
+import { EColorThemes } from '../../common/config/enums/EColorThemes'
 import { ThemeStore } from '../../common/model/themeStore'
 
 // Угол фонового градиента макета: CSS `165deg` — направление
@@ -26,48 +27,89 @@ type SphereGeometry = {
     /** Центр радиального градиента — CSS `circle at cx cy` */
     cx: string
     cy: string
-    /** Положение средней точки градиента */
-    mid: string
-    /** Внутренняя подсветка края, внутренняя тень объёма, падающая тень */
-    rim: Offset
-    depth: Offset
-    drop: Offset
 }
 
-// Геометрия сфер из макета (dc.html:29–31 и 34–36). Одинакова в обеих темах —
-// по теме различаются только цвета, они лежат в COLORS.AMBIENT.
+type SphereLighting = {
+    /** Положение средней точки градиента */
+    mid: string
+    /** Внутренняя подсветка края */
+    rim: Offset
+    /** Внутреннее лаймовое свечение — есть только в тёмной теме */
+    glow?: Offset
+    /** Внутренняя тень объёма */
+    depth: Offset
+    /** Падающая тень — есть только в светлой теме */
+    drop?: Offset
+}
+
+// Размер, позиция и центр градиента сфер из макета (dc.html:29–31 и 34–36) —
+// одинаковы в обеих темах.
 const SPHERES: SphereGeometry[] = [
     {
         size: 430,
         position: { top: -230, right: -130 },
         cx: '32%',
         cy: '28%',
-        mid: '45%',
-        rim: { x: -14, y: -22, blur: 46 },
-        depth: { x: 18, y: 24, blur: 50 },
-        drop: { x: 0, y: 24, blur: 70 },
     },
     {
         size: 560,
         position: { top: 210, left: -260 },
         cx: '68%',
         cy: '26%',
-        mid: '48%',
-        rim: { x: 16, y: -20, blur: 52 },
-        depth: { x: -18, y: 26, blur: 56 },
-        drop: { x: 0, y: 30, blur: 80 },
     },
     {
         size: 480,
         position: { bottom: -250, right: -160 },
         cx: '40%',
         cy: '22%',
-        mid: '46%',
-        rim: { x: -10, y: -24, blur: 48 },
-        depth: { x: 16, y: 20, blur: 48 },
-        drop: { x: 0, y: -20, blur: 70 },
     },
 ]
+
+// Светотень по темам: в светлой это размытый ореол по краю, тень объёма и
+// падающая тень; в тёмной — лаймовый волосок по краю (нулевое размытие),
+// мягкое свечение внутрь и глубокая внутренняя тень, падающей нет.
+const LIGHTING: { light: SphereLighting[]; dark: SphereLighting[] } = {
+    light: [
+        {
+            mid: '45%',
+            rim: { x: -14, y: -22, blur: 46 },
+            depth: { x: 18, y: 24, blur: 50 },
+            drop: { x: 0, y: 24, blur: 70 },
+        },
+        {
+            mid: '48%',
+            rim: { x: 16, y: -20, blur: 52 },
+            depth: { x: -18, y: 26, blur: 56 },
+            drop: { x: 0, y: 30, blur: 80 },
+        },
+        {
+            mid: '46%',
+            rim: { x: -10, y: -24, blur: 48 },
+            depth: { x: 16, y: 20, blur: 48 },
+            drop: { x: 0, y: -20, blur: 70 },
+        },
+    ],
+    dark: [
+        {
+            mid: '50%',
+            rim: { x: 1.5, y: -2, blur: 0 },
+            glow: { x: 5, y: -7, blur: 14 },
+            depth: { x: -14, y: 18, blur: 40 },
+        },
+        {
+            mid: '50%',
+            rim: { x: -1.5, y: 0, blur: 0 },
+            glow: { x: -6, y: -4, blur: 14 },
+            depth: { x: 16, y: 16, blur: 40 },
+        },
+        {
+            mid: '50%',
+            rim: { x: 1.5, y: 2, blur: 0 },
+            glow: { x: 5, y: 7, blur: 14 },
+            depth: { x: -14, y: -16, blur: 40 },
+        },
+    ],
+}
 
 const scalePosition = ({
     top,
@@ -91,12 +133,18 @@ const shadow = (offset: Offset, color: string, inset?: boolean) => ({
 
 type SphereProps = {
     geometry: SphereGeometry
+    lighting: SphereLighting
     /** Стопы радиального градиента: центр, средняя точка, край */
     colors: [string, string, string]
     rimColor: string
+    glowColor: string
     depthColor: string
     dropColor: string
-    /** Уникальный суффикс id градиента: id в SVG глобальны на всё дерево */
+    /**
+     * Уникальный суффикс id градиента: id в SVG глобальны на всё дерево.
+     * Обязан различаться и между экземплярами AmbientBackground — их бывает
+     * два одновременно, см. комментарий у instanceId ниже.
+     */
     id: string
 }
 
@@ -107,8 +155,10 @@ type SphereProps = {
 const Sphere = memo(
     ({
         geometry,
+        lighting,
         colors,
         rimColor,
+        glowColor,
         depthColor,
         dropColor,
         id,
@@ -124,14 +174,19 @@ const Sphere = memo(
                 height: box,
                 borderRadius: half,
                 ...scalePosition(geometry.position),
-                boxShadow: [shadow(geometry.drop, dropColor)],
+                ...(lighting.drop && {
+                    boxShadow: [shadow(lighting.drop, dropColor)],
+                }),
             },
             lighting: {
                 ...StyleSheet.absoluteFillObject,
                 borderRadius: half,
                 boxShadow: [
-                    shadow(geometry.rim, rimColor, true),
-                    shadow(geometry.depth, depthColor, true),
+                    shadow(lighting.rim, rimColor, true),
+                    ...(lighting.glow
+                        ? [shadow(lighting.glow, glowColor, true)]
+                        : []),
+                    shadow(lighting.depth, depthColor, true),
                 ],
             },
         })
@@ -150,7 +205,7 @@ const Sphere = memo(
                             r="100%"
                         >
                             <Stop offset="0%" stopColor={colors[0]} />
-                            <Stop offset={geometry.mid} stopColor={colors[1]} />
+                            <Stop offset={lighting.mid} stopColor={colors[1]} />
                             <Stop offset="100%" stopColor={colors[2]} />
                         </RadialGradient>
                     </Defs>
@@ -173,9 +228,33 @@ const Sphere = memo(
 // дизайн убрал вместе с самими блобами.
 export const AmbientBackground = memo(() => {
     const COLORS = ThemeStore.useCOLORS()
+    const theme = ThemeStore.useTheme()
 
+    // id градиентов уникальны на экземпляр, а не только на сферу. Во время
+    // перехода на внутреннюю страницу смонтировано сразу два фона — свой у
+    // группы табов и свой у InternalPagesLayout. С общими id ссылка
+    // url(#sphere-N) переставала резолвиться, и сфера падала на дефолтную
+    // заливку SVG — чёрную. Двоеточия из useId в id класть нельзя.
+    const instanceId = useId().replace(/[^a-zA-Z0-9]/g, '')
+
+    const styles = StyleSheet.create({
+        clip: {
+            ...StyleSheet.absoluteFillObject,
+            overflow: 'hidden',
+        },
+    })
+
+    const lighting =
+        theme === EColorThemes.DARK ? LIGHTING.dark : LIGHTING.light
+
+    // Сферы намеренно вылезают за края экрана (top: -230, left: -260 и т.п.),
+    // поэтому фон обязан их обрезать. Без overflow: 'hidden' торчащая часть
+    // видна во время нативного перехода: въезжающий экран стоит правее, и сфера,
+    // выходящая за его левый край, рисуется поверх уезжающего экрана и уезжает
+    // вместе с ним влево. На неподвижном экране этого не заметно — там
+    // вылезающая часть просто за границей дисплея.
     return (
-        <>
+        <View pointerEvents="none" style={styles.clip}>
             <LinearGradient
                 pointerEvents="none"
                 colors={
@@ -191,41 +270,47 @@ export const AmbientBackground = memo(() => {
                 style={StyleSheet.absoluteFill}
             />
             <Sphere
-                id="1"
+                id={`${instanceId}-1`}
                 geometry={SPHERES[0]}
+                lighting={lighting[0]}
                 colors={[
                     COLORS.AMBIENT.Sphere1From,
                     COLORS.AMBIENT.Sphere1Mid,
                     COLORS.AMBIENT.Sphere1To,
                 ]}
                 rimColor={COLORS.AMBIENT.Sphere1Rim}
+                glowColor={COLORS.AMBIENT.Sphere1Glow}
                 depthColor={COLORS.AMBIENT.Sphere1Depth}
                 dropColor={COLORS.AMBIENT.Sphere1Drop}
             />
             <Sphere
-                id="2"
+                id={`${instanceId}-2`}
                 geometry={SPHERES[1]}
+                lighting={lighting[1]}
                 colors={[
                     COLORS.AMBIENT.Sphere2From,
                     COLORS.AMBIENT.Sphere2Mid,
                     COLORS.AMBIENT.Sphere2To,
                 ]}
                 rimColor={COLORS.AMBIENT.Sphere2Rim}
+                glowColor={COLORS.AMBIENT.Sphere2Glow}
                 depthColor={COLORS.AMBIENT.Sphere2Depth}
                 dropColor={COLORS.AMBIENT.Sphere2Drop}
             />
             <Sphere
-                id="3"
+                id={`${instanceId}-3`}
                 geometry={SPHERES[2]}
+                lighting={lighting[2]}
                 colors={[
                     COLORS.AMBIENT.Sphere3From,
                     COLORS.AMBIENT.Sphere3Mid,
                     COLORS.AMBIENT.Sphere3To,
                 ]}
                 rimColor={COLORS.AMBIENT.Sphere3Rim}
+                glowColor={COLORS.AMBIENT.Sphere3Glow}
                 depthColor={COLORS.AMBIENT.Sphere3Depth}
                 dropColor={COLORS.AMBIENT.Sphere3Drop}
             />
-        </>
+        </View>
     )
 })

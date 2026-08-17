@@ -1,10 +1,15 @@
 import { useRouter } from 'expo-router'
 import { memo, useCallback } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { EColorThemes } from '../../../common/config/enums/EColorThemes'
 import { PRESS_SCALE } from '../../../common/config/constants/PRESS_SCALE'
 import { RADII } from '../../../common/config/constants/RADII'
 import { SIZES } from '../../../common/config/constants/sizes'
+import {
+    TAB_BG_TRANSITION,
+    TAB_ICON_TRANSITION,
+} from '../../../common/config/lib/motion/transitions'
 import { ThemeStore } from '../../../common/model/themeStore'
 import { Icon } from '../../../Icons'
 import { PressableScale } from '../../../PressableScale'
@@ -36,9 +41,19 @@ export const BottomMenuItem = memo(
                 borderRadius: RADII.PILL,
                 paddingVertical: 4 * SIZES.PX,
                 paddingHorizontal: 16 * SIZES.PX,
+                // Гаснем в лайм с нулевой альфой, а не в 'transparent':
+                // переход через rgba(0,0,0,0) дал бы тёмный подтон на середине.
                 backgroundColor: isActive
                     ? COLORS.ACCENT.Lime
-                    : 'transparent',
+                    : COLORS.ACCENT.LimeClear,
+            },
+            // Активная иконка лежит поверх неактивной и проявляется по opacity:
+            // color у Icon — проп <Svg>, транзишеном его не взять.
+            iconActive: {
+                ...StyleSheet.absoluteFillObject,
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: isActive ? 1 : 0,
             },
         })
 
@@ -55,17 +70,18 @@ export const BottomMenuItem = memo(
                 scaleTo={PRESS_SCALE.TAB}
                 style={styles.container}
             >
-                <View style={styles.iconPill}>
-                    <Icon
-                        name={name}
-                        size={22}
-                        color={
-                            isActive
-                                ? COLORS.ACCENT.OnLime
-                                : COLORS.TEXT.Secondary
-                        }
-                    />
-                </View>
+                <Animated.View style={[styles.iconPill, TAB_BG_TRANSITION]}>
+                    <Icon name={name} size={22} color={COLORS.TEXT.Secondary} />
+                    <Animated.View
+                        style={[styles.iconActive, TAB_ICON_TRANSITION]}
+                    >
+                        <Icon
+                            name={name}
+                            size={22}
+                            color={COLORS.ACCENT.OnLime}
+                        />
+                    </Animated.View>
+                </Animated.View>
                 <Typography type="tabLabel" customColor={labelColor}>
                     {title}
                 </Typography>

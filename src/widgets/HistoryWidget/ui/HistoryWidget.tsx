@@ -6,6 +6,7 @@ import {
 } from '../../../features/History/GetHistoryPieChart'
 import { MapHistoryItems } from '../../../features/History/MapHistoryItems'
 import { SIZES, SPACING, useFetchData } from '../../../shared'
+import { ContentIn } from '../../../shared/ContentIn'
 import { CenteredState } from '../../../shared/CenteredState'
 import { RangePicker, useRangePicker } from '../../../shared/RangePicker'
 import { historyWidgetApi } from '../api/historyWidgetApi'
@@ -129,7 +130,7 @@ export const HistoryWidget = memo(() => {
     }
 
     return (
-        <>
+        <ContentIn>
             <RangePicker
                 onResetDate={handleResetDate}
                 dates={dates}
@@ -141,6 +142,6 @@ export const HistoryWidget = memo(() => {
             </View>
 
             <MapHistoryItems items={historyItemsData?.journal} />
-        </>
+        </ContentIn>
     )
 })

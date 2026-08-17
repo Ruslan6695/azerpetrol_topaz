@@ -7,6 +7,7 @@ import { getArticleApi } from '../api/getArticleApi'
 import { ARTICLE_CARD_PADDING } from '../config/constants/ARTICLE_CARD'
 import { EGetAricleIds } from '../config/enums/EGetAricleIds'
 import { GetArticleSkeleton } from './GetArticleSkeleton'
+import { ContentIn } from '../../../shared/ContentIn'
 
 type Props = {
     id: EGetAricleIds
@@ -50,12 +51,14 @@ export const GetArticle = memo(({ id }: Props) => {
     }
 
     return (
-        <GlassCard
-            variant="glass2"
-            radius={RADII.CARD}
-            padding={ARTICLE_CARD_PADDING}
-        >
-            <HtmlContent html={data.html_text} />
-        </GlassCard>
+        <ContentIn>
+            <GlassCard
+                variant="glass2"
+                radius={RADII.CARD}
+                padding={ARTICLE_CARD_PADDING}
+            >
+                <HtmlContent html={data.html_text} />
+            </GlassCard>
+        </ContentIn>
     )
 })

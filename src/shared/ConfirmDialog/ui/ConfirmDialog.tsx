@@ -1,8 +1,10 @@
 import { ReactNode, memo, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
 import { SPACING } from '../../common/config/constants/SPACING'
+import { popIn } from '../../common/config/lib/motion/animations'
 import { ThemeStore } from '../../common/model/themeStore'
 import { CustomModal } from '../../CustomModal'
 import { PillButton } from '../../PillButton'
@@ -83,13 +85,15 @@ export const ConfirmDialog = memo(
                 radius={RADII.HERO_SM}
             >
                 <View style={styles.content}>
-                    <View style={styles.iconCircle}>
+                    {/* Круг «попает» пружинистой кривой макета — той же,
+                        что у ручки свитча. */}
+                    <Animated.View style={styles.iconCircle} entering={popIn()}>
                         {icon ?? (
                             <Typography type="h5" customColor={accentColor}>
                                 !
                             </Typography>
                         )}
-                    </View>
+                    </Animated.View>
 
                     <Typography type="num18" textAlign="center">
                         {title}

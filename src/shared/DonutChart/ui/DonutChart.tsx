@@ -1,9 +1,13 @@
-import { ReactNode, memo } from 'react'
+import { ReactNode, memo, useEffect } from 'react'
 import { StyleSheet, View } from 'react-native'
+import { useSharedValue, withTiming } from 'react-native-reanimated'
 import Svg, { Circle } from 'react-native-svg'
+import { MOTION } from '../../common/config/constants/MOTION'
 import { SIZES } from '../../common/config/constants/sizes'
+import { EASING } from '../../common/config/lib/motion/easing'
 import { ThemeStore } from '../../common/model/themeStore'
 import { IDonutSegment } from '../config/interfaces/IDonutSegment'
+import { DonutArc } from './DonutArc'
 
 type Props = {
     segments: IDonutSegment[]
@@ -59,6 +63,22 @@ export const DonutChart = memo(
                   })
             : []
 
+        // Кольцо рисуется одной линией по часовой. Подпись набора нужна,
+        // чтобы перезапускать отрисовку при смене данных, но не на каждом
+        // рендере: массив arcs пересоздаётся всегда.
+        const signature = arcs
+            .map((arc) => `${arc.color}:${Math.round(arc.length)}`)
+            .join(',')
+        const progress = useSharedValue(0)
+
+        useEffect(() => {
+            progress.value = 0
+            progress.value = withTiming(1, {
+                duration: MOTION.ARC_DRAW,
+                easing: EASING.SCREEN,
+            })
+        }, [signature, progress])
+
         const styles = StyleSheet.create({
             container: {
                 width: box,
@@ -90,16 +110,16 @@ export const DonutChart = memo(
                         />
                     ) : (
                         arcs.map((arc) => (
-                            <Circle
+                            <DonutArc
                                 key={arc.key}
-                                cx={box / 2}
-                                cy={box / 2}
-                                r={radius}
-                                fill="none"
-                                stroke={arc.color}
-                                strokeWidth={stroke}
-                                strokeDasharray={`${arc.length} ${circumference}`}
-                                strokeDashoffset={-arc.offset}
+                                progress={progress}
+                                box={box}
+                                radius={radius}
+                                stroke={stroke}
+                                color={arc.color}
+                                circumference={circumference}
+                                start={arc.offset}
+                                length={arc.length}
                             />
                         ))
                     )}

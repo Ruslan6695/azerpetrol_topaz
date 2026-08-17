@@ -6,6 +6,8 @@ import { WithoutPromotionsAndBonusesBlock } from '../../../entities/PromotionsAn
 import { RADII, SIZES, SPACING, useFetchData } from '../../../shared'
 import { Skeleton } from '../../../shared/Skeleton'
 import { promotionsAndBonusesWidgetApi } from '../api/promotionsAndBonusesWidgetApi'
+import { ContentIn } from '../../../shared/ContentIn'
+import { StaggerItem, useStagger } from '../../../shared/Stagger'
 
 type Props = {}
 
@@ -14,6 +16,7 @@ type Props = {}
 const CARD_HEIGHT = 150
 
 export const PromotionsAndBonusesWidget = memo((props: Props) => {
+    const getEntering = useStagger()
     const { data, errorText, fetchData, isDataLoading } = useFetchData({
         apiCallback: promotionsAndBonusesWidgetApi.getPromotions,
         errorText: 'Ошибка при получении данных',
@@ -44,7 +47,7 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
     )
 
     return (
-        <>
+        <ContentIn>
             {/* Заголовок «Акции и Бонусы» рисует шапка экрана
                 (InternalPagesHeader через SCREENS_TITLES) — свой не нужен. */}
             {errorText ? (
@@ -68,12 +71,17 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
                     {data?.promotions.length === 0 ? (
                         <WithoutPromotionsAndBonusesBlock />
                     ) : (
-                        data?.promotions?.map((pr) => (
-                            <PromotionsAndBonusesItem {...pr} key={pr.id} />
+                        data?.promotions?.map((pr, index) => (
+                            <StaggerItem
+                                key={pr.id}
+                                entering={getEntering(index)}
+                            >
+                                <PromotionsAndBonusesItem {...pr} />
+                            </StaggerItem>
                         ))
                     )}
                 </View>
             )}
-        </>
+        </ContentIn>
     )
 })

@@ -1,3 +1,5 @@
+import { MOTION } from './MOTION'
+
 // Масштаб при нажатии из макета «21 Век»: чем крупнее элемент, тем слабее отклик.
 // Применяется через shared/PressableScale.
 export const PRESS_SCALE = {
@@ -10,4 +12,6 @@ export const PRESS_SCALE = {
     TAB: 0.88,
 } as const
 
-export const PRESS_DURATION = 150
+// transition: transform .15s из макета. Живёт в общей шкале движения,
+// здесь только реэкспорт под привычным именем.
+export const PRESS_DURATION = MOTION.PRESS

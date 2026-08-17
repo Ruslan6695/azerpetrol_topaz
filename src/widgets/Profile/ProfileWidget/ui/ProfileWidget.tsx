@@ -5,6 +5,7 @@ import { Glass } from '../../../../shared/GlassCard'
 import { Icon } from '../../../../shared/Icons'
 import { Typography } from '../../../../shared/Typography'
 import { ProfileWidgetSkeleton } from './ProfileWidgetSkeleton'
+import { ContentIn } from '../../../../shared/ContentIn'
 
 type Props = {
     name: string | undefined
@@ -32,7 +33,7 @@ export const ProfileWidget = memo(({ name, phone, isDataLoading }: Props) => {
     })
 
     return (
-        <View style={styles.container}>
+        <ContentIn style={styles.container}>
             <Glass level="secondary" radius={(AVATAR_SIZE / 2) * SIZES.PX}>
                 <View style={styles.avatar}>
                     <Icon name="person" size={40} />
@@ -49,6 +50,6 @@ export const ProfileWidget = memo(({ name, phone, isDataLoading }: Props) => {
                     </Typography>
                 </>
             )}
-        </View>
+        </ContentIn>
     )
 })

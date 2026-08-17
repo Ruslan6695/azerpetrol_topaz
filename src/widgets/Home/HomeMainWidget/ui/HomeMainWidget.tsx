@@ -24,6 +24,7 @@ import {
     useFetchData,
     useFetchStoreData,
 } from '../../../../shared'
+import { ContentIn } from '../../../../shared/ContentIn'
 import { homeMainWidgetApi } from '../api/homeMainWidgetApi'
 import { IHomeMainwidgetData } from '../config/interfaces/IHomeMainwidgetData'
 import { HomeStore } from '../model/HomeStore'
@@ -129,7 +130,7 @@ export const HomeMainWidget = memo((props: Props) => {
         ) : undefined
 
     return (
-        <View style={styles.container}>
+        <ContentIn style={styles.container}>
             {isTokenRefreshed && <ShowPromotionsModal />}
 
             <BalanceCard
@@ -181,6 +182,6 @@ export const HomeMainWidget = memo((props: Props) => {
             )}
 
             <ShowMainPromotions />
-        </View>
+        </ContentIn>
     )
 })

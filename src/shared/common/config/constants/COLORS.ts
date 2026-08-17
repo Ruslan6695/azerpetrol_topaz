@@ -49,6 +49,10 @@ export const COLORS = {
         SolidPrimary: '#E6F4D6',
         SolidSecondary: '#ECF6E0',
         Surface: '#F2F5EC',
+        // Белая поверхность, одинаковая в обеих темах. Нужна модалке QR-кода:
+        // вокруг кода обязана быть светлая зона тишины, иначе в тёмной теме
+        // сканеры на кассе читают его хуже.
+        SurfaceLight: '#FFFFFF',
         // Тонировки внутри плитки связанного аккаунта: круг под иконкой и
         // кружок «✕». Лежат поверх лайма или стекла, поэтому в обеих темах
         // одинаковы — как ACCENT.Lime и STATE.DestructiveSoft.
@@ -58,6 +62,11 @@ export const COLORS = {
     ACCENT: {
         Primary: '#00C12A',
         Lime: '#B8F53C',
+        // Тот же лайм с нулевой альфой. Нужен как «выключенное» состояние там,
+        // где фон перетекает в лайм (пилюля таба, сегмент, чип): переход из
+        // 'transparent' идёт через rgba(0,0,0,0) и даёт тёмный подтон на
+        // середине анимации, а из LimeClear — чистый.
+        LimeClear: 'rgba(184,245,60,0)',
         // Текст на лайме — всегда тёмный, в обеих темах.
         OnLime: '#0A0E0B',
         // Фон бейджа дизельного топлива. Как и лайм — тонировка бейджа,
@@ -114,13 +123,16 @@ export const COLORS = {
     },
     // Цвета фоновых сфер (shared/AmbientBackground, dc.html:33–36).
     // From/Mid/To — стопы радиального градиента, Rim — внутренняя подсветка
-    // края, Depth — внутренняя тень объёма, Drop — падающая тень.
-    // Геометрия сфер одинакова в обеих темах и живёт в компоненте.
+    // края, Glow — лаймовое свечение внутрь, Depth — внутренняя тень объёма,
+    // Drop — падающая тень. Геометрия сфер живёт в компоненте: общая часть
+    // (размер, позиция, центр градиента) одна на обе темы, светотень — своя.
+    // В светлой теме отдельного свечения нет, его слой не рисуется.
     AMBIENT: {
         Sphere1From: '#DBEFC0',
         Sphere1Mid: '#BEDF97',
         Sphere1To: '#A2CE77',
         Sphere1Rim: 'rgba(233,252,196,0.9)',
+        Sphere1Glow: 'transparent',
         Sphere1Depth: 'rgba(128,166,96,0.38)',
         Sphere1Drop: 'rgba(140,175,108,0.28)',
 
@@ -128,6 +140,7 @@ export const COLORS = {
         Sphere2Mid: '#B7DA8D',
         Sphere2To: '#98C86B',
         Sphere2Rim: 'rgba(236,253,203,0.9)',
+        Sphere2Glow: 'transparent',
         Sphere2Depth: 'rgba(120,158,90,0.34)',
         Sphere2Drop: 'rgba(140,175,108,0.24)',
 
@@ -135,6 +148,7 @@ export const COLORS = {
         Sphere3Mid: '#C5E3A0',
         Sphere3To: '#A9D27F',
         Sphere3Rim: 'rgba(239,254,208,0.9)',
+        Sphere3Glow: 'transparent',
         Sphere3Depth: 'rgba(128,166,96,0.32)',
         Sphere3Drop: 'rgba(140,175,108,0.22)',
     },
@@ -183,12 +197,14 @@ export const COLORS_DARK = {
         SolidPrimary: '#12170F',
         SolidSecondary: '#1A1F17',
         Surface: '#141A15',
+        SurfaceLight: '#FFFFFF',
         TileAvatar: 'rgba(255,255,255,0.25)',
         TileClose: 'rgba(0,0,0,0.2)',
     },
     ACCENT: {
         Primary: '#00C12A',
         Lime: '#B8F53C',
+        LimeClear: 'rgba(184,245,60,0)',
         OnLime: '#0A0E0B',
         Diesel: '#9BD3FF',
         PrimarySoft: 'rgba(0, 193, 42, 0.16)',
@@ -227,27 +243,33 @@ export const COLORS_DARK = {
         Cash: '#B47CFF',
     },
     // Те же сферы в тёмной теме: почти чёрная зелень с лаймовой подсветкой края.
+    // Сферы стали темнее, а подсветка края — тонким лаймовым волоском вместо
+    // размытого ореола; падающей тени у них больше нет (Drop прозрачный),
+    // объём держат внутренние тени.
     AMBIENT: {
-        Sphere1From: '#20361A',
-        Sphere1Mid: '#152510',
-        Sphere1To: '#0B140A',
-        Sphere1Rim: 'rgba(184,245,60,0.5)',
-        Sphere1Depth: 'rgba(0,0,0,0.6)',
-        Sphere1Drop: 'rgba(0,0,0,0.5)',
+        Sphere1From: '#16260F',
+        Sphere1Mid: '#0E1A0A',
+        Sphere1To: '#070D06',
+        Sphere1Rim: 'rgba(184,245,60,0.95)',
+        Sphere1Glow: 'rgba(184,245,60,0.2)',
+        Sphere1Depth: 'rgba(0,0,0,0.7)',
+        Sphere1Drop: 'transparent',
 
-        Sphere2From: '#1D3218',
-        Sphere2Mid: '#13220F',
-        Sphere2To: '#090F08',
-        Sphere2Rim: 'rgba(184,245,60,0.45)',
-        Sphere2Depth: 'rgba(0,0,0,0.6)',
-        Sphere2Drop: 'rgba(0,0,0,0.45)',
+        Sphere2From: '#142310',
+        Sphere2Mid: '#0C170A',
+        Sphere2To: '#060B05',
+        Sphere2Rim: 'rgba(184,245,60,0.9)',
+        Sphere2Glow: 'rgba(184,245,60,0.18)',
+        Sphere2Depth: 'rgba(0,0,0,0.7)',
+        Sphere2Drop: 'transparent',
 
-        Sphere3From: '#233A1C',
-        Sphere3Mid: '#162812',
-        Sphere3To: '#0A1209',
-        Sphere3Rim: 'rgba(184,245,60,0.42)',
-        Sphere3Depth: 'rgba(0,0,0,0.55)',
-        Sphere3Drop: 'rgba(0,0,0,0.4)',
+        Sphere3From: '#182A12',
+        Sphere3Mid: '#0F1C0B',
+        Sphere3To: '#070E06',
+        Sphere3Rim: 'rgba(184,245,60,0.9)',
+        Sphere3Glow: 'rgba(184,245,60,0.18)',
+        Sphere3Depth: 'rgba(0,0,0,0.65)',
+        Sphere3Drop: 'transparent',
     },
     EFFECTS: {
         BlurTint: 'dark' as 'light' | 'dark',

@@ -15,6 +15,9 @@ export const QrCodeModal = memo(({ handleClose, isOpened, value }: Props) => {
         <CustomModal
             closeOutside
             bgDark
+            // Код всегда чёрный на белом, поэтому и подложка вокруг него белая
+            // в обеих темах: тёмная зона тишины хуже читается сканером кассы.
+            lightSurface
             handleClose={handleClose}
             isModalOpened={isOpened}
         >

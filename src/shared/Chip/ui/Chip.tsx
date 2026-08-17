@@ -3,6 +3,7 @@ import { StyleProp, StyleSheet, ViewStyle } from 'react-native'
 import { PRESS_SCALE } from '../../common/config/constants/PRESS_SCALE'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { SEGMENT_BG_TRANSITION } from '../../common/config/lib/motion/transitions'
 import { ThemeStore } from '../../common/model/themeStore'
 import { PressableScale } from '../../PressableScale'
 import { Typography } from '../../Typography'
@@ -32,11 +33,13 @@ export const Chip = memo(
 
         // Выбранный чип в макете — сплошной лайм без рамки.
         const isLime = selected || variant === 'lime'
+        // Прозрачный фон берём лаймом с нулевой альфой: чип перетекает в лайм,
+        // а переход через rgba(0,0,0,0) дал бы тёмный подтон на середине.
         const backgroundColor = isLime
             ? COLORS.ACCENT.Lime
             : variant === 'outline'
-            ? 'transparent'
-            : COLORS.GLASS.Primary
+              ? COLORS.ACCENT.LimeClear
+              : COLORS.GLASS.Primary
         const textColor = isLime ? COLORS.ACCENT.OnLime : COLORS.TEXT.Primary
 
         const styles = StyleSheet.create({
@@ -58,7 +61,7 @@ export const Chip = memo(
                 onPress={onPress}
                 disabled={!onPress}
                 scaleTo={PRESS_SCALE.CHIP}
-                style={[styles.container, style]}
+                style={[styles.container, SEGMENT_BG_TRANSITION, style]}
             >
                 {icon}
                 <Typography type="label13" customColor={textColor}>

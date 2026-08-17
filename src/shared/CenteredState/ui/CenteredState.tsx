@@ -1,8 +1,10 @@
 import { ReactNode, memo } from 'react'
 import { StyleSheet, View } from 'react-native'
+import Animated from 'react-native-reanimated'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
 import { SPACING } from '../../common/config/constants/SPACING'
+import { contentIn, popIn } from '../../common/config/lib/motion/animations'
 import { ThemeStore } from '../../common/model/themeStore'
 import { PillButton, TPillButtonVariants } from '../../PillButton'
 import { Typography } from '../../Typography'
@@ -98,20 +100,27 @@ export const CenteredState = memo(
 
         return (
             <View style={styles.container}>
-                <View style={styles.circle}>
+                {/* Круг «попает» пружинистой кривой макета, остальное
+                    подтягивается следом лесенкой. */}
+                <Animated.View style={styles.circle} entering={popIn()}>
                     {icon ?? (
                         <Typography type="h1" customColor={glyphColor}>
                             {glyph}
                         </Typography>
                     )}
-                </View>
+                </Animated.View>
 
-                <Typography type="h5" textAlign="center">
-                    {title}
-                </Typography>
+                <Animated.View entering={contentIn(80)}>
+                    <Typography type="h5" textAlign="center">
+                        {title}
+                    </Typography>
+                </Animated.View>
 
                 {description && (
-                    <View style={styles.description}>
+                    <Animated.View
+                        style={styles.description}
+                        entering={contentIn(140)}
+                    >
                         <Typography
                             type="body14"
                             color="secondary"
@@ -119,7 +128,7 @@ export const CenteredState = memo(
                         >
                             {description}
                         </Typography>
-                    </View>
+                    </Animated.View>
                 )}
 
                 {error && (
@@ -135,7 +144,10 @@ export const CenteredState = memo(
                 )}
 
                 {(action || secondaryAction) && (
-                    <View style={styles.actions}>
+                    <Animated.View
+                        style={styles.actions}
+                        entering={contentIn(200)}
+                    >
                         {action && (
                             <PillButton
                                 title={action.label}
@@ -156,7 +168,7 @@ export const CenteredState = memo(
                                 style={styles.actionButton}
                             />
                         )}
-                    </View>
+                    </Animated.View>
                 )}
             </View>
         )

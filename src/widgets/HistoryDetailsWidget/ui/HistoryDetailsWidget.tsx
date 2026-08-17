@@ -13,6 +13,7 @@ import { Typography } from '../../../shared/Typography'
 import { historyDetailsWidgetApi } from '../api/historyDetailsWidgetApi'
 import { buildDetailsRows } from '../lib/buildDetailsRows'
 import { HistoryDetailsWidgetSkeleton } from './HistoryDetailsWidgetSkeleton'
+import { ContentIn } from '../../../shared/ContentIn'
 
 type Props = {
     params: Partial<THistoryDetailsScreenParams>
@@ -77,7 +78,7 @@ export const HistoryDetailsWidget = memo(({ params }: Props) => {
     }
 
     return (
-        <View>
+        <ContentIn>
             <View style={styles.header}>
                 <StatusPill
                     label={data.text}
@@ -106,6 +107,6 @@ export const HistoryDetailsWidget = memo(({ params }: Props) => {
                     ))}
                 </ListGroup>
             )}
-        </View>
+        </ContentIn>
     )
 })
