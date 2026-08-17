@@ -1,16 +1,16 @@
 import { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { MapInfoBlocks } from '../../../../features/MapInfoBlocks'
+import { InfoCard } from '../../../../entities/InfoCard'
+import { StepHeader } from '../../../../entities/StepHeader'
 import {
     FuelStore,
     SIZES,
+    SPACING,
     TFuelRoad,
     UserStore,
     useSendFetch,
 } from '../../../../shared'
 import { CameraScanner } from '../../../../shared/CameraScanner'
-import { CustomButton } from '../../../../shared/CustomButton'
-import { Typography } from '../../../../shared/Typography'
 import { fuelScanBarcodeWidgetApi } from '../api/fuelScanBarcodeWidgetApi'
 import { FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS'
 
@@ -18,8 +18,10 @@ type Props = {
     setRoad: React.Dispatch<React.SetStateAction<TFuelRoad>>
 }
 
+// Шаг сканирования QR-кода с колонки. Возврат даёт StepHeader над кадром,
+// отдельной кнопки «Вернуться назад» под камерой в макете нет.
 export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
-    const { errorText, isSendFetchLoading, sendFetch } = useSendFetch({
+    const { sendFetch } = useSendFetch({
         apiCallback: fuelScanBarcodeWidgetApi.scan,
         errorText: 'Ошибка при определении колонки',
     })
@@ -48,41 +50,23 @@ export const FuelScanBarcodeWidget = memo(({ setRoad }: Props) => {
     const handleGoBack = useCallback(() => {
         setRoad('main')
     }, [setRoad])
+
+    const styles = StyleSheet.create({
+        info: {
+            gap: SPACING.ROW_GAP * SIZES.PX,
+            marginTop: SPACING.XXL * SIZES.PX,
+        },
+    })
+
     return (
         <>
-            <View style={styles.container}>
-                <Typography
-                    type="bodyAccentMedium"
-                    marginsPaddings={{ mb: 10 }}
-                >
-                    Просканируйте QR-код с колонки
-                </Typography>
-                <View style={styles.cameraContainer}>
-                    <CameraScanner onScan={handleSubmit} />
-                </View>
-
-                <CustomButton
-                    onPress={handleGoBack}
-                    styled={{
-                        type: 'secondary',
-                        width: { type: 'absolute', value: '100%' },
-                        marginsPaddings: { mt: 30 },
-                    }}
-                >
-                    Вернуться назад
-                </CustomButton>
+            <StepHeader title="Сканирование" onBack={handleGoBack} />
+            <CameraScanner onScan={handleSubmit} />
+            <View style={styles.info}>
+                {FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS.map((info) => (
+                    <InfoCard key={info.title} {...info} />
+                ))}
             </View>
-            <MapInfoBlocks infoBlocks={FUEL_SCAN_BARCODE_WIDGET_INFO_TEXTS} />
         </>
     )
-})
-
-const styles = StyleSheet.create({
-    cameraContainer: {
-        width: SIZES.WIDTH(0.8),
-        height: SIZES.HEIGHT(0.4),
-    },
-    container: {
-        alignItems: 'center',
-    },
 })

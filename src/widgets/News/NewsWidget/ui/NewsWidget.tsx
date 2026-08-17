@@ -58,7 +58,6 @@ export const NewsWidget = memo(({ variant = 'list' }: Props) => {
 
     const content = errorText ? (
         <ErrorWhileFetchingForm
-            buttonProps={{ type: 'primary' }}
             onReload={handleReloadData}
             message={errorText}
         />

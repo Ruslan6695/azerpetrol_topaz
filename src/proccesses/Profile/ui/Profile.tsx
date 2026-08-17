@@ -87,7 +87,6 @@ export const Profile = memo(() => {
 
             {errorText ? (
                 <ErrorWhileFetchingForm
-                    margins={{ mb: 55 }}
                     message={errorText}
                     onReload={handleReloadData}
                 />

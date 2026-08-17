@@ -41,7 +41,6 @@ export const GetArticle = memo(({ id }: Props) => {
             <ErrorWhileFetchingForm
                 onReload={handleReloadData}
                 message={errorText}
-                margins={{ mt: 40 }}
             />
         )
     }

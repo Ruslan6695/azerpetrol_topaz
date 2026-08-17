@@ -58,7 +58,6 @@ export const CoffeeBonusWidget = memo(
         if (errorText) {
             return (
                 <ErrorWhileFetchingForm
-                    margins={{ mt: 100 }}
                     message={errorText}
                     onReload={handleReloadData}
                 />

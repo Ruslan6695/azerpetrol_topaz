@@ -106,7 +106,6 @@ export const HomeMainWidget = memo((props: Props) => {
     if (errorText || refreshTokenErrorText) {
         return (
             <ErrorWhileFetchingForm
-                buttonProps={{ type: 'primary' }}
                 onReload={reloadData}
                 message={errorText ?? refreshTokenErrorText ?? ''}
             />

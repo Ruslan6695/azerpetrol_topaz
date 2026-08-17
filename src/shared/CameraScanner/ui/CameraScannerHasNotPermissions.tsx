@@ -12,10 +12,10 @@ export const CameraScannerHasNotPermissions = memo(
         return (
             <View style={styles.container}>
                 <ErrorWhileFetchingForm
-                    buttonProps={{ type: 'primary', text: 'Разрешить' }}
+                    buttonText="Разрешить"
+                    buttonVariant="primary"
                     onReload={askPermission}
-                    message="Для сканирования штрих-кодов нужно разрешение на
-                        использование камеры."
+                    message="Для сканирования нужно разрешение на использование камеры"
                 />
             </View>
         )

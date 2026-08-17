@@ -33,7 +33,6 @@ export const SelectCoffeeMachineWidget = memo(
                 <StepHeader title="Выбор кофемашины" onBack={onGoBack} />
                 {error ? (
                     <ErrorWhileFetchingForm
-                        margins={{ mt: 100 }}
                         message={error}
                         onReload={onReload}
                     />

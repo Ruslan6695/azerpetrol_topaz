@@ -49,7 +49,6 @@ export const PromotionsAndBonusesWidget = memo((props: Props) => {
                 (InternalPagesHeader через SCREENS_TITLES) — свой не нужен. */}
             {errorText ? (
                 <ErrorWhileFetchingForm
-                    margins={{ mt: 100 }}
                     onReload={handleReloadData}
                     message={errorText}
                 />

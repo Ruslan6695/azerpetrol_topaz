@@ -74,9 +74,6 @@ export const SelectTrkTypeForm = memo(
 
                 {errorText ? (
                     <ErrorWhileFetchingForm
-                        buttonProps={{
-                            width: { type: 'absolute', value: '100%' },
-                        }}
                         onReload={handleReloadData}
                         message={errorText}
                     />

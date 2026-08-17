@@ -1,26 +1,17 @@
-import React from 'react'
-import { StyleSheet, View } from 'react-native'
-import { SIZES } from '../../../shared'
-import { Typography } from '../../../shared/Typography'
-import WifiSvg from '../assets/wifi.svg'
+import { memo } from 'react'
+import { CenteredState } from '../../../shared/CenteredState'
+
 type Props = {}
 
-export const CheckNetworkWidget = (props: Props) => {
+// Оффлайн-состояние: подставляется вместо содержимого в обоих лэйаутах,
+// поэтому это единственный вид приложения без сети. Отдельной иконки не
+// берём — у состояния ошибки в макете круг с «!», его и даёт CenteredState.
+export const CheckNetworkWidget = memo((props: Props) => {
     return (
-        <View style={styles.container}>
-            <Typography textAlign="center">Произошла ошибка!</Typography>
-            <Typography type="caption" marginsPaddings={{ mb: 70 }}>
-                Проверьте подключение к интернету
-            </Typography>
-            <WifiSvg width={SIZES.PX * 150} height={SIZES.PX * 150} />
-        </View>
+        <CenteredState
+            variant="error"
+            title="Нет подключения к интернету"
+            description="Проверьте соединение — данные загрузятся автоматически"
+        />
     )
-}
-
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: SIZES.HEIGHT(0.6),
-    },
 })

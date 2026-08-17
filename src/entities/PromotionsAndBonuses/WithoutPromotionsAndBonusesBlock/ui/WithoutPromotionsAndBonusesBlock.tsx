@@ -1,27 +1,16 @@
 import { memo } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { SIZES } from '../../../../shared'
-import { NewsGif } from '../../../../shared/NewsGif'
-import { Typography } from '../../../../shared/Typography'
+import { CenteredState } from '../../../../shared/CenteredState'
 
 type Props = {}
 
+// Пустого экрана акций в макете «21 Век» нет — берём общий паттерн
+// центрированного состояния, как у соседнего WithoutNewsBlock.
 export const WithoutPromotionsAndBonusesBlock = memo((props: Props) => {
     return (
-        <View style={styles.container}>
-            <NewsGif />
-            <Typography
-                style={{ maxWidth: SIZES.WIDTH(0.8) }}
-                textAlign="center"
-            >
-                Активных акций пока нет
-            </Typography>
-        </View>
+        <CenteredState
+            variant="empty"
+            title="Активных акций пока нет"
+            description="Здесь появятся акции и бонусные программы компании"
+        />
     )
-})
-
-const styles = StyleSheet.create({
-    container: {
-        alignItems: 'center',
-    },
 })
