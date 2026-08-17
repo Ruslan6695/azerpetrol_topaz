@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { PressableScale } from '../../PressableScale'
 import { ThemeStore } from '../../common/model/themeStore'
 
 type Props = {
@@ -98,18 +98,15 @@ const BottomSheet = ({
                     visible={isOpened}
                     transparent
                 >
-                    <CustomTouchableOpacity
-                        activeOpacity={1}
+                    <PressableScale
                         onPress={closeOnPressOutside ? handleClose : undefined}
+                        scaleTo={1}
                         style={styles.wrapper}
                     >
-                        <CustomTouchableOpacity
-                            activeOpacity={1}
-                            style={styles.container}
-                        >
+                        <PressableScale scaleTo={1} style={styles.container}>
                             <View>{children}</View>
-                        </CustomTouchableOpacity>
-                    </CustomTouchableOpacity>
+                        </PressableScale>
+                    </PressableScale>
                 </Modal>
             ) : (
                 <Modal
@@ -118,15 +115,15 @@ const BottomSheet = ({
                     visible={isOpened}
                     transparent
                 >
-                    <CustomTouchableOpacity
+                    <PressableScale
                         onPress={closeOnPressOutside ? handleClose : undefined}
-                        activeOpacity={1}
+                        scaleTo={1}
                         style={styles.wrapper}
                     >
                         <Animated.View style={[styles.container]}>
                             {children}
                         </Animated.View>
-                    </CustomTouchableOpacity>
+                    </PressableScale>
                 </Modal>
             )}
         </>

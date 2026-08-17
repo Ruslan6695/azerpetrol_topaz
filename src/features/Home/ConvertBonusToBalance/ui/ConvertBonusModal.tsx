@@ -1,19 +1,18 @@
 import { memo, useCallback, useMemo } from 'react'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import {
     divideNumber,
-    FONTS,
     RADII,
     SIZES,
     SPACING,
     ThemeStore,
 } from '../../../../shared'
+import { AmountField } from '../../../../shared/AmountField'
+import { Chip } from '../../../../shared/Chip'
 import { CustomModal } from '../../../../shared/CustomModal'
 import { Icon } from '../../../../shared/Icons'
 import { PillButton } from '../../../../shared/PillButton'
-import { PressableScale } from '../../../../shared/PressableScale'
 import { Typography } from '../../../../shared/Typography'
-import { PRESS_SCALE } from '../../../../shared/common/config/constants/PRESS_SCALE'
 
 type Props = {
     isOpened: boolean
@@ -50,45 +49,21 @@ export const ConvertBonusModal = memo(
                     iconCircle: {
                         width: 64 * SIZES.PX,
                         height: 64 * SIZES.PX,
-                        borderRadius: 32 * SIZES.PX,
+                        borderRadius: RADII.PILL,
                         alignItems: 'center',
                         justifyContent: 'center',
                         backgroundColor: COLORS.ACCENT.PrimarySoft,
-                    },
-                    field: {
-                        width: '100%',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 5 * SIZES.PX,
-                        backgroundColor: COLORS.GLASS.Primary,
-                        borderWidth: 1.5 * SIZES.PX,
-                        borderColor: COLORS.ACCENT.Primary,
-                        borderRadius: 18 * SIZES.PX,
-                        paddingVertical: SPACING.LG * SIZES.PX,
-                        paddingHorizontal: 18 * SIZES.PX,
-                    },
-                    input: {
-                        minWidth: 110 * SIZES.PX,
-                        textAlign: 'center',
-                        padding: 0,
-                        fontFamily: FONTS.EXTRABOLD,
-                        fontSize: 30 * SIZES.PX,
-                        color: COLORS.TEXT.Primary,
                     },
                     presets: {
                         flexDirection: 'row',
                         gap: SPACING.SM * SIZES.PX,
                         width: '100%',
                     },
+                    // Чипы делят ширину поровну, поэтому подпись центруется
+                    // здесь, а не внутри Chip — там она прижата к иконке.
                     preset: {
                         flex: 1,
-                        alignItems: 'center',
-                        borderRadius: RADII.PILL,
-                        backgroundColor: COLORS.GLASS.Primary,
-                        borderWidth: 1,
-                        borderColor: COLORS.GLASS.Border,
-                        paddingVertical: 9 * SIZES.PX,
+                        justifyContent: 'center',
                     },
                     buttons: {
                         width: '100%',
@@ -96,18 +71,6 @@ export const ConvertBonusModal = memo(
                     },
                 }),
             [COLORS]
-        )
-
-        // Ввод зажимается в [0, max] прямо здесь: иначе можно отправить
-        // перевод больше, чем есть бонусов.
-        const handleChangeText = useCallback(
-            (text: string) => {
-                const parsed = parseInt(text.replace(/\D/g, ''), 10)
-                onChangeAmount(
-                    isNaN(parsed) ? 0 : Math.max(0, Math.min(max, parsed))
-                )
-            },
-            [max, onChangeAmount]
         )
 
         const handleHalf = useCallback(
@@ -127,7 +90,6 @@ export const ConvertBonusModal = memo(
                 bgDark
                 animationType="fade"
                 width="100%"
-                radius={28}
             >
                 <View style={styles.content}>
                     <View style={styles.iconCircle}>
@@ -149,36 +111,27 @@ export const ConvertBonusModal = memo(
                         Доступно {divideNumber(max)} B · 1 B = 1 ₽
                     </Typography>
 
-                    <View style={styles.field}>
-                        <TextInput
-                            value={String(amount)}
-                            onChangeText={handleChangeText}
-                            keyboardType="number-pad"
-                            selectTextOnFocus
-                            style={styles.input}
-                        />
-                        <Typography type="num16" color="secondary">
-                            B
-                        </Typography>
-                    </View>
+                    <AmountField
+                        value={amount}
+                        onChangeValue={onChangeAmount}
+                        suffix="B"
+                        align="center"
+                        fullWidth
+                        fontSize={30}
+                        max={max}
+                    />
 
                     <View style={styles.presets}>
-                        <PressableScale
+                        <Chip
+                            label="Половина"
                             onPress={handleHalf}
-                            scaleTo={PRESS_SCALE.CHIP}
                             style={styles.preset}
-                        >
-                            <Typography type="label13">Половина</Typography>
-                        </PressableScale>
-                        <PressableScale
+                        />
+                        <Chip
+                            label={`Все ${divideNumber(max)} B`}
                             onPress={handleAll}
-                            scaleTo={PRESS_SCALE.CHIP}
                             style={styles.preset}
-                        >
-                            <Typography type="label13">
-                                Все {divideNumber(max)} B
-                            </Typography>
-                        </PressableScale>
+                        />
                     </View>
 
                     <View style={styles.buttons}>

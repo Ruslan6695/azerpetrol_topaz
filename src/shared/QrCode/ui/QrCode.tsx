@@ -2,7 +2,8 @@ import { memo } from 'react'
 import QRCode from 'react-native-qrcode-svg'
 import { QrCodeModal } from './QrCodeModal'
 import { useModal } from '../../common/config/lib/hooks/useModal'
-import { CustomTouchableOpacity } from '../../CustomTouchableOpacity'
+import { PRESS_SCALE } from '../../common/config/constants/PRESS_SCALE'
+import { PressableScale } from '../../PressableScale'
 import { SIZES } from '../../common/config/constants/sizes'
 import { QrCodeSkeleton } from './QrCodeSkeleton'
 
@@ -15,15 +16,13 @@ type Props = {
 
 export const QrCode = memo(({ value, size, hideModal, qrIsLoading }: Props) => {
     const { handleCloseModal, handleOpenModal, isShowModal } = useModal()
+    const isPressable = !qrIsLoading && !!value && !hideModal
     return (
         <>
-            <CustomTouchableOpacity
-                onPress={
-                    qrIsLoading || !value || hideModal
-                        ? undefined
-                        : handleOpenModal
-                }
-                activeOpacity={0.8}
+            <PressableScale
+                onPress={isPressable ? handleOpenModal : undefined}
+                disabled={!isPressable}
+                scaleTo={PRESS_SCALE.CARD}
             >
                 {!qrIsLoading && value ? (
                     <>
@@ -42,7 +41,7 @@ export const QrCode = memo(({ value, size, hideModal, qrIsLoading }: Props) => {
                         size={size ? size * SIZES.PX : SIZES.PX * 220}
                     />
                 )}
-            </CustomTouchableOpacity>
+            </PressableScale>
         </>
     )
 })
