@@ -89,7 +89,7 @@ export const HistoryItem = memo(
                             <Icon
                                 name={HISTORY_TYPE_ICONS[type]}
                                 size={18}
-                                color={COLORS.Icon.Primary}
+                                color={COLORS.TEXT.Primary}
                             />
                         </View>
                         <View style={styles.sum}>

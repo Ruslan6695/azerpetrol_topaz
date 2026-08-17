@@ -22,8 +22,8 @@ export const Loader = memo(
                         customColor
                             ? customColor
                             : color === 'invert'
-                            ? COLORS.Icon.Invert
-                            : COLORS.Icon.Primary
+                            ? COLORS.TEXT.Invert
+                            : COLORS.TEXT.Primary
                     }
                     size={small ? 'small' : 'large'}
                 />

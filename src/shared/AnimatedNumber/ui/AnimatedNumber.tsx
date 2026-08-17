@@ -10,7 +10,7 @@ type Props = {
     value: number
     /** Приписка вплотную к числу — «₽», «B». Не анимируется */
     suffix?: string
-    type?: TTypographyTypes
+    type: TTypographyTypes
     color?: TTypographyColorTypes
     customColor?: string
     style?: StyleProp<TextStyle>

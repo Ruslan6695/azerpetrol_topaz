@@ -21,7 +21,7 @@ export const Icon = memo(({ name, size = 24, color, opacity }: Props) => {
         <Svg
             width={size * SIZES.PX}
             height={size * SIZES.PX}
-            color={color ?? COLORS.Icon.Primary}
+            color={color ?? COLORS.TEXT.Primary}
             opacity={opacity}
         />
     )

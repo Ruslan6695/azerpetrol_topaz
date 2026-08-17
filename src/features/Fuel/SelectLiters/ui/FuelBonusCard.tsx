@@ -76,7 +76,7 @@ export const FuelBonusCard = memo(({ trkType, liters }: Props) => {
             <View style={styles.row}>
                 <View style={styles.icon}>
                     {main.kind === 'cashback' ? (
-                        <Typography type="h3" customColor={COLORS.Icon.Primary}>
+                        <Typography type="h3" customColor={COLORS.TEXT.Primary}>
                             ₽
                         </Typography>
                     ) : (

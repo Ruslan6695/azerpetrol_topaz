@@ -9,31 +9,11 @@ type TScaleEntry = {
     color?: TTypographyColorTypes
 }
 
-// Шрифтовая лестница.
-//
-// Верхний блок — старые типы. Их значения менять НЕЛЬЗЯ: они стоят в ~104 местах
-// на всех экранах (в том числе в подписи каждой CustomButton и заголовке каждой
-// CustomModal), и смена размера — это переверстка, а не правка типографики.
-//
-// Нижний блок — лестница макета «21 Век» (design/DESIGN_SPEC.md, раздел
-// «Типографика»). Новую вёрстку пишем только на ней.
+// Шрифтовая лестница макета «21 Век» (design/DESIGN_SPEC.md, раздел
+// «Типографика»). Старая лестница (display*, headline*, body*, bodyAccent*,
+// caption, captionAccent) удалена вместе с последними её потребителями —
+// проп type у Typography теперь обязателен, молчаливого дефолта нет.
 export const TYPOGRAPHY_SCALE = {
-    displayLarge: { ff: FONTS.SEMIBOLD, fz: 36 },
-    displayMedium: { ff: FONTS.SEMIBOLD, fz: 28 },
-    displaySmall: { ff: FONTS.SEMIBOLD, fz: 16 },
-    headlineMedium: { ff: FONTS.SEMIBOLD, fz: 36 },
-    headlineSmall: { ff: FONTS.SEMIBOLD, fz: 24 },
-    bodyLarge: { ff: FONTS.MEDIUM, fz: 24 },
-    bodyMedium: { ff: FONTS.MEDIUM, fz: 20 },
-    bodySmall: { ff: FONTS.MEDIUM, fz: 16 },
-    bodyAccentLarge: { ff: FONTS.SEMIBOLD, fz: 24 },
-    bodyAccentMedium: { ff: FONTS.SEMIBOLD, fz: 20 },
-    bodyAccentSmall: { ff: FONTS.SEMIBOLD, fz: 16 },
-    caption: { ff: FONTS.SEMIBOLD, fz: 12 },
-    captionAccent: { ff: FONTS.MEDIUM, fz: 12 },
-
-    // --- лестница «21 Век» ---
-
     // 800 — заголовки, числа, подписи основных кнопок
     h1: { ff: FONTS.EXTRABOLD, fz: 40 },
     h2: { ff: FONTS.EXTRABOLD, fz: 32 },

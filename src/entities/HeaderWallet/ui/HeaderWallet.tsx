@@ -44,7 +44,7 @@ export const HeaderWallet = memo((props: Props) => {
                     <Icon
                         name="wallet"
                         size={18}
-                        color={COLORS.Icon.Primary}
+                        color={COLORS.TEXT.Primary}
                         opacity={0.8}
                     />
                     {/* По макету в чипе рублёвый баланс, иконки бонуса нет —

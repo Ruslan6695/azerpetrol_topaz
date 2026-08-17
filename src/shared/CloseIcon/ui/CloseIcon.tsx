@@ -21,7 +21,7 @@ export const CloseIcon = memo(({ red, size }: Props) => {
         <AntDesign
             name="close"
             size={(size || 24) * SIZES.PX}
-            color={COLORS.Icon.Secondary}
+            color={COLORS.TEXT.Secondary}
         />
     )
 })
