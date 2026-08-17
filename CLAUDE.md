@@ -9,7 +9,7 @@ Expo SDK 54 / React Native 0.81 / React 19, expo-router, TypeScript strict, Zust
 
 Тексты интерфейса, комментарии и отчёты в `plans/` — на русском.
 
-Идёт редизайн под макет **«21 Век»** ([Claude Design](https://claude.ai/design/p/58beacf8-4804-4477-9e9f-f9991cf19ca6)): dark-first глассморфизм, лаймовый акцент, Manrope 600/700/800. Локальная копия макета — [design/21vek-app.dc.html](design/21vek-app.dc.html), выжимка с токенами и описью экранов — [design/DESIGN_SPEC.md](design/DESIGN_SPEC.md), правила работы с ним — [.claude/rules/design.md](.claude/rules/design.md).
+Приложение переведено на макет **«21 Век»** ([Claude Design](https://claude.ai/design/p/58beacf8-4804-4477-9e9f-f9991cf19ca6)): dark-first глассморфизм, лаймовый акцент, Manrope 600/700/800. Старой дизайн-системы в коде не осталось — ни старой лестницы `Typography`, ни неймспейсов `BRAND`/`SUCCESS`/`ERROR`/`Icon`, ни примитивов `Custom*`. Локальная копия макета — [design/21vek-app.dc.html](design/21vek-app.dc.html), выжимка с токенами и описью экранов — [design/DESIGN_SPEC.md](design/DESIGN_SPEC.md), правила работы с ним — [.claude/rules/design.md](.claude/rules/design.md).
 
 ## Commands
 
@@ -22,7 +22,7 @@ eas build --profile development|preview|production -p ios|android
 
 - Приложение использует `expo-dev-client` и нативные модули (камера, геолокация, контакты, пуши) — **в Expo Go не запустится**, нужен dev-билд.
 - Тестов, линтера и lint-скрипта в проекте нет. Не заявляй, что тесты прошли — их не существует.
-- `npx tsc --noEmit` сейчас даёт ~39 предсуществующих ошибок. Сравнивай состояние до/после своего изменения, а не жди чистого прогона.
+- `npx tsc --noEmit` сейчас даёт **5** предсуществующих ошибок (типизация двух роутов, JSX-namespace в `WheelPicker` ×2, стиль в `TabBarWithBackground`). Сравнивай состояние до/после своего изменения, а не жди чистого прогона.
 - Нативный конфиг — [app.config.ts](app.config.ts) (действующий; `app.json` остался от старой схемы).
 
 ## Rules

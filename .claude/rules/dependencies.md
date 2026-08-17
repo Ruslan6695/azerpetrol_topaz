@@ -37,7 +37,7 @@ yarn add <package>             # ❌ поставит latest, потенциал
 
 ## Правило 4. Библиотека прячется за обёрткой в `shared/`
 
-Стороннюю библиотеку не вызывают напрямую из `widgets/`, `features/` и `entities/`. Для неё заводится обёртка в `shared/`, как это уже сделано: `CustomPieChart` (gifted-charts), `QrCode` (qrcode-svg), `RangePicker` (calendar-range-picker), `ToastComponent` (toast-message), `CameraScanner` (expo-camera), `Skeleton`, `ImageCarousel` (reanimated-carousel).
+Стороннюю библиотеку не вызывают напрямую из `widgets/`, `features/` и `entities/`. Для неё заводится обёртка в `shared/`, как это уже сделано: `QrCode` (qrcode-svg), `RangePicker` (calendar-range-picker), `ToastComponent` (toast-message), `CameraScanner` (expo-camera), `HtmlContent` (webview + render-html), `Skeleton`, `ImageCarousel` (reanimated-carousel), `GlassCard` (expo-blur).
 
 Обёртка обязана привести библиотеку к правилам проекта: цвета из `ThemeStore.useCOLORS()`, размеры через `SIZES.PX`, текст через `Typography` (см. [styling.md](styling.md)). Именно поэтому чужой API не должен течь наружу — иначе тему и плотность придётся чинить в каждом месте вызова.
 
