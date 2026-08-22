@@ -61,7 +61,7 @@ CSS-переменные макета соответствуют палитре 
 | 700 | `rowTitle`, `label14`, `label13` |
 | 600 | `body14 body13 body125`, `caption12 caption11 caption10`, `tabLabel`, `eyebrow` |
 
-Старые типы (`display*`, `headline*`, `body*`, `bodyAccent*`, `caption`, `captionAccent`) остаются для не переделанных экранов — в новой вёрстке их не используем.
+Старая лестница (`display*`, `headline*`, `body(Large|Medium|Small)`, `bodyAccent*`, `caption`, `captionAccent`) **удалена** — непеределанных экранов не осталось. Проп `type` обязателен, дефолта нет.
 
 ## Правило 3. Чего в React Native нет
 
@@ -73,7 +73,7 @@ CSS-переменные макета соответствуют палитре 
 | `filter: brightness()/invert()/grayscale()` | проп `color` у `<Icon>` (иконки нормализованы на `currentColor`) |
 | `display: grid` | `flexDirection: 'row'` + `flexWrap: 'wrap'`, ширина элемента через `SIZES.WIDTH()` |
 | `radial-gradient` | `react-native-svg` (`<RadialGradient>`), см. `shared/AmbientBackground` |
-| `conic-gradient` (пончик истории) | `react-native-svg` дугами либо существующий `shared/CustomPieChart` |
+| `conic-gradient` (пончик истории) | `shared/DonutChart` — дуги на `react-native-svg` |
 | `linear-gradient` | `expo-linear-gradient` |
 | `letter-spacing` в `font` | отдельное поле `letterSpacing` (тоже `* SIZES.PX`) |
 | `:active { transform: scale() }` | `shared/PressableScale` с `PRESS_SCALE.*` |

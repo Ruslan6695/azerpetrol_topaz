@@ -1,8 +1,16 @@
-import { ReactNode, memo } from 'react'
+import { ReactNode, memo, useMemo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { RADII, SIZES, SPACING, ThemeStore } from '../../../shared'
+import Animated from 'react-native-reanimated'
+import {
+    MOTION,
+    RADII,
+    screenIn,
+    SIZES,
+    SPACING,
+    ThemeStore,
+} from '../../../shared'
 import { AmbientBackground } from '../../../shared/AmbientBackground'
 import { Glass } from '../../../shared/GlassCard'
 
@@ -23,6 +31,11 @@ export const LoginRegistrationLayout = memo(
     ({ children, header, headerTop = 150, disableSheetPaddings }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
         const insets = useSafeAreaInsets()
+        // В макете вход и регистрация появляются тем же screenIn, но за .4s.
+        // Гостевой Stack стоит на animation: 'none', поэтому анимация тут одна
+        // и двойной не будет. Лэйаут общий для обоих экранов и перемонтируется
+        // при переходе между ними — как key={{ screenKey }} в прототипе.
+        const enter = useMemo(() => screenIn(MOTION.AUTH_IN), [])
 
         const styles = StyleSheet.create({
             wrapper: {
@@ -65,7 +78,7 @@ export const LoginRegistrationLayout = memo(
                 enableOnAndroid
                 renderToHardwareTextureAndroid
             >
-                <View style={styles.wrapper}>
+                <Animated.View style={styles.wrapper} entering={enter}>
                     <AmbientBackground />
 
                     {header && <View style={styles.header}>{header}</View>}
@@ -77,7 +90,7 @@ export const LoginRegistrationLayout = memo(
                     >
                         <View style={styles.sheetContent}>{children}</View>
                     </Glass>
-                </View>
+                </Animated.View>
             </KeyboardAwareScrollView>
         )
     }

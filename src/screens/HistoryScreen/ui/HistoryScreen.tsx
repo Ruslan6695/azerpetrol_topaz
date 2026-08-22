@@ -1,7 +1,13 @@
-import { HistoryWidget } from '../../../widgets/HistoryWidget'
+import { memo } from 'react'
+import { InternalPagesLayout } from '../../../layouts/InternalPagesLayout'
+import { HistoryStore, HistoryWidget } from '../../../widgets/HistoryWidget'
 
-type Props = {}
+export const HistoryScreen = memo(() => {
+    const requestLoadMore = HistoryStore.useRequestLoadMore()
 
-export const HistoryScreen = (props: Props) => {
-    return <HistoryWidget />
-}
+    return (
+        <InternalPagesLayout onScrollToEnd={requestLoadMore}>
+            <HistoryWidget />
+        </InternalPagesLayout>
+    )
+})

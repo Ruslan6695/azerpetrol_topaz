@@ -6,8 +6,8 @@ import { IInfoCard } from '../config/interfaces/IInfoCard'
 
 type Props = IInfoCard
 
-// Информационная карточка нового дизайна. Старый InfoBlock оставлен
-// для ещё не переделанных экранов и постепенно заменяется этой.
+// Блок-подсказка макета: заголовок 700/14 + подпись 600/12 в стеклянной
+// карточке. Повторяется на Топливе, Балансе, Выборе, Меню кофе, Пополнении.
 export const InfoCard = memo(({ title, info }: Props) => {
     return (
         <GlassCard radius={RADII.CARD} padding={SPACING.XL}>

@@ -1,8 +1,8 @@
 import { memo, useCallback, useEffect, useState } from 'react'
+import { useInput } from '../../../shared'
 import { GlassInput } from '../../../shared/GlassInput'
 import { PillButton } from '../../../shared/PillButton'
 import { Typography } from '../../../shared/Typography'
-import { useInput } from '../../../shared/CustomInput'
 
 const CODE_LENGTH = 4
 const SMS_UNLOCK_SEC = 30

@@ -5,8 +5,10 @@ import { CoffeeSuccess } from '../../../entities/Coffee/CoffeeSuccess'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
 import { CoffeeMachinesStore } from '../../../features/Coffee/SelectCoffeeMachine'
 import { SPACING, TCoffeeRoad, TCoffeeScreenParams } from '../../../shared'
-import { useTabBar } from '../../../shared/TabBar'
-import { TabBarWithBackground } from '../../../shared/TabBarWithBackground'
+import {
+    TabBarWithBackground,
+    useTabBar,
+} from '../../../shared/TabBarWithBackground'
 import { BuyCoffeeWidget } from '../../../widgets/Coffee/BuyCoffeeWidget'
 import { CoffeeConfirmWidget } from '../../../widgets/Coffee/CoffeeConfirmWidget'
 import { MyCoffeeWidget } from '../../../widgets/Coffee/MyCoffeeWidget'
@@ -87,7 +89,6 @@ export const Coffee = memo(({ params }: Props) => {
     if (coffeeMachinesError && road === 'main') {
         return (
             <ErrorWhileFetchingForm
-                margins={{ mt: 100 }}
                 onReload={fetchCoffeeMachines}
                 message={coffeeMachinesError}
             />

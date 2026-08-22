@@ -1,6 +1,7 @@
 import { ReactNode, memo, useCallback } from 'react'
 import { Keyboard, Pressable, StyleProp, ViewStyle } from 'react-native'
 import Animated, {
+    AnimatedStyle,
     useAnimatedStyle,
     useSharedValue,
     withTiming,
@@ -16,7 +17,11 @@ type Props = {
     onLongPress?: () => void
     scaleTo?: number
     disabled?: boolean
-    style?: StyleProp<ViewStyle>
+    // AnimatedStyle, а не голый ViewStyle: так вызывающие места могут положить
+    // сюда CSS-транзишен (перетекание фона у чипа и сегмента) прямо на кнопку,
+    // не заводя ради этого вложенный Animated.View. Обычные ViewStyle он
+    // по-прежнему принимает.
+    style?: StyleProp<AnimatedStyle<ViewStyle>>
     hitSlop?: number
     dismissKeyboard?: boolean
 }

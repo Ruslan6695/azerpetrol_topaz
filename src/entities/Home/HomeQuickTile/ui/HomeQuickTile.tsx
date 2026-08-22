@@ -59,7 +59,7 @@ export const HomeQuickTile = memo(
                     <Icon
                         name={icon}
                         size={34}
-                        color={COLORS.Icon.Primary}
+                        color={COLORS.TEXT.Primary}
                         opacity={0.9}
                     />
                     <Typography

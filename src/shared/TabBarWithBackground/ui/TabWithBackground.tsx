@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native'
 import { PRESS_SCALE } from '../../common/config/constants/PRESS_SCALE'
 import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
+import { SEGMENT_BG_TRANSITION } from '../../common/config/lib/motion/transitions'
 import { ThemeStore } from '../../common/model/themeStore'
 import { PressableScale } from '../../PressableScale'
 import { Typography } from '../../Typography'
@@ -30,9 +31,12 @@ export const TabWithBackground = memo(
                         justifyContent: 'center',
                         paddingVertical: 10 * SIZES.PX,
                         borderRadius: RADII.PILL,
+                        // Лайм с нулевой альфой вместо 'transparent': иначе
+                        // перетекание фона идёт через rgba(0,0,0,0) и на
+                        // середине даёт тёмный подтон.
                         backgroundColor: isSelected
                             ? COLORS.ACCENT.Lime
-                            : 'transparent',
+                            : COLORS.ACCENT.LimeClear,
                     },
                 }),
             [COLORS, isSelected]
@@ -45,12 +49,15 @@ export const TabWithBackground = memo(
             <PressableScale
                 onPress={handlePress}
                 scaleTo={PRESS_SCALE.CHIP}
-                style={styles.container}
+                // transition: background .2s из макета
+                style={[styles.container, SEGMENT_BG_TRANSITION]}
             >
                 <Typography
                     type="label13"
                     customColor={
-                        isSelected ? COLORS.ACCENT.OnLime : COLORS.TEXT.Secondary
+                        isSelected
+                            ? COLORS.ACCENT.OnLime
+                            : COLORS.TEXT.Secondary
                     }
                 >
                     {label}

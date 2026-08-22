@@ -141,7 +141,22 @@ export default function Layout() {
     return (
         <GestureHandlerRootView>
             {!user ? (
-                <Stack screenOptions={{ animation: 'none' }}>
+                <Stack
+                    screenOptions={{
+                        animation: 'none',
+                        // Шапку рисует InternalPagesHeader, нативной не должно
+                        // быть нигде. Опция живёт в screenOptions, а не на
+                        // каждом экране: при выходе из аккаунта рендерится
+                        // этот стек, а активным маршрутом остаётся ещё «(main)»,
+                        // который здесь не объявлен. Поэкранной опции у него
+                        // нет, и он показывал дефолтный белый хедер с
+                        // названием маршрута — на обеих платформах.
+                        headerShown: false,
+                        contentStyle: {
+                            backgroundColor: COLORS.BACKGROUND.Primary,
+                        },
+                    }}
+                >
                     <Stack.Screen
                         options={{ headerShown: false }}
                         name="index"
@@ -158,9 +173,30 @@ export default function Layout() {
                 </Stack>
             ) : (
                 <>
-                    <Stack>
+                    <Stack
+                        screenOptions={{
+                            // Так же, как в стеке выше: гарантия, что нативной
+                            // шапки не будет и у маршрута, который забыли
+                            // объявить отдельным Stack.Screen.
+                            headerShown: false,
+                            // ios_from_right даёт одинаковый iOS-подобный слайд
+                            // на обеих платформах: на iOS резолвится в default
+                            // (со свайпом назад), на Android рисует тот же
+                            // параллакс вместо material-перехода.
+                            animation: 'ios_from_right',
+                            // Без этого на Android между экранами моргает
+                            // системный фон.
+                            contentStyle: {
+                                backgroundColor: COLORS.BACKGROUND.Primary,
+                            },
+                        }}
+                    >
                         <Stack.Screen
-                            options={{ headerShown: false }}
+                            options={{
+                                headerShown: false,
+                                // Пустой роут-редирект, анимировать нечего.
+                                animation: 'none',
+                            }}
                             name="index"
                         />
                         <Stack.Screen
@@ -195,6 +231,14 @@ export default function Layout() {
                                 title: 'Пополнить баланс',
 
                                 headerShown: false,
+                                // Экран итога — это смена состояния, а не
+                                // следующая страница: он проявляется, а не
+                                // въезжает сбоку. Свайпом назад в уже
+                                // отправленную форму возвращаться нельзя.
+                                animation: 'fade',
+                                animationDuration: 260,
+                                animationTypeForReplace: 'push',
+                                gestureEnabled: false,
                             }}
                             name={'success/index'}
                         />
@@ -233,9 +277,11 @@ export default function Layout() {
                         <Stack.Screen
                             options={{
                                 headerShown: false,
-                                // Свайп назад увёл бы с идущего налива:
-                                // выход с этого роута только кнопками шага.
-                                gestureEnabled: false,
+                                // Налив перехватывает экран целиком, поэтому
+                                // проявляется, а не приезжает сбоку как
+                                // «ещё одна страница».
+                                animation: 'fade',
+                                animationDuration: 300,
                             }}
                             name={'fuelLoading/index'}
                         />

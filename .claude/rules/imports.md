@@ -30,7 +30,7 @@ import { AppStore, ESCREENS, SIZES, ThemeStore, UserStore, useFetchData } from '
 
 ```ts
 import { Typography } from '../../shared/Typography'
-import { CustomButton } from '../../shared/CustomButton'
+import { PillButton } from '../../shared/PillButton'
 import { showError } from '../../shared/ToastComponent'
 ```
 

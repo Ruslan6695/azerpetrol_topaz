@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
-import { CustomButton } from '../../CustomButton'
 import { MPLayout } from '../../MpLayout'
+import { PillButton } from '../../PillButton'
 import { Typography } from '../../Typography'
 import WheelPickerExpo from '../../WheelPicker'
+import { RADII } from '../../common/config/constants/RADII'
 import { SIZES } from '../../common/config/constants/sizes'
 import { ISelectOption } from '../config/interfaces/ISelectOption'
 import { ThemeStore } from '../../common/model/themeStore'
@@ -56,15 +57,20 @@ export const CustomSelectBottomSheet = ({
             flex: 1,
             justifyContent: 'flex-end',
             alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.49)',
+            backgroundColor: COLORS.EFFECTS.Backdrop,
         },
         container: {
             alignItems: 'center',
             position: 'relative',
             width: '100%',
             backgroundColor: COLORS.GLASS.Surface,
-            borderTopLeftRadius: SIZES.PX * 30,
-            borderTopRightRadius: SIZES.PX * 30,
+            borderTopLeftRadius: RADII.SHEET * SIZES.PX,
+            borderTopRightRadius: RADII.SHEET * SIZES.PX,
+        },
+        // Кнопки лежат в ряду с space-between, поэтому ширину задаём здесь:
+        // PillButton с fullWidth={false} тянется по контенту.
+        button: {
+            minWidth: 120 * SIZES.PX,
         },
         title: {
             position: 'absolute',
@@ -97,7 +103,7 @@ export const CustomSelectBottomSheet = ({
                 <View style={styles.container}>
                     <View style={styles.title}>
                         <Typography
-                            type="bodyAccentMedium"
+                            type="num16"
                             marginsPaddings={{ pt: 20 }}
                         >
                             {title.toUpperCase()}
@@ -105,25 +111,21 @@ export const CustomSelectBottomSheet = ({
                     </View>
 
                     <View style={styles.top}>
-                        <CustomButton
+                        <PillButton
+                            title="Отменить"
                             onPress={handleClose}
-                            styled={{
-                                type: 'secondary',
-                                width: { type: 'px', value: 110 },
-                                height: { type: 'px', value: 45 },
-                            }}
-                        >
-                            Отменить
-                        </CustomButton>
-                        <CustomButton
+                            variant="secondary"
+                            size="md"
+                            fullWidth={false}
+                            style={styles.button}
+                        />
+                        <PillButton
+                            title="Подтвердить"
                             onPress={handleSubmit}
-                            styled={{
-                                width: { type: 'px', value: 130 },
-                                height: { type: 'px', value: 45 },
-                            }}
-                        >
-                            Подтвердить
-                        </CustomButton>
+                            size="md"
+                            fullWidth={false}
+                            style={styles.button}
+                        />
                     </View>
                     <MPLayout mt={30}>
                         <WheelPickerExpo

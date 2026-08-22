@@ -8,7 +8,8 @@ import { TTypographyColorTypes } from '../config/types/TTypographyColorTypes'
 import { TTypographyTypes } from '../config/types/TTypographyTypes'
 
 interface Props extends TextProps {
-    type?: TTypographyTypes
+    /** Обязателен: молчаливого дефолта из старой лестницы больше нет */
+    type: TTypographyTypes
     color?: TTypographyColorTypes
     children: string | any
     marginsPaddings?: IMarginsPaddings
@@ -18,7 +19,7 @@ interface Props extends TextProps {
 
 export const Typography = memo(
     ({
-        type = 'bodySmall',
+        type,
         color,
         children,
         marginsPaddings,
@@ -30,7 +31,7 @@ export const Typography = memo(
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
         const styles = useMemo(() => {
-            const entry = TYPOGRAPHY_SCALE[type] ?? TYPOGRAPHY_SCALE.bodySmall
+            const entry = TYPOGRAPHY_SCALE[type]
             const ff = entry.ff
             const fz = entry.fz
 

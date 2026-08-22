@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react'
 import { Linking } from 'react-native'
 import { ThemeStore, USE_TERMS_LINK } from '../../../shared'
-import { CustomTouchableOpacity } from '../../../shared/CustomTouchableOpacity'
+import { PressableScale } from '../../../shared/PressableScale'
 import { Typography } from '../../../shared/Typography'
 
 type Props = {}
@@ -20,17 +20,14 @@ export const OpenUseTerms = memo((props: Props) => {
             <Typography type="caption12" color="secondary">
                 Продолжая, я принимаю условия{' '}
             </Typography>
-            <CustomTouchableOpacity
-                onPress={handleOpenTerms}
-                activeOpacity={0.6}
-            >
+            <PressableScale onPress={handleOpenTerms} scaleTo={1} hitSlop={8}>
                 <Typography
                     type="caption12"
                     customColor={COLORS.ACCENT.Primary}
                 >
                     Пользовательского соглашения
                 </Typography>
-            </CustomTouchableOpacity>
+            </PressableScale>
         </>
     )
 })

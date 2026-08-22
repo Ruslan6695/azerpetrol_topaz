@@ -77,7 +77,6 @@ export const CoffeeBonus = memo(({ coffeeMachineId }: Props) => {
     if (coffeeMachinesError && road === 'main') {
         return (
             <ErrorWhileFetchingForm
-                margins={{ mt: 100 }}
                 onReload={fetchCoffeeMachines}
                 message={coffeeMachinesError}
             />

@@ -66,7 +66,7 @@ export const RegistrationForm = memo(
                         <Icon
                             name="person"
                             size={20}
-                            color={COLORS.Icon.Secondary}
+                            color={COLORS.TEXT.Secondary}
                             opacity={0.6}
                         />
                     }
@@ -83,7 +83,7 @@ export const RegistrationForm = memo(
                         <Icon
                             name="person"
                             size={20}
-                            color={COLORS.Icon.Secondary}
+                            color={COLORS.TEXT.Secondary}
                             opacity={0.6}
                         />
                     }
@@ -100,7 +100,7 @@ export const RegistrationForm = memo(
                         <Icon
                             name="phone"
                             size={20}
-                            color={COLORS.Icon.Secondary}
+                            color={COLORS.TEXT.Secondary}
                             opacity={0.6}
                         />
                     }

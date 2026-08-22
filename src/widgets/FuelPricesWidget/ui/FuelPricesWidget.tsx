@@ -5,15 +5,18 @@ import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm
 import { FuelPriceRow } from '../../../entities/Fuel/FuelPriceRow'
 import { InfoCard } from '../../../entities/InfoCard'
 import { SIZES, SPACING, useFetchData } from '../../../shared'
+import { ContentIn } from '../../../shared/ContentIn'
 import { CenteredState } from '../../../shared/CenteredState'
 import { MPLayout } from '../../../shared/MpLayout'
 import { fuelPricesWidgetApi } from '../api/fuelPricesWidgetApi'
 import { IFuelPricesWidgetData } from '../config/interfaces/IFuelPricesWidgetData'
 import { FuelPricesWidgetSkeleton } from './FuelPricesWidgetSkeleton'
+import { StaggerItem, useStagger } from '../../../shared/Stagger'
 
 type Props = {}
 
 export const FuelPricesWidget = memo((props: Props) => {
+    const getEntering = useStagger()
     const { data, errorText, fetchData, isDataLoading } =
         useFetchData<IFuelPricesWidgetData>({
             apiCallback: fuelPricesWidgetApi.getPrices,
@@ -65,10 +68,12 @@ export const FuelPricesWidget = memo((props: Props) => {
     }
 
     return (
-        <>
+        <ContentIn>
             <View style={styles.list}>
-                {data.prices.map((price) => (
-                    <FuelPriceRow key={price.id} {...price} />
+                {data.prices.map((price, index) => (
+                    <StaggerItem key={price.id} entering={getEntering(index)}>
+                        <FuelPriceRow {...price} />
+                    </StaggerItem>
                 ))}
             </View>
             {data.info ? (
@@ -76,6 +81,6 @@ export const FuelPricesWidget = memo((props: Props) => {
                     <InfoCard {...data.info} />
                 </MPLayout>
             ) : null}
-        </>
+        </ContentIn>
     )
 })

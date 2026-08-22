@@ -6,14 +6,13 @@ import { IThemeStore } from '../config/interfaces/IThemeStore'
 import { COLORS, COLORS_DARK } from '../config/constants/COLORS'
 import { getItemFromAsyncStorage } from '../config/lib/asyncStorage/getItemFromAsyncStorage'
 import { EAsyncStoreKeys } from '../config/enums/EAsyncStoreKeys'
-import { Appearance } from 'react-native'
 import { EColorThemes } from '../config/enums/EColorThemes'
 import { changeColorThemeAsyncStore } from '../config/lib/asyncStorage/changeColorTheme'
 
 const store = create<IThemeStore>()(
     immer((set) => ({
-        COLORS: COLORS,
-        theme: EColorThemes.LIGHT,
+        COLORS: COLORS_DARK,
+        theme: EColorThemes.DARK,
         changeColorTheme(theme) {
             set((state) => {
                 if (theme === EColorThemes.LIGHT) {
@@ -30,19 +29,13 @@ const store = create<IThemeStore>()(
                 EAsyncStoreKeys.COLOR_THEME
             )
             switch (resp) {
+                // Пользователь ещё не выбирал тему — по умолчанию тёмная,
+                // системную настройку не учитываем
                 case null:
-                    const theme = Appearance.getColorScheme() // 'light' или 'dark'
-                    if (theme === 'dark') {
-                        set((state) => {
-                            state.COLORS = COLORS_DARK
-                            state.theme = EColorThemes.DARK
-                        })
-                    } else {
-                        set((state) => {
-                            state.COLORS = COLORS
-                            state.theme = EColorThemes.LIGHT
-                        })
-                    }
+                    set((state) => {
+                        state.COLORS = COLORS_DARK
+                        state.theme = EColorThemes.DARK
+                    })
                     break
                 case EColorThemes.DARK:
                     set((state) => {

@@ -5,13 +5,14 @@ import { SendCallcheckWait } from '../../../features/SendCallcheckWait'
 import {
     authMethodsApi,
     EAuthMethod,
+    isTestPhone,
     IUser,
     TAuthStep,
     useFetchData,
+    useInput,
     UserStore,
     useSendFetch,
 } from '../../../shared'
-import { useInput } from '../../../shared/CustomInput'
 import { showError } from '../../../shared/ToastComponent'
 import { loginWidgetApi } from '../api/loginWidgetApi'
 import { GetCaptcha } from '../../../features/GetCaptcha'
@@ -105,7 +106,15 @@ export const LoginWidget = memo(({ onStepChange }: Props) => {
             }
             if (captchaToken) setCaptchaValue(captchaToken)
 
-            const targetMethod = method ?? currentMethod
+            const requestedMethod = method ?? currentMethod
+
+            // Тестовый номер не может принять callcheck-звонок — переводим его
+            // на смс-код независимо от того, что вернул /v2/auth_methods/
+            const targetMethod =
+                requestedMethod === EAuthMethod.Callcheck &&
+                isTestPhone(phoneValue)
+                    ? EAuthMethod.Sms
+                    : requestedMethod
 
             if (targetMethod === EAuthMethod.Callcheck) {
                 setCurrentMethod(EAuthMethod.Callcheck)
