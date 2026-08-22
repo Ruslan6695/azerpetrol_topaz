@@ -1,5 +1,5 @@
-import { memo, useEffect } from 'react'
-import { BackHandler } from 'react-native'
+import { useRouter } from 'expo-router'
+import { memo, useCallback } from 'react'
 import { FuelPouringProgress } from '../../../../entities/FuelLoading/FuelPouringProgress'
 import { StepHeader } from '../../../../entities/StepHeader'
 import {
@@ -21,6 +21,7 @@ type Props = {
 
 export const FuelLoadingFuellingWidget = memo(
     ({ onEndFuelling, onError }: Props) => {
+        const router = useRouter()
         const { azs, column, trkType, liters } = FuelStore.useState()
 
         // Хук вызывается до любых return, чтобы не ронять порядок хуков,
@@ -33,15 +34,13 @@ export const FuelLoadingFuellingWidget = memo(
             onError,
         })
 
-        // Уйти с экрана во время налива нельзя: сессия на колонке уже открыта,
-        // а вернуться в неё приложению неоткуда.
-        useEffect(() => {
-            const subscription = BackHandler.addEventListener(
-                'hardwareBackPress',
-                () => true
-            )
-            return () => subscription.remove()
-        }, [])
+        // Возврат на выбор литров: роут /fuel остался в стеке под наливом
+        // и держит свой шаг, поэтому router.back() — тот же выход,
+        // что «Отмена» на шаге запуска. Сессию на колонке уход не отменяет:
+        // эндпоинта отмены нет, есть только fuelling/start/ и fuelling/status/.
+        const handleGoBack = useCallback(() => {
+            router.back()
+        }, [router])
 
         if (!azs || !column || !trkType || !liters) return null
 
@@ -51,7 +50,7 @@ export const FuelLoadingFuellingWidget = memo(
 
         return (
             <>
-                <StepHeader title="Идёт налив" />
+                <StepHeader title="Идёт налив" onBack={handleGoBack} />
                 <FuelPouringProgress
                     volume={volume}
                     target={liters}

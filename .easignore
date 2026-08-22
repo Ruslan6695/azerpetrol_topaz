@@ -1,0 +1,51 @@
+# .easignore ПОЛНОСТЬЮ заменяет .gitignore при сборке архива для EAS Build,
+# а не дополняет его. Поэтому здесь продублировано содержимое .gitignore,
+# и только в конце добавлено то, что нужно именно сборке.
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+expo-env.d.ts
+
+# --- специфично для EAS ---
+
+# Индекс CodeGraph. Внутри лежит unix-сокет daemon.sock, на котором
+# архиватор EAS падает с «Cannot copy a socket file: cp returned EINVAL»,
+# плюс это лишние ~12 МБ в загрузке. Сборке индекс не нужен.
+.codegraph/
+
+# Отчёты, планы и локальная копия макета — на сборку не влияют.
+plans/
+design/
+.claude/

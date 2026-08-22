@@ -1,9 +1,13 @@
 import { ExpoConfig } from '@expo/config'
 
 const config: ExpoConfig = {
-    name: 'Азерпетрол',
+    // Имя iOS-проекта и таргета Xcode Expo выводит из `name`, выбрасывая
+    // не-ASCII символы; начинаться с цифры оно не может — '21 Век' давало
+    // таргет '21' и падало на «Could not find target '21' in project.pbxproj».
+    // Видимое имя приложения на iOS задано ниже через CFBundleDisplayName.
+    name: 'Vek21',
     slug: 'azerpetrol',
-    version: '1.3.3',
+    version: '1.3.5',
     scheme: 'azerpetrol',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -22,6 +26,8 @@ const config: ExpoConfig = {
         supportsTablet: true,
         bundleIdentifier: 'com.azscontrol.azerpetrol',
         infoPlist: {
+            CFBundleDisplayName: '21 Век',
+            CFBundleName: '21 Век',
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription:
                 'This application uses a camera to read the QR code of the gas station address.',
@@ -42,7 +48,7 @@ const config: ExpoConfig = {
             backgroundColor: '#FFFFFF',
         },
 
-        versionCode: 23,
+        versionCode: 25,
         package: 'com.vek21.azerpetrol',
     },
     web: {

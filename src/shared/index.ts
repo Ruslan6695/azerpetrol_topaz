@@ -70,3 +70,5 @@ export * from "./common/config/constants/DEFAULT_ICON_SIZE";
 export * from "../shared/common/config/lib/asyncStorage/changeColorTheme";
 export * from "../shared/common/config/enums/EColorThemes";
 export * from "./common/model/themeStore";
+export * from "./common/config/constants/TEST_PHONES";
+export * from "./common/config/lib/helpers/isTestPhone";

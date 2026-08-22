@@ -50,6 +50,15 @@ export const useFuellingPolling = ({
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
     const cancelledRef = useRef(false)
 
+    // «Налив точно шёл» — без этого флага idle до начала налива приняли бы
+    // за его завершение. Взводится и по ненулевому объёму: короткий налив
+    // может целиком уместиться между двумя тиками, и статус fuelling
+    // не поймает ни один опрос.
+    const hasStartedRef = useRef(false)
+    // Последние ненулевые показания. К моменту idle колонка уже могла
+    // обнулить счётчик, а итоги показать надо настоящие.
+    const lastTotalsRef = useRef<IFuellingTotals | null>(null)
+
     const fetchDataRef = useRef(fetchData)
     const onCompleteRef = useRef(onComplete)
     const onErrorRef = useRef(onError)
@@ -62,6 +71,8 @@ export const useFuellingPolling = ({
 
         cancelledRef.current = false
         inFlightRef.current = false
+        hasStartedRef.current = false
+        lastTotalsRef.current = null
         const startedAt = Date.now()
 
         const stop = () => {
@@ -93,16 +104,47 @@ export const useFuellingPolling = ({
                 afterDataCallback(data) {
                     if (cancelledRef.current) return
 
+                    // Потеряв связь с контроллером, бэкенд отдаёт 200 с пустым
+                    // телом. Затирать им последний осмысленный статус нельзя.
+                    if (!data?.status) return
+
                     setStatus(data.status)
                     setVolume(data.volume)
 
-                    switch (data.status) {
-                        case EFuelLoadingFuellingStatuses.COMPLETE:
-                            stop()
-                            onCompleteRef.current({
+                    if (
+                        data.status === EFuelLoadingFuellingStatuses.FUELLING ||
+                        data.volume > 0
+                    ) {
+                        hasStartedRef.current = true
+                    }
+
+                    if (data.volume > 0) {
+                        lastTotalsRef.current = {
+                            volume: data.volume,
+                            sum: data.volume * data.price,
+                        }
+                    }
+
+                    const complete = () => {
+                        stop()
+                        onCompleteRef.current(
+                            lastTotalsRef.current ?? {
                                 volume: data.volume,
                                 sum: data.volume * data.price,
-                            })
+                            }
+                        )
+                    }
+
+                    switch (data.status) {
+                        case EFuelLoadingFuellingStatuses.COMPLETE:
+                            complete()
+                            break
+                        // Заказ отработан, но статус complete держится только
+                        // до возврата пистолета и легко проскакивает между
+                        // тиками. Повесили рукав — колонка ушла в idle,
+                        // и это тоже конец налива.
+                        case EFuelLoadingFuellingStatuses.IDLE:
+                            if (hasStartedRef.current) complete()
                             break
                         case EFuelLoadingFuellingStatuses.ERROR:
                             stop()

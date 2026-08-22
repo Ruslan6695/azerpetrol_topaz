@@ -141,7 +141,22 @@ export default function Layout() {
     return (
         <GestureHandlerRootView>
             {!user ? (
-                <Stack screenOptions={{ animation: 'none' }}>
+                <Stack
+                    screenOptions={{
+                        animation: 'none',
+                        // Шапку рисует InternalPagesHeader, нативной не должно
+                        // быть нигде. Опция живёт в screenOptions, а не на
+                        // каждом экране: при выходе из аккаунта рендерится
+                        // этот стек, а активным маршрутом остаётся ещё «(main)»,
+                        // который здесь не объявлен. Поэкранной опции у него
+                        // нет, и он показывал дефолтный белый хедер с
+                        // названием маршрута — на обеих платформах.
+                        headerShown: false,
+                        contentStyle: {
+                            backgroundColor: COLORS.BACKGROUND.Primary,
+                        },
+                    }}
+                >
                     <Stack.Screen
                         options={{ headerShown: false }}
                         name="index"
@@ -160,6 +175,10 @@ export default function Layout() {
                 <>
                     <Stack
                         screenOptions={{
+                            // Так же, как в стеке выше: гарантия, что нативной
+                            // шапки не будет и у маршрута, который забыли
+                            // объявить отдельным Stack.Screen.
+                            headerShown: false,
                             // ios_from_right даёт одинаковый iOS-подобный слайд
                             // на обеих платформах: на iOS резолвится в default
                             // (со свайпом назад), на Android рисует тот же
@@ -258,9 +277,6 @@ export default function Layout() {
                         <Stack.Screen
                             options={{
                                 headerShown: false,
-                                // Свайп назад увёл бы с идущего налива:
-                                // выход с этого роута только кнопками шага.
-                                gestureEnabled: false,
                                 // Налив перехватывает экран целиком, поэтому
                                 // проявляется, а не приезжает сбоку как
                                 // «ещё одна страница».

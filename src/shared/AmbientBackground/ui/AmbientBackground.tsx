@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { memo, useId } from 'react'
+import { memo, useId, useMemo } from 'react'
 import { StyleSheet, View, ViewStyle } from 'react-native'
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { SIZES } from '../../common/config/constants/sizes'
@@ -167,29 +167,45 @@ const Sphere = memo(
         const half = box / 2
         const gradientId = `sphere-${id}`
 
-        const styles = StyleSheet.create({
-            sphere: {
-                position: 'absolute',
-                width: box,
-                height: box,
-                borderRadius: half,
-                ...scalePosition(geometry.position),
-                ...(lighting.drop && {
-                    boxShadow: [shadow(lighting.drop, dropColor)],
+        // Стили сферы — это описание её светотени: несколько размытых теней,
+        // которые Android растеризует через BlurMaskFilter. Пересобирать их
+        // на каждый рендер незачем, меняются они только со сменой темы.
+        const styles = useMemo(
+            () =>
+                StyleSheet.create({
+                    sphere: {
+                        position: 'absolute',
+                        width: box,
+                        height: box,
+                        borderRadius: half,
+                        ...scalePosition(geometry.position),
+                        ...(lighting.drop && {
+                            boxShadow: [shadow(lighting.drop, dropColor)],
+                        }),
+                    },
+                    lighting: {
+                        ...StyleSheet.absoluteFillObject,
+                        borderRadius: half,
+                        boxShadow: [
+                            shadow(lighting.rim, rimColor, true),
+                            ...(lighting.glow
+                                ? [shadow(lighting.glow, glowColor, true)]
+                                : []),
+                            shadow(lighting.depth, depthColor, true),
+                        ],
+                    },
                 }),
-            },
-            lighting: {
-                ...StyleSheet.absoluteFillObject,
-                borderRadius: half,
-                boxShadow: [
-                    shadow(lighting.rim, rimColor, true),
-                    ...(lighting.glow
-                        ? [shadow(lighting.glow, glowColor, true)]
-                        : []),
-                    shadow(lighting.depth, depthColor, true),
-                ],
-            },
-        })
+            [
+                box,
+                half,
+                geometry.position,
+                lighting,
+                rimColor,
+                glowColor,
+                depthColor,
+                dropColor,
+            ]
+        )
 
         return (
             <View pointerEvents="none" style={styles.sphere}>
@@ -222,6 +238,21 @@ const Sphere = memo(
     }
 )
 
+// Сферы намеренно вылезают за края экрана (top: -230, left: -260 и т.п.),
+// поэтому фон обязан их обрезать. Без overflow: 'hidden' торчащая часть
+// видна во время нативного перехода: въезжающий экран стоит правее, и сфера,
+// выходящая за его левый край, рисуется поверх уезжающего экрана и уезжает
+// вместе с ним влево. На неподвижном экране этого не заметно — там
+// вылезающая часть просто за границей дисплея.
+//
+// От темы стиль не зависит, поэтому живёт на модуле, а не в теле компонента.
+const rootStyles = StyleSheet.create({
+    clip: {
+        ...StyleSheet.absoluteFillObject,
+        overflow: 'hidden',
+    },
+})
+
 // Фон макета: градиентная заливка и три объёмные сферы позади контента.
 // Единственный фон приложения: старый BackgroundImage удалён вместе с последними
 // его потребителями в ветке налива. Сферы статичны — прежний дрейф блобов
@@ -237,38 +268,61 @@ export const AmbientBackground = memo(() => {
     // заливку SVG — чёрную. Двоеточия из useId в id класть нельзя.
     const instanceId = useId().replace(/[^a-zA-Z0-9]/g, '')
 
-    const styles = StyleSheet.create({
-        clip: {
-            ...StyleSheet.absoluteFillObject,
-            overflow: 'hidden',
-        },
-    })
-
     const lighting =
         theme === EColorThemes.DARK ? LIGHTING.dark : LIGHTING.light
 
-    // Сферы намеренно вылезают за края экрана (top: -230, left: -260 и т.п.),
-    // поэтому фон обязан их обрезать. Без overflow: 'hidden' торчащая часть
-    // видна во время нативного перехода: въезжающий экран стоит правее, и сфера,
-    // выходящая за его левый край, рисуется поверх уезжающего экрана и уезжает
-    // вместе с ним влево. На неподвижном экране этого не заметно — там
-    // вылезающая часть просто за границей дисплея.
+    // Тёмная тема макета заливает фон плоско: все три стопа равны
+    // BACKGROUND.Primary, которым родитель уже залит. Гонять ради этого
+    // шейдер линейного градиента на весь экран — чистый overdraw, поэтому
+    // при совпадающих стопах рисуем обычную заливку. В светлой теме стопы
+    // различаются, там остаётся настоящий градиент.
+    const gradientColors = [
+        COLORS.BACKGROUND.PrimaryGradientFrom,
+        COLORS.BACKGROUND.PrimaryGradientMid,
+        COLORS.BACKGROUND.PrimaryGradientTo,
+    ] as const
+    const isFlatFill =
+        gradientColors[0] === gradientColors[1] &&
+        gradientColors[1] === gradientColors[2]
+
+    const flatFillStyle = useMemo(
+        () =>
+            StyleSheet.create({
+                fill: {
+                    ...StyleSheet.absoluteFillObject,
+                    backgroundColor: gradientColors[0],
+                },
+            }),
+        [gradientColors[0]]
+    )
+
     return (
-        <View pointerEvents="none" style={styles.clip}>
-            <LinearGradient
-                pointerEvents="none"
-                colors={
-                    [
-                        COLORS.BACKGROUND.PrimaryGradientFrom,
-                        COLORS.BACKGROUND.PrimaryGradientMid,
-                        COLORS.BACKGROUND.PrimaryGradientTo,
-                    ] as const
-                }
-                locations={GRADIENT_LOCATIONS}
-                start={GRADIENT_ANGLE.start}
-                end={GRADIENT_ANGLE.end}
-                style={StyleSheet.absoluteFill}
-            />
+        // Фон статичен: он не зависит ни от какого покадрового состояния и
+        // меняется только со сменой темы. Зато рисовать его дорого — три
+        // SVG-сферы шире экрана и несколько размытых теней на каждую, а
+        // boxShadow на Android идёт через BlurMaskFilter. Просим Android
+        // растеризовать всё поддерево один раз в текстуру: при переходах,
+        // когда экран едет, она композитится вместо повторной растеризации
+        // размытий. Цена — видеопамять под текстуру размером с экран; для
+        // статики это правильный размен (docs: View#renderToHardwareTextureAndroid).
+        <View
+            pointerEvents="none"
+            style={rootStyles.clip}
+            renderToHardwareTextureAndroid
+            collapsable={false}
+        >
+            {isFlatFill ? (
+                <View pointerEvents="none" style={flatFillStyle.fill} />
+            ) : (
+                <LinearGradient
+                    pointerEvents="none"
+                    colors={gradientColors}
+                    locations={GRADIENT_LOCATIONS}
+                    start={GRADIENT_ANGLE.start}
+                    end={GRADIENT_ANGLE.end}
+                    style={StyleSheet.absoluteFill}
+                />
+            )}
             <Sphere
                 id={`${instanceId}-1`}
                 geometry={SPHERES[0]}
