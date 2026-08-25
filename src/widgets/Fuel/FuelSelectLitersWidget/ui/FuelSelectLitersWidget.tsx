@@ -37,7 +37,7 @@ export const FuelSelectLitersWidget = memo(({ setRoad }: Props) => {
     // Шаг открыт без выбранного топлива — возвращаемся назад.
     // Именно в эффекте: setRoad во время рендера ронял порядок хуков.
     const isReady = Boolean(
-        fuelStore.azs && fuelStore.column && fuelStore.trkType
+        fuelStore.azs && fuelStore.column && fuelStore.fuelOption
     )
     useEffect(() => {
         if (!isReady) {
@@ -51,7 +51,7 @@ export const FuelSelectLitersWidget = memo(({ setRoad }: Props) => {
         },
     })
 
-    if (!fuelStore.azs || !fuelStore.column || !fuelStore.trkType) {
+    if (!fuelStore.azs || !fuelStore.column || !fuelStore.fuelOption) {
         return null
     }
 
@@ -62,7 +62,7 @@ export const FuelSelectLitersWidget = memo(({ setRoad }: Props) => {
                 onSubmit={handleChangeLitersAndRubles}
                 azs={fuelStore.azs}
                 column={fuelStore.column}
-                trkType={fuelStore.trkType}
+                fuelOption={fuelStore.fuelOption}
             />
             <MPLayout mt={SPACING.SECTION}>
                 <View style={styles.info}>
