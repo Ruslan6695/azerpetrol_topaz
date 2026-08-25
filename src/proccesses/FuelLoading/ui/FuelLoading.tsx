@@ -17,6 +17,7 @@ export const FuelLoading = memo((props: Props) => {
     const [road, setRoad] = useState<TFuelLoadingRoad>('start')
     const [totals, setTotals] = useState<IFuellingTotals | null>(null)
     const [errorKind, setErrorKind] = useState<EFuellingErrorKind | null>(null)
+    const [errorReason, setErrorReason] = useState<string | undefined>(undefined)
     const { fetchBalance } = useGetBalance()
 
     const handleEndFuelling = useCallback((endTotals: IFuellingTotals) => {
@@ -24,15 +25,20 @@ export const FuelLoading = memo((props: Props) => {
         setRoad('end')
     }, [])
 
-    const handleFuellingError = useCallback((kind: EFuellingErrorKind) => {
-        setErrorKind(kind)
-        setRoad('error')
-    }, [])
+    const handleFuellingError = useCallback(
+        (kind: EFuellingErrorKind, reason?: string) => {
+            setErrorKind(kind)
+            setErrorReason(reason)
+            setRoad('error')
+        },
+        []
+    )
 
     // Возврат на поллинг: колонка могла ожить, а сессия налива на бэкенде
     // жива — заново стартовать fuelling/start/ не нужно.
     const handleRetry = useCallback(() => {
         setErrorKind(null)
+        setErrorReason(undefined)
         setRoad('fuelling')
     }, [])
 
@@ -58,6 +64,7 @@ export const FuelLoading = memo((props: Props) => {
             return errorKind ? (
                 <FuelLoadingErrorWidget
                     kind={errorKind}
+                    reason={errorReason}
                     onRetry={handleRetry}
                 />
             ) : null

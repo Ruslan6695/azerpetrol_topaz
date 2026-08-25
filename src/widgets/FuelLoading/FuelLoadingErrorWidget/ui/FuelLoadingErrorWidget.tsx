@@ -13,16 +13,17 @@ import { CenteredState } from '../../../../shared/CenteredState'
 
 type Props = {
     kind: EFuellingErrorKind
+    reason?: string
     /** Вернуться к опросу статуса — колонка могла ожить */
     onRetry: () => void
 }
 
 // Экрана ошибки налива в макете нет — дорисован: на статусах error/locked
 // и по таймауту пользователь иначе остаётся на вечно крутящемся кольце.
-export const FuelLoadingErrorWidget = memo(({ kind, onRetry }: Props) => {
+export const FuelLoadingErrorWidget = memo(({ kind, reason, onRetry }: Props) => {
     const router = useRouter()
     const clearState = FuelStore.useClearState()
-    const { title, description } = getFuellingErrorText(kind)
+    const { title, description } = getFuellingErrorText(kind, reason)
 
     const handleBackToFuel = useCallback(() => {
         clearState()

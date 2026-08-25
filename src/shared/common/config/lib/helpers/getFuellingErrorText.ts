@@ -4,15 +4,18 @@ const TEXTS: Record<
     EFuellingErrorKind,
     { title: string; description: string }
 > = {
-    [EFuellingErrorKind.PUMP_ERROR]: {
-        title: 'Ошибка колонки',
+    [EFuellingErrorKind.EXPIRED]: {
+        title: 'Колонка не ответила',
         description:
-            'Колонка сообщила об ошибке. Проверьте пистолет и обратитесь к оператору АЗС.',
+            'Станция не подтвердила заказ вовремя. Попробуйте запустить налив ещё раз.',
     },
-    [EFuellingErrorKind.LOCKED]: {
-        title: 'Колонка заблокирована',
-        description:
-            'Колонка сейчас недоступна. Выберите другую или обратитесь к оператору АЗС.',
+    [EFuellingErrorKind.STATION_CANCELED]: {
+        title: 'Заказ отменён станцией',
+        description: 'АЗС отменила заказ. Обратитесь к оператору АЗС.',
+    },
+    [EFuellingErrorKind.USER_CANCELED]: {
+        title: 'Заказ отменён',
+        description: 'Налив был отменён.',
     },
     [EFuellingErrorKind.TIMEOUT]: {
         title: 'Колонка не отвечает',
@@ -21,5 +24,11 @@ const TEXTS: Record<
     },
 }
 
-// Тексты ошибок налива берём здесь, а не сравнением статусов по месту.
-export const getFuellingErrorText = (kind: EFuellingErrorKind) => TEXTS[kind]
+// Причина от сервера (если пришла) точнее нашего общего текста — показываем её.
+export const getFuellingErrorText = (
+    kind: EFuellingErrorKind,
+    reason?: string
+) => {
+    const base = TEXTS[kind]
+    return reason ? { ...base, description: reason } : base
+}
