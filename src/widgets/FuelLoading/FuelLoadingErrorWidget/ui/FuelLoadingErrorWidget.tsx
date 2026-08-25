@@ -14,16 +14,19 @@ import { CenteredState } from '../../../../shared/CenteredState'
 type Props = {
     kind: EFuellingErrorKind
     reason?: string
-    /** Вернуться к опросу статуса — колонка могла ожить */
+    /** Повторить опрос — только для TIMEOUT, где статус колонки не выяснен */
     onRetry: () => void
 }
 
-// Экрана ошибки налива в макете нет — дорисован: на статусах error/locked
-// и по таймауту пользователь иначе остаётся на вечно крутящемся кольце.
+// Экрана ошибки налива в макете нет — дорисован. TIMEOUT — единственная
+// причина, где статус колонки действительно неизвестен и есть смысл
+// проверить ещё раз; Expired/StationCanceled/UserCanceled — терминальные
+// статусы заказа Топаз, повтор опроса того же orderId вернёт тот же статус.
 export const FuelLoadingErrorWidget = memo(({ kind, reason, onRetry }: Props) => {
     const router = useRouter()
     const clearState = FuelStore.useClearState()
     const { title, description } = getFuellingErrorText(kind, reason)
+    const isRetryable = kind === EFuellingErrorKind.TIMEOUT
 
     const handleBackToFuel = useCallback(() => {
         clearState()
@@ -44,11 +47,16 @@ export const FuelLoadingErrorWidget = memo(({ kind, reason, onRetry }: Props) =>
                     variant="error"
                     title={title}
                     description={description}
-                    action={{ label: 'Проверить ещё раз', onPress: onRetry }}
-                    secondaryAction={{
-                        label: 'Вернуться к выбору',
-                        onPress: handleBackToFuel,
-                    }}
+                    action={
+                        isRetryable
+                            ? { label: 'Проверить ещё раз', onPress: onRetry }
+                            : { label: 'Вернуться к выбору', onPress: handleBackToFuel }
+                    }
+                    secondaryAction={
+                        isRetryable
+                            ? { label: 'Вернуться к выбору', onPress: handleBackToFuel }
+                            : undefined
+                    }
                 />
             </View>
         </>
