@@ -3,14 +3,12 @@ import { IFuelLoadingFuellingArgs } from '../config/interfaces/IFuelLoadingFuell
 import { IFuelLoadingFuellingData } from '../config/interfaces/IFuelLoadingFuellingData'
 
 export const fuelLoadingFuellingApi = {
-    getStatus: async ({ azsId, columnDevice }: IFuelLoadingFuellingArgs) => {
+    getStatus: async ({ orderId }: IFuelLoadingFuellingArgs) => {
         const token = await getToken()
 
         const resp = await axiosIntsanse.get<IFuelLoadingFuellingData>(
             'fuelling/status/',
-            {
-                params: { token, azs: azsId, trc_id: columnDevice },
-            }
+            { params: { token, order_id: orderId } }
         )
         return resp.data
     },
