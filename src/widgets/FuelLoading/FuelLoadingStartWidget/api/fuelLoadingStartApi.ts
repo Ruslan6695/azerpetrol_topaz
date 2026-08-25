@@ -1,39 +1,32 @@
 import { axiosIntsanse, getToken } from '../../../../shared'
+import { IFuelLoadingStartData } from '../config/interfaces/IFuelLoadingStartData'
 
 export const fuelLoadingStartApi = {
     startFuelling: async ({
         azsId,
-        columnDevice,
+        columnId,
+        fuelId,
+        price,
         sumRub,
-        trkTypeArt,
-        trkTypeName,
-        trkTypeNozzleId,
-        trkTypePetrolId,
-        trkTypePrice,
     }: {
-        azsId: number
-        columnDevice: string
-        trkTypeNozzleId: number
-        trkTypePetrolId: number
-        trkTypeArt: string
-        trkTypeName: string
-        trkTypePrice: number
+        azsId: string
+        columnId: number
+        fuelId: string
+        price: number
         sumRub: number
     }) => {
         const token = await getToken()
-        const resp = await axiosIntsanse.get('fuelling/start/', {
-            params: {
-                token,
-                azs: azsId,
-                trk_id: columnDevice,
-                nozzle_id: trkTypeNozzleId,
-                petrol_id: trkTypePetrolId,
-                art: trkTypeArt,
-                petrol_name: trkTypeName,
-                price: trkTypePrice,
+        const resp = await axiosIntsanse.post<IFuelLoadingStartData>(
+            'fuelling/start/',
+            {
+                azs_id: azsId,
+                column_id: columnId,
+                fuel_id: fuelId,
+                price,
                 sum: sumRub,
             },
-        })
+            { params: { token } }
+        )
         return resp.data
     },
 }

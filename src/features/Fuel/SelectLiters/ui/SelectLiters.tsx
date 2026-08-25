@@ -7,7 +7,7 @@ import {
     FuelStore,
     IAzs,
     IColumn,
-    ITrkType,
+    IFuelOption,
     RADII,
     SIZES,
     SPACING,
@@ -32,7 +32,7 @@ import { LitersPresets } from './LitersPresets'
 type Props = {
     column: IColumn
     azs: IAzs
-    trkType: ITrkType
+    fuelOption: IFuelOption
     onSubmit: (props: { liters: number; rubles: number }) => void
     onGoBack: () => void
 }
@@ -43,7 +43,7 @@ const MODES: ITabWithBackground[] = [
 ]
 
 export const SelectLiters = memo(
-    ({ azs, column, trkType, onSubmit, onGoBack }: Props) => {
+    ({ azs, column, fuelOption, onSubmit, onGoBack }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
         const router = useRouter()
         const fuelOnDebt = FuelStore.useState().fuelOnDebt
@@ -57,8 +57,8 @@ export const SelectLiters = memo(
 
         const isLitersMode = mode.value === MODES[0].value
         const rubles = useMemo(
-            () => Math.round(liters * trkType.price),
-            [liters, trkType.price]
+            () => Math.round(liters * fuelOption.price),
+            [liters, fuelOption.price]
         )
 
         const handleChangeLiters = useCallback((value: number) => {
@@ -68,9 +68,9 @@ export const SelectLiters = memo(
         // Сумма редактируется в рублях, но состояние одно — литры.
         const handleChangeRubles = useCallback(
             (value: number) => {
-                setLiters(Number((value / trkType.price).toFixed(2)))
+                setLiters(Number((value / fuelOption.price).toFixed(2)))
             },
-            [trkType.price]
+            [fuelOption.price]
         )
 
         const handleSubmit = useCallback(() => {
@@ -211,18 +211,18 @@ export const SelectLiters = memo(
                         <ListRow title="АЗС" value={azs.name} />
                         <ListRow
                             title="Топливо"
-                            value={`${trkType.name} · Колонка ${column.name}`}
+                            value={`${fuelOption.name} · Колонка ${column.id}`}
                         />
                         <ListRow
                             title="Цена за литр"
-                            value={`${trkType.price} ₽`}
+                            value={`${fuelOption.price} ₽`}
                             last
                         />
                     </ListGroup>
                 </View>
 
                 <View style={styles.section}>
-                    <FuelBonusCard trkType={trkType} liters={liters} />
+                    <FuelBonusCard fuelOption={fuelOption} liters={liters} />
                 </View>
 
                 <View style={styles.section}>

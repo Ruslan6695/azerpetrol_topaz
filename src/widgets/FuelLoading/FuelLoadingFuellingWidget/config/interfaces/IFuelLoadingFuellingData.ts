@@ -1,8 +1,9 @@
-import { EFuelLoadingFuellingStatuses } from '../enums/EFuelLoadingFuellingStatuses'
+import { EFuelOrderStatus } from '../enums/EFuelOrderStatus'
 
 export interface IFuelLoadingFuellingData {
+    status: EFuelOrderStatus
     volume: number
-    price: number
-    status: EFuelLoadingFuellingStatuses
-    nozzle: string
+    sum: number
+    /** Причина отмены/просрочки от сервера, есть только на терминальных статусах отмены */
+    reason?: string
 }

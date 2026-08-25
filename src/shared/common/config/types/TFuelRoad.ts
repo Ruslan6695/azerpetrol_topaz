@@ -2,4 +2,4 @@
 // поэтому не ESCREENS: процесс переключает их локальным состоянием.
 // Живёт в shared, потому что тип нужен и процессу, и виджетам шагов.
 export type TFuelRoad =
-    'main' | 'selectAzsAndColumn' | 'scan' | 'selectTrkType' | 'selectLiters'
+    'main' | 'selectAzsAndColumn' | 'selectTrkType' | 'selectLiters'

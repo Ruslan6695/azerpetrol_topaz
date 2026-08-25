@@ -7,7 +7,7 @@ import {
     FuelStore,
     IAzs,
     IColumn,
-    ITrkType,
+    IFuelOption,
     SIZES,
     SPACING,
     UserStore,
@@ -22,20 +22,20 @@ import { TrkTypeRow } from './TrkTypeRow'
 type Props = {
     column: IColumn
     azs: IAzs
-    onSelectTrkType: (trkType: ITrkType) => void
+    onSelectFuelOption: (fuelOption: IFuelOption) => void
     onGoBack: () => void
 }
 
 export const SelectTrkTypeForm = memo(
-    ({ azs, column, onSelectTrkType, onGoBack }: Props) => {
+    ({ azs, column, onSelectFuelOption, onGoBack }: Props) => {
         const setBalance = UserStore.useSetBalance()
         const changeFuelOnDebt = FuelStore.useChangeFuelOnDebt()
 
         const { data, errorText, fetchData, isDataLoading } = useFetchData<
             ISelectTrkTypeData,
-            { azsId: number; columnId: number }
+            { azsId: string; columnId: number }
         >({
-            apiCallback: selectTrkTypeApi.getTrkTypes,
+            apiCallback: selectTrkTypeApi.getFuelOptions,
             errorText: 'Не удалось получить типы топлива',
         })
 
@@ -79,7 +79,7 @@ export const SelectTrkTypeForm = memo(
                     />
                 ) : isDataLoading ? (
                     <SelectTrkTypeFormSkeleton />
-                ) : !data?.trc_types?.length ? (
+                ) : !data?.fuel_options?.length ? (
                     <CenteredState
                         variant="empty"
                         title="Топливо не загрузилось"
@@ -91,11 +91,11 @@ export const SelectTrkTypeForm = memo(
                     />
                 ) : (
                     <View style={styles.list}>
-                        {data.trc_types.map((trk) => (
+                        {data.fuel_options.map((option) => (
                             <TrkTypeRow
-                                key={trk.id}
-                                trkType={trk}
-                                onSelect={onSelectTrkType}
+                                key={option.fuelId}
+                                fuelOption={option}
+                                onSelect={onSelectFuelOption}
                             />
                         ))}
                     </View>

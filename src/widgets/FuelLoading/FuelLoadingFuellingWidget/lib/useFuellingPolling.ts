@@ -5,7 +5,7 @@ import {
     useFetchData,
 } from '../../../../shared'
 import { fuelLoadingFuellingApi } from '../api/fuelLoadingFuellingApi'
-import { EFuelLoadingFuellingStatuses } from '../config/enums/EFuelLoadingFuellingStatuses'
+import { EFuelOrderStatus } from '../config/enums/EFuelOrderStatus'
 import { IFuelLoadingFuellingArgs } from '../config/interfaces/IFuelLoadingFuellingArgs'
 import { IFuelLoadingFuellingData } from '../config/interfaces/IFuelLoadingFuellingData'
 
@@ -15,27 +15,23 @@ const INTERVAL_MS = 1000
 const DEADLINE_MS = 10 * 60 * 1000
 
 type Args = {
-    /** Пока параметры налива не собраны, опрашивать колонку нечем */
+    /** Пока orderId не создан, опрашивать нечего */
     enabled: boolean
-    azsId: number
-    columnDevice: string
+    orderId: string
     onComplete: (totals: IFuellingTotals) => void
-    onError: (kind: EFuellingErrorKind) => void
+    onError: (kind: EFuellingErrorKind, reason?: string) => void
 }
 
-// Поллинг статуса колонки. Живёт в lib, а не в компоненте: своих setInterval
+// Поллинг статуса заказа. Живёт в lib, а не в компоненте: своих setInterval
 // по месту в проекте не заводим (см. useCallcheckPolling). Запрос идёт через
 // useFetchData, поэтому разлогин по 401 остаётся централизованным.
 export const useFuellingPolling = ({
     enabled,
-    azsId,
-    columnDevice,
+    orderId,
     onComplete,
     onError,
 }: Args) => {
-    const [status, setStatus] = useState<EFuelLoadingFuellingStatuses | null>(
-        null
-    )
+    const [status, setStatus] = useState<EFuelOrderStatus | null>(null)
     const [volume, setVolume] = useState(0)
 
     const { fetchData } = useFetchData<
@@ -50,15 +46,6 @@ export const useFuellingPolling = ({
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
     const cancelledRef = useRef(false)
 
-    // «Налив точно шёл» — без этого флага idle до начала налива приняли бы
-    // за его завершение. Взводится и по ненулевому объёму: короткий налив
-    // может целиком уместиться между двумя тиками, и статус fuelling
-    // не поймает ни один опрос.
-    const hasStartedRef = useRef(false)
-    // Последние ненулевые показания. К моменту idle колонка уже могла
-    // обнулить счётчик, а итоги показать надо настоящие.
-    const lastTotalsRef = useRef<IFuellingTotals | null>(null)
-
     const fetchDataRef = useRef(fetchData)
     const onCompleteRef = useRef(onComplete)
     const onErrorRef = useRef(onError)
@@ -71,8 +58,6 @@ export const useFuellingPolling = ({
 
         cancelledRef.current = false
         inFlightRef.current = false
-        hasStartedRef.current = false
-        lastTotalsRef.current = null
         const startedAt = Date.now()
 
         const stop = () => {
@@ -84,8 +69,6 @@ export const useFuellingPolling = ({
         }
 
         const tick = async () => {
-            // Ответ колонки может прийти позже следующего тика — без флага
-            // запросы копились бы параллельно.
             if (inFlightRef.current || cancelledRef.current) return
 
             if (Date.now() - startedAt > DEADLINE_MS) {
@@ -96,63 +79,46 @@ export const useFuellingPolling = ({
 
             inFlightRef.current = true
             await fetchDataRef.current({
-                args: { azsId, columnDevice },
-                // Тост на каждый неудачный опрос завалил бы экран,
-                // а свой индикатор загрузки здесь не нужен — кольцо само им и является.
+                args: { orderId },
                 hideToastOnError: true,
                 disableSetLoading: true,
                 afterDataCallback(data) {
                     if (cancelledRef.current) return
-
-                    // Потеряв связь с контроллером, бэкенд отдаёт 200 с пустым
+                    // Потеряв связь с Топаз, сервер может отдать 200 с пустым
                     // телом. Затирать им последний осмысленный статус нельзя.
                     if (!data?.status) return
 
                     setStatus(data.status)
                     setVolume(data.volume)
 
-                    if (
-                        data.status === EFuelLoadingFuellingStatuses.FUELLING ||
-                        data.volume > 0
-                    ) {
-                        hasStartedRef.current = true
-                    }
-
-                    if (data.volume > 0) {
-                        lastTotalsRef.current = {
-                            volume: data.volume,
-                            sum: data.volume * data.price,
-                        }
-                    }
-
-                    const complete = () => {
-                        stop()
-                        onCompleteRef.current(
-                            lastTotalsRef.current ?? {
-                                volume: data.volume,
-                                sum: data.volume * data.price,
-                            }
-                        )
-                    }
-
                     switch (data.status) {
-                        case EFuelLoadingFuellingStatuses.COMPLETE:
-                            complete()
-                            break
-                        // Заказ отработан, но статус complete держится только
-                        // до возврата пистолета и легко проскакивает между
-                        // тиками. Повесили рукав — колонка ушла в idle,
-                        // и это тоже конец налива.
-                        case EFuelLoadingFuellingStatuses.IDLE:
-                            if (hasStartedRef.current) complete()
-                            break
-                        case EFuelLoadingFuellingStatuses.ERROR:
+                        case EFuelOrderStatus.COMPLETED:
                             stop()
-                            onErrorRef.current(EFuellingErrorKind.PUMP_ERROR)
+                            onCompleteRef.current({
+                                volume: data.volume,
+                                sum: data.sum,
+                            })
                             break
-                        case EFuelLoadingFuellingStatuses.LOCKED:
+                        case EFuelOrderStatus.EXPIRED:
                             stop()
-                            onErrorRef.current(EFuellingErrorKind.LOCKED)
+                            onErrorRef.current(
+                                EFuellingErrorKind.EXPIRED,
+                                data.reason
+                            )
+                            break
+                        case EFuelOrderStatus.STATION_CANCELED:
+                            stop()
+                            onErrorRef.current(
+                                EFuellingErrorKind.STATION_CANCELED,
+                                data.reason
+                            )
+                            break
+                        case EFuelOrderStatus.USER_CANCELED:
+                            stop()
+                            onErrorRef.current(
+                                EFuellingErrorKind.USER_CANCELED,
+                                data.reason
+                            )
                             break
                     }
                 },
@@ -166,7 +132,7 @@ export const useFuellingPolling = ({
         tick()
 
         return stop
-    }, [enabled, azsId, columnDevice])
+    }, [enabled, orderId])
 
     return { status, volume }
 }

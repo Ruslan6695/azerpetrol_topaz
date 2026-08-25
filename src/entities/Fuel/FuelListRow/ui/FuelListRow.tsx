@@ -7,12 +7,12 @@ import { Typography } from '../../../../shared/Typography'
 type Props = {
     /** Идентификатор элемента: возвращается в onSelect, чтобы не плодить
      *  стрелочные функции в списке и не ломать memo строк */
-    id: number
+    id: string
     title: string
     subtitle?: string
     /** Значение справа: расстояние, номер, статус */
     value?: string
-    onSelect: (id: number) => void
+    onSelect: (id: string) => void
 }
 
 // Стеклянная строка списка макета (dc.html:499–502): заголовок, подпись

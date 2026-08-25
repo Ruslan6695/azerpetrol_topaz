@@ -4,7 +4,7 @@ import { InfoCard } from '../../../../entities/InfoCard'
 import { SelectTrkTypeForm } from '../../../../features/Fuel/SelectTrkTypeForm'
 import {
     FuelStore,
-    ITrkType,
+    IFuelOption,
     SIZES,
     SPACING,
     TFuelRoad,
@@ -18,14 +18,14 @@ type Props = {
 
 export const FuelSelectTrkTypeWidget = memo(({ setRoad }: Props) => {
     const fuelStore = FuelStore.useState()
-    const changeTrkType = FuelStore.useChangeTrkType()
+    const changeFuelOption = FuelStore.useChangeFuelOption()
 
-    const handleSelectTrkType = useCallback(
-        (trkType: ITrkType) => {
-            changeTrkType(trkType)
+    const handleSelectFuelOption = useCallback(
+        (fuelOption: IFuelOption) => {
+            changeFuelOption(fuelOption)
             setRoad('selectLiters')
         },
-        [changeTrkType, setRoad]
+        [changeFuelOption, setRoad]
     )
 
     const handleGoBack = useCallback(() => {
@@ -55,7 +55,7 @@ export const FuelSelectTrkTypeWidget = memo(({ setRoad }: Props) => {
         <>
             <SelectTrkTypeForm
                 onGoBack={handleGoBack}
-                onSelectTrkType={handleSelectTrkType}
+                onSelectFuelOption={handleSelectFuelOption}
                 azs={fuelStore.azs}
                 column={fuelStore.column}
             />

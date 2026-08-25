@@ -6,50 +6,29 @@ import { SIZES, SPACING } from '../../../../shared'
 
 type Props = {
     onSelectColumn: () => void
-    onScanColumn: () => void
     onNeedHelp: () => void
 }
 
-// Раскладка макета: герой «Выбрать колонку», под ним ряд из двух плиток.
+// Раскладка макета: герой «Выбрать колонку», под ним плитка помощи
+// (плитка сканирования убрана — Топаз не поддерживает идентификацию по QR).
 export const MapFuelMainBlocks = memo(
-    ({ onNeedHelp, onScanColumn, onSelectColumn }: Props) => {
+    ({ onNeedHelp, onSelectColumn }: Props) => {
         const styles = StyleSheet.create({
             container: {
                 gap: SPACING.MD * SIZES.PX,
-            },
-            row: {
-                flexDirection: 'row',
-                gap: SPACING.MD * SIZES.PX,
-            },
-            // Ширину плиткам задаёт обёртка: GlassCard сам не растягивается.
-            tile: {
-                flex: 1,
             },
         })
 
         return (
             <View style={styles.container}>
                 <FuelMainHero onPress={onSelectColumn} />
-                <View style={styles.row}>
-                    <View style={styles.tile}>
-                        <FuelMethodTile
-                            icon="fuel_scan"
-                            variant="glass2"
-                            title="Сканировать QR"
-                            subtitle="С колонки"
-                            onPress={onScanColumn}
-                        />
-                    </View>
-                    <View style={styles.tile}>
-                        <FuelMethodTile
-                            icon="fuel_help"
-                            variant="glass"
-                            title="Нужна помощь"
-                            subtitle="Подсказки, контакты"
-                            onPress={onNeedHelp}
-                        />
-                    </View>
-                </View>
+                <FuelMethodTile
+                    icon="fuel_help"
+                    variant="glass"
+                    title="Нужна помощь"
+                    subtitle="Подсказки, контакты"
+                    onPress={onNeedHelp}
+                />
             </View>
         )
     }

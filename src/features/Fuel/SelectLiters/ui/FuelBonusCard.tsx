@@ -4,7 +4,7 @@ import {
     calcFuelModifierAmount,
     collectFuelModifiers,
     formatFuelModifierAmount,
-    ITrkType,
+    IFuelOption,
     RADII,
     SIZES,
     SPACING,
@@ -15,19 +15,16 @@ import { Icon } from '../../../../shared/Icons'
 import { Typography } from '../../../../shared/Typography'
 
 type Props = {
-    trkType: ITrkType
-    /** Модификаторы считаются от объёма: рубли в них — за литр */
+    fuelOption: IFuelOption
     liters: number
 }
 
 const ICON_SIZE = 30
 
-// Карточка выгоды (dc.html:556–559). Бонусы, кэшбек и скидка — разные вещи,
-// поэтому у каждой свой текст; пока бэкенд их не отдаёт, карточки нет.
-export const FuelBonusCard = memo(({ trkType, liters }: Props) => {
+export const FuelBonusCard = memo(({ fuelOption, liters }: Props) => {
     const lines = useMemo(
         () =>
-            collectFuelModifiers(trkType, [
+            collectFuelModifiers(fuelOption, [
                 'bonus',
                 'cashback',
                 'discount',
@@ -35,10 +32,10 @@ export const FuelBonusCard = memo(({ trkType, liters }: Props) => {
                 kind,
                 text: formatFuelModifierAmount(
                     kind,
-                    calcFuelModifierAmount(modifier, trkType.price, liters)
+                    calcFuelModifierAmount(modifier, fuelOption.price, liters)
                 ),
             })),
-        [trkType, liters]
+        [fuelOption, liters]
     )
 
     const COLORS = ThemeStore.useCOLORS()
@@ -49,8 +46,6 @@ export const FuelBonusCard = memo(({ trkType, liters }: Props) => {
             alignItems: 'center',
             gap: SPACING.LG * SIZES.PX,
         },
-        // Знак рубля рисуется текстом, поэтому фиксируем ему ширину иконки,
-        // иначе тексты в карточках бонусов и кэшбека начинались бы по-разному.
         icon: {
             width: ICON_SIZE * SIZES.PX,
             alignItems: 'center',

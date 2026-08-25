@@ -53,7 +53,7 @@ export const SelectAzsAndColumn = memo(
             errorText: columnsErrorText,
             fetchData: fetchColumnsData,
             isDataLoading: isColumnsDataLoading,
-        } = useFetchData<IGetColumnsData, { azs_id: number }>({
+        } = useFetchData<IGetColumnsData, { azs_id: string }>({
             apiCallback: selectAzsAndColumnApi.getColumns,
             errorText: 'Не удалось получить список колонок',
             defaultLoading: false,
@@ -64,7 +64,7 @@ export const SelectAzsAndColumn = memo(
         }, [fetchAzsListData])
 
         const handleSelectAzs = useCallback(
-            (azsId: number) => {
+            (azsId: string) => {
                 const selected = azsListData?.azs_list.find(
                     (item) => item.id === azsId
                 )
@@ -94,7 +94,7 @@ export const SelectAzsAndColumn = memo(
         const columnOptions: ISelectOption[] = useMemo(
             () =>
                 (columnsData?.trcs ?? []).map((trc) => ({
-                    label: `Колонка № ${trc.name}`,
+                    label: `Колонка № ${trc.id}`,
                     value: trc.id,
                 })),
             [columnsData]
@@ -197,8 +197,10 @@ export const SelectAzsAndColumn = memo(
                                 key={item.id}
                                 id={item.id}
                                 title={item.name}
-                                // Адреса и расстояния в get_azs_list/ нет,
-                                // поэтому отмечаем только найденную по гео.
+                                // IAzs пока не несёт адрес/геолокацию (сервер их
+                                // отдаёт, но UI ими не пользуется); подсветка "рядом
+                                // с вами" не сработает, пока не вернётся автоподбор
+                                // по геолокации (см. FuelSelectAzsAndColumnWidget).
                                 value={
                                     azs?.id === item.id
                                         ? 'Рядом с вами'

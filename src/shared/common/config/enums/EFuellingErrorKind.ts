@@ -1,8 +1,8 @@
-// Причины, по которым налив прерван. Отделены от EFuelLoadingFuellingStatuses:
-// статусы описывают, что сейчас с колонкой, а kind — что показать пользователю
-// (в том числе таймаут, которого среди статусов бэкенда нет).
+// Причины, по которым налив прерван — статусы заказа Топаз, которые
+// не ведут на экран итогов, плюс собственный клиентский таймаут.
 export enum EFuellingErrorKind {
-    PUMP_ERROR = 'PUMP_ERROR',
-    LOCKED = 'LOCKED',
+    EXPIRED = 'EXPIRED',
+    STATION_CANCELED = 'STATION_CANCELED',
+    USER_CANCELED = 'USER_CANCELED',
     TIMEOUT = 'TIMEOUT',
 }

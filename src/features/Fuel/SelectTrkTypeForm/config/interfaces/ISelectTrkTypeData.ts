@@ -1,8 +1,8 @@
-import { ITrkType } from "../../../../../shared";
+import { IFuelOption } from '../../../../../shared'
 
 export interface ISelectTrkTypeData {
-  trc_types: ITrkType[];
-  balance: number;
-  bonus_balance: number;
-  fuel_on_debt: boolean;
+    fuel_options: IFuelOption[]
+    balance: number
+    bonus_balance: number
+    fuel_on_debt: boolean
 }
