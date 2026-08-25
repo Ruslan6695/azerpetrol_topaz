@@ -22,7 +22,7 @@ type Props = {
 // Итоги налива (dc.html:585–599). Экран не центрированный — обычная колонка.
 export const FuelLoadingEndWidget = memo(({ totals }: Props) => {
     const router = useRouter()
-    const { azs, column, trkType } = FuelStore.useState()
+    const { azs, column, fuelOption } = FuelStore.useState()
     const clearState = FuelStore.useClearState()
     const { balance, fetchBalance } = useGetBalance()
 
@@ -54,8 +54,8 @@ export const FuelLoadingEndWidget = memo(({ totals }: Props) => {
                     <ListRow
                         title="Топливо"
                         value={
-                            trkType && column
-                                ? `${trkType.name} · Колонка ${column.name}`
+                            fuelOption && column
+                                ? `${fuelOption.name} · Колонка ${column.id}`
                                 : '—'
                         }
                     />
