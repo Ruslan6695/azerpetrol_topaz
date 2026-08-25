@@ -7,7 +7,6 @@ import ConvertSvg from '../../assets/convert.svg'
 import EyeSvg from '../../assets/eye.svg'
 import EyeOffSvg from '../../assets/eye_off.svg'
 import FuelHelpSvg from '../../assets/fuel_help.svg'
-import FuelScanSvg from '../../assets/fuel_scan.svg'
 import FuelSelectSvg from '../../assets/fuel_select.svg'
 import GiftSvg from '../../assets/gift.svg'
 import HomeBonusesSvg from '../../assets/home_bonuses.svg'
@@ -40,7 +39,6 @@ export const ICONS = {
     eye: EyeSvg,
     eye_off: EyeOffSvg,
     fuel_help: FuelHelpSvg,
-    fuel_scan: FuelScanSvg,
     fuel_select: FuelSelectSvg,
     gift: GiftSvg,
     home_bonuses: HomeBonusesSvg,

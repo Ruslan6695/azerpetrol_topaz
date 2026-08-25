@@ -84,6 +84,8 @@ export const useFuellingPolling = ({
                 disableSetLoading: true,
                 afterDataCallback(data) {
                     if (cancelledRef.current) return
+                    // Потеряв связь с Топаз, сервер может отдать 200 с пустым
+                    // телом. Затирать им последний осмысленный статус нельзя.
                     if (!data?.status) return
 
                     setStatus(data.status)

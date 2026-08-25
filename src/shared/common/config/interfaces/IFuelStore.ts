@@ -11,6 +11,10 @@ export interface IFuelStore {
     /** Заказ на сервере, создаётся в fuelling/start/, нужен для поллинга статуса */
     orderId: string | null;
   };
+  /**
+   * Объём бака пользователя из Настроек. Лежит рядом со state, а не внутри:
+   * clearState() чистит параметры налива, а настройка переживает заправку.
+   */
   tankVolume: number;
   changeTankVolume: (volume: number) => void;
   getTankVolume: () => Promise<void>;
