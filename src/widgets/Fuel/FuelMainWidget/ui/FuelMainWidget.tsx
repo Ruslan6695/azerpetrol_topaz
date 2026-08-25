@@ -19,10 +19,6 @@ export const FuelMainWidget = memo(({ setRoad }: Props) => {
         setRoad('selectAzsAndColumn')
     }, [setRoad])
 
-    const handleScanColumn = useCallback(() => {
-        setRoad('scan')
-    }, [setRoad])
-
     const handleNeedHelp = useCallback(() => {
         router.navigate(ESCREENS.HELP)
     }, [router])
@@ -38,7 +34,6 @@ export const FuelMainWidget = memo(({ setRoad }: Props) => {
             <ScreenTitle title="Выберите метод" ml={SPACING.XS} />
             <MapFuelMainBlocks
                 onNeedHelp={handleNeedHelp}
-                onScanColumn={handleScanColumn}
                 onSelectColumn={handleSelectColumn}
             />
             <MPLayout mt={SPACING.SECTION}>

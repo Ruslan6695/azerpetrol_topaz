@@ -1,7 +1,6 @@
 import { memo, useCallback, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
 import { FuelMainWidget } from '../../../widgets/Fuel/FuelMainWidget'
-import { FuelScanBarcodeWidget } from '../../../widgets/Fuel/FuelScanBarcodeWidget'
 import { FuelSelectAzsAndColumnWidget } from '../../../widgets/Fuel/FuelSelectAzsAndColumnWidget'
 import { FuelSelectLitersWidget } from '../../../widgets/Fuel/FuelSelectLitersWidget'
 import { FuelSelectTrkTypeWidget } from '../../../widgets/Fuel/FuelSelectTrkTypeWidget'
@@ -28,7 +27,5 @@ export const Fuel = memo((props: Props) => {
             return <FuelSelectTrkTypeWidget setRoad={setRoad} />
         case 'selectLiters':
             return <FuelSelectLitersWidget setRoad={setRoad} />
-        case 'scan':
-            return <FuelScanBarcodeWidget setRoad={setRoad} />
     }
 })
