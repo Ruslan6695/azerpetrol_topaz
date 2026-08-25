@@ -1,7 +1,6 @@
 import { LocationAccuracy } from 'expo-location'
 import { memo, useCallback, useEffect, useState } from 'react'
 import {
-    IAzs,
     PermissionsStatuses,
     SPACING,
     ThemeStore,
@@ -12,10 +11,11 @@ import { MPLayout } from '../../../../shared/MpLayout'
 import { PillButton } from '../../../../shared/PillButton'
 import { ToastBlock } from '../../../../shared/ToastBlock'
 import { getLocationOfAzsApi } from '../api/getLocationOfAzsApi'
+import { IAzsGeo } from '../config/interfaces/IGetLocationOfAzsData'
 import * as Location from 'expo-location'
 
 type Props = {
-    onChangeAzs: (azs: IAzs) => void
+    onChangeAzs: (azs: IAzsGeo) => void
 }
 
 export const GetLocationOfAzs = memo(({ onChangeAzs }: Props) => {

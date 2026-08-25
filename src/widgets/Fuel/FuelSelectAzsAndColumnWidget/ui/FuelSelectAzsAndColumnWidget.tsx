@@ -11,6 +11,7 @@ import {
     SPACING,
     TFuelRoad,
 } from '../../../../shared'
+import { IAzsGeo } from '../../../../features/Fuel/GetLocationOfAzs/config/interfaces/IGetLocationOfAzsData'
 import { MPLayout } from '../../../../shared/MpLayout'
 import { FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS } from '../config/constants/FUEL_SELECT_AZS_AND_COLUMN_WIDGET_INFO_TEXTS'
 
@@ -36,14 +37,11 @@ export const FuelSelectAzsAndColumnWidget = memo(({ setRoad }: Props) => {
         [handleChangeAzs, handleChangeColumn, setRoad]
     )
 
-    const handleSelectGeoAzs = useCallback(
-        (azs: IAzs) => {
-            if (!fuelStore.azs) {
-                handleChangeAzs(azs)
-            }
-        },
-        [fuelStore.azs, handleChangeAzs]
-    )
+    // Геолокация временно не подставляет станцию автоматически: get_azs_geo/
+    // отдаёт легаси-числовой id, несовместимый с id станций Топаз (строка).
+    // Автоподбор вернётся, когда появится эндпоинт геопоиска в новом контракте
+    // (см. plans/topaz-fuelling-integration-design.md, открытые вопросы).
+    const handleSelectGeoAzs = useCallback((_azs: IAzsGeo) => {}, [])
 
     const styles = StyleSheet.create({
         info: {

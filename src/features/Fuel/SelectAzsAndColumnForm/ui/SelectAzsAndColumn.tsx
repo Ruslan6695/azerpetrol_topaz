@@ -197,8 +197,10 @@ export const SelectAzsAndColumn = memo(
                                 key={item.id}
                                 id={item.id}
                                 title={item.name}
-                                // Адреса и расстояния в get_azs_list/ нет,
-                                // поэтому отмечаем только найденную по гео.
+                                // IAzs пока не несёт адрес/геолокацию (сервер их
+                                // отдаёт, но UI ими не пользуется); подсветка "рядом
+                                // с вами" не сработает, пока не вернётся автоподбор
+                                // по геолокации (см. FuelSelectAzsAndColumnWidget).
                                 value={
                                     azs?.id === item.id
                                         ? 'Рядом с вами'
