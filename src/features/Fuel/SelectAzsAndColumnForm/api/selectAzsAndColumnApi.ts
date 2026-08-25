@@ -5,16 +5,18 @@ import { IGetColumnsData } from '../config/interfaces/IGetColumnsData'
 export const selectAzsAndColumnApi = {
     getAzsList: async () => {
         const token = await getToken()
-        const resp = await axiosIntsanse.get<IGetAzsListData>('get_azs_list/', {
-            params: { token },
-        })
+        const resp = await axiosIntsanse.get<IGetAzsListData>(
+            'fuelling/stations/',
+            { params: { token } }
+        )
         return resp.data
     },
-    getColumns: async ({ azs_id }: { azs_id: number }) => {
+    getColumns: async ({ azs_id }: { azs_id: string }) => {
         const token = await getToken()
-        const resp = await axiosIntsanse.get<IGetColumnsData>('get_trcs/', {
-            params: { token, azs_id },
-        })
+        const resp = await axiosIntsanse.get<IGetColumnsData>(
+            'fuelling/columns/',
+            { params: { token, azs_id } }
+        )
         return resp.data
     },
 }

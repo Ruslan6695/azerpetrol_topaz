@@ -53,7 +53,7 @@ export const SelectAzsAndColumn = memo(
             errorText: columnsErrorText,
             fetchData: fetchColumnsData,
             isDataLoading: isColumnsDataLoading,
-        } = useFetchData<IGetColumnsData, { azs_id: number }>({
+        } = useFetchData<IGetColumnsData, { azs_id: string }>({
             apiCallback: selectAzsAndColumnApi.getColumns,
             errorText: 'Не удалось получить список колонок',
             defaultLoading: false,
@@ -64,7 +64,7 @@ export const SelectAzsAndColumn = memo(
         }, [fetchAzsListData])
 
         const handleSelectAzs = useCallback(
-            (azsId: number) => {
+            (azsId: string) => {
                 const selected = azsListData?.azs_list.find(
                     (item) => item.id === azsId
                 )
@@ -94,7 +94,7 @@ export const SelectAzsAndColumn = memo(
         const columnOptions: ISelectOption[] = useMemo(
             () =>
                 (columnsData?.trcs ?? []).map((trc) => ({
-                    label: `Колонка № ${trc.name}`,
+                    label: `Колонка № ${trc.id}`,
                     value: trc.id,
                 })),
             [columnsData]
