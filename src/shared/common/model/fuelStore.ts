@@ -15,8 +15,9 @@ const store = create<IFuelStore>()(
             column: null,
             liters: null,
             rubles: null,
-            trkType: null,
+            fuelOption: null,
             fuelOnDebt: false,
+            orderId: null,
         },
         changeAzs(azs) {
             set((state) => {
@@ -28,9 +29,9 @@ const store = create<IFuelStore>()(
                 state.state.column = column
             })
         },
-        changeTrkType(trkType) {
+        changeFuelOption(fuelOption) {
             set((state) => {
-                state.state.trkType = trkType
+                state.state.fuelOption = fuelOption
             })
         },
         changeLitersAndRubles({ liters, rubles }) {
@@ -42,6 +43,11 @@ const store = create<IFuelStore>()(
         changeFuelOnDebt(fuelOnDebt) {
             set((state) => {
                 state.state.fuelOnDebt = fuelOnDebt
+            })
+        },
+        changeOrderId(orderId) {
+            set((state) => {
+                state.state.orderId = orderId
             })
         },
         changeTankVolume(volume) {
@@ -59,7 +65,6 @@ const store = create<IFuelStore>()(
             )
             const parsed = Number(stored)
 
-            // Ничего не сохранено или в хранилище мусор — оставляем дефолт.
             if (!stored || isNaN(parsed) || parsed <= 0) return
 
             set((state) => {
@@ -70,10 +75,11 @@ const store = create<IFuelStore>()(
             set((state) => {
                 state.state.azs = null
                 state.state.column = null
-                state.state.trkType = null
+                state.state.fuelOption = null
                 state.state.liters = null
                 state.state.rubles = null
                 state.state.fuelOnDebt = false
+                state.state.orderId = null
             })
         },
     }))
