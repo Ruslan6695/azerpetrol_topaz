@@ -6,7 +6,10 @@ import {
     EFuellingErrorKind,
     FuelStore,
     IFuellingTotals,
+    useSendFetch,
 } from '../../../../shared'
+import { fuelLoadingFuellingApi } from '../api/fuelLoadingFuellingApi'
+import { IFuelLoadingFuellingArgs } from '../config/interfaces/IFuelLoadingFuellingArgs'
 import {
     FUELLING_STATUS_PENDING_TEXT,
     FUELLING_STATUS_TEXTS,
@@ -31,9 +34,22 @@ export const FuelLoadingFuellingWidget = memo(
             onError,
         })
 
+        // До этого «Назад» просто закрывал экран, не сообщая ни серверу, ни
+        // Топаз об отмене — заказ оставался висеть в нетерминальном статусе
+        // и блокировал следующий налив. Шлём отмену, но не ждём ответа —
+        // пользователь уходит с экрана сразу, ошибка отправки некритична
+        // (заказ подчистит серверный cron по таймауту).
+        const { sendFetch } = useSendFetch<IFuelLoadingFuellingArgs>({
+            apiCallback: fuelLoadingFuellingApi.cancel,
+            errorText: 'Ошибка при отмене налива',
+        })
+
         const handleGoBack = useCallback(() => {
+            if (orderId) {
+                sendFetch({ args: { orderId }, hideToastOnError: true })
+            }
             router.back()
-        }, [router])
+        }, [orderId, sendFetch, router])
 
         if (!azs || !column || !fuelOption || !liters || !orderId) return null
 

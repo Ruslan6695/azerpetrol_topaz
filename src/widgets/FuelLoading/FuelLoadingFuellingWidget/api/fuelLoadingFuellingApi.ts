@@ -12,4 +12,15 @@ export const fuelLoadingFuellingApi = {
         )
         return resp.data
     },
+    // Отмена по инициативе клиента (кнопка «Назад» на экране ожидания
+    // налива) — без неё заказ оставался бы висеть в нетерминальном статусе.
+    cancel: async ({ orderId }: IFuelLoadingFuellingArgs) => {
+        const token = await getToken()
+
+        await axiosIntsanse.post(
+            'fuelling/cancel/',
+            { order_id: orderId },
+            { params: { token } }
+        )
+    },
 }
