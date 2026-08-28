@@ -2,12 +2,14 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 import { HeaderWallet } from '../../../entities/HeaderWallet'
 import { SIZES } from '../../../shared'
-import { Wordmark } from '../../../shared/Logo'
+import { Typography } from '../../../shared/Typography'
 
 type Props = {}
 
 // Хак с Device.osName для высоты убран: верхний отступ теперь даёт
 // SafeAreaView с edges={['top', ...]} в (main)/_layout.
+// ⚠️ Wordmark временно заменён текстом "testTopaz" для тестовой сборки —
+// вернуть <Wordmark height={15} /> из '../../../shared/Logo' после теста.
 export const MainHeaderWidget = (props: Props) => {
     const styles = StyleSheet.create({
         container: {
@@ -21,7 +23,7 @@ export const MainHeaderWidget = (props: Props) => {
     })
     return (
         <View style={styles.container}>
-            <Wordmark height={15} />
+            <Typography type="h6">testTopaz</Typography>
             <HeaderWallet />
         </View>
     )

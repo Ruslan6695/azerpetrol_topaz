@@ -5,7 +5,7 @@ const config: ExpoConfig = {
     // не-ASCII символы; начинаться с цифры оно не может — '21 Век' давало
     // таргет '21' и падало на «Could not find target '21' in project.pbxproj».
     // Видимое имя приложения на iOS задано ниже через CFBundleDisplayName.
-    name: 'Vek21',
+    name: 'testTopaz',
     slug: 'azerpetrol',
     version: '1.3.5',
     scheme: 'azerpetrol',
@@ -26,8 +26,8 @@ const config: ExpoConfig = {
         supportsTablet: true,
         bundleIdentifier: 'com.azscontrol.azerpetrol',
         infoPlist: {
-            CFBundleDisplayName: '21 Век',
-            CFBundleName: '21 Век',
+            CFBundleDisplayName: 'testTopaz',
+            CFBundleName: 'testTopaz',
             ITSAppUsesNonExemptEncryption: false,
             NSCameraUsageDescription:
                 'This application uses a camera to read the QR code of the gas station address.',
