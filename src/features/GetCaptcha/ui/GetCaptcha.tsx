@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { StyleSheet, View } from 'react-native'
 import WebView from 'react-native-webview'
-import { SIZES, ThemeStore } from '../../../shared'
+import { MOBILE_CAPTCHA_URL, SIZES, ThemeStore } from '../../../shared'
 
 type Props = {
     onSubmitCaptcha: ({
@@ -44,7 +44,7 @@ export const GetCaptcha = memo(({ onSubmitCaptcha }: Props) => {
                 focusable={false}
                 showsVerticalScrollIndicator={false}
                 source={{
-                    uri: `https://azscontrol.ru/mobile_captcha/`,
+                    uri: MOBILE_CAPTCHA_URL,
                 }}
             />
         </View>

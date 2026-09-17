@@ -15,6 +15,7 @@ export * from "./common/config/constants/BLUR";
 export * from "./common/config/constants/TANK_VOLUME";
 export type { IMarginsPaddings } from "./common/config/interfaces/IMarginsPaddings";
 export * from "./common/config/constants/USE_TERMS_LINK";
+export * from "./common/config/constants/MOBILE_CAPTCHA_URL";
 export * from "./common/config/enums/EScreens";
 export * from "./common/config/enums/EAuthMethod";
 export type { TAuthStep } from "./common/config/types/TAuthStep";
