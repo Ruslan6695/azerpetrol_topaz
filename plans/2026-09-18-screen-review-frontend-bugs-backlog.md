@@ -8,6 +8,15 @@
 Формат записи: экран → что не так → где в коде → почему не критично прямо
 сейчас (если фикс отложен по причине, а не просто "потом").
 
+## Прогресс по экранам
+
+- ✅ **Home** — разобран (2026-09-18). Бэк-баг найден и исправлен (`bonus_balance` в `/home/`).
+- ✅ **Fuel** — разобран (2026-09-18). Бэк-баг найден и исправлен (`bonus_balance` в `/get_balance/`).
+- ✅ **FuelLoading** — разобран (2026-09-18). 2 денежные гонки при завершении/отмене заказа найдены и исправлены на бэке (атомарный UPDATE), плюс обнаружена и устранена рассинхронизация `main` с продакшеном в `azerpetrol-topaz-server` (3 незамёрженные, но уже задеплоенные ветки).
+- ⬜ Остальные экраны — Balance, Coffee, Products, Profile, History, PayBalance, TransferBalance, Bonuses/Promotions, News, JoinAccount, Settings, About*, Contacts, Help, DeleteAccount и т.д.
+
+Подробности каждого фикса — в памяти Claude (`mobile-app-screen-review-project.md`) и в коммитах `azerpetrol-topaz-server` (сообщения коммитов подробные, с обоснованием и результатами живых проверок).
+
 ## Home
 
 - **`ConvertBonusToBalance.tsx`** (`src/features/Home/ConvertBonusToBalance/ui/ConvertBonusToBalance.tsx:67`) —
