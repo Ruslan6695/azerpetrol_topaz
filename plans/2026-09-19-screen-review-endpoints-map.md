@@ -37,9 +37,16 @@
 
 Вебхуки от Топаза (`adapters/primary/topaz/api/order/{accept,fueling,canceled,completed,volume}`) — не мобильные эндпоинты (Топаз стучится сам), но часть того же жизненного цикла заказа; в эту таблицу не включены, см. `topaz-server-credentials-and-known-bugs` в памяти.
 
+## Balance (QR-код клиента для кассы)
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET get_balance/` | `shared/common/api/userApi.ts` (через `useGetBalance`) | см. раздел Fuel выше | На этом экране баланс не отображается — запрос только обновляет `UserStore`, из которого живёт чип баланса в шапке приложения. |
+| `GET refresh_token/` (косвенно) | `widgets/Home/HomeMainWidget/api/homeMainWidgetApi.ts` | `refresh_token/index.php` → `port_in_refresh_client_token($token)` → `core/clients/refresh_client_token.php` → `adapters/.../clients/update.php` | Сам QR не делает запрос — он рисует `UserStore.token`, который проставляется этим эндпоинтом при первом фокусе экрана Home за сессию (`isTokenRefreshed`). Токен генерируется как `sha1(phone . date('U'))` и ротируется в БД (`clients.token`/`clients.old_token`). **Найден и исправлен бэк-баг (2026-09-19, коммит `898aedd`)**: `update_client_token()` не проверял `rowCount()` — при гонке двух параллельных вызовов с одним и тем же старым токеном второй получал «успешно смененный» токен, которого на самом деле нет в БД (обрыв авторизации до повторного входа по SMS). Подтверждено изолированным SQL-тестом и живым curl на сервере. |
+
 ## Остальные экраны — не разобраны
 
-Balance, Coffee, Products, Profile, History, PayBalance, TransferBalance,
+Coffee, Products, Profile, History, PayBalance, TransferBalance,
 Bonuses/Promotions, News, JoinAccount, Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
