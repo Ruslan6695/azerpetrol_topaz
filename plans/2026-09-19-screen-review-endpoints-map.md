@@ -71,9 +71,20 @@
 
 Между делом разгадан старый открытый вопрос из памяти `balance-history-clients-transactions-rewrite` (admin-панель, 2026-09-16): почему `mobile_history` пуст по переводам/бонусам, хотя код их пишет. Оказалось — не баг: `mobile_history` завели только с `2026-08-28` (переезд на этот сервер), а `clients_transactions` копит историю с 2023 года из старой системы; реальных переводов через ТЕКУЩЕЕ приложение с 28.08 почти не было. Живой тест перевода между двумя тестовыми клиентами подтвердил — код пишет в `mobile_history` корректно.
 
+## PayBalance (пополнение через СБП)
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET balance_pay/?sum=` | `features/PayBalance/PayBalanceForm/api/payBalanceFormApi.ts` | `balance_pay/index.php` → `port_in_mobile_balance_pay(...)` → `mobile_balance_pay()` | Создаёт QR/ссылку СБП через внешний сервис ControlPay (`GET control-pay.ru/api/getQr`), сохраняет заявку в `control_pay` (`active=0`). |
+| открытие `link` в `WebView`/банковском приложении | `features/PayBalance/PayBalanceSelectBank` | — | Не наш бэкенд — страница выбора банка от ControlPay/СБП, отдаёт диплинк банка через `postMessage`. |
+| `GET balance/pay_success/?pay_id=` (поллинг раз в 1с) | `features/PayBalance/PayBalanceWaiting/api/payBalanceWaitingApi.ts` | `balance/pay_success/index.php` → `port_in_mobile_balance_pay_confirm(...)` → `mobile_balance_pay_confirm()` → читает `control_pay.active` | `pay_id` — это `control_pay.id` (внутренний PK, не `control_id` ControlPay). Раньше `active` никогда не становился `1` — см. ниже. |
+| `POST` (внешний, не мобильный) `adapters/primary/control_pay/callback/` | — | `control_pay_callback()` | **Критический бэк-баг найден и исправлен (2026-09-20, коммит `74d904e`)**: вебхук подтверждения оплаты от ControlPay на этом сервере отсутствовал вовсе — перенесён со старого бэкенда (`local-test/azsdemo: api/control-pay/callback.php`), не перенесённого при миграции. Без него `control_pay.active` не выставлялся никогда — реальное пополнение зависало бы бесконечно на экране ожидания, деньги списаны банком, баланс не пополнен. Атомарный `claim` (`UPDATE ... WHERE active=0` + `rowCount()`) защищает от двойного зачисления при ретрае вебхука — в старом коде такой защиты не было. Подтверждено живым тестом полного цикла (создание → вебхук → баланс/история/транзакции → `pay_success/` → идемпотентность при повторе). **Нужно действие пользователя вне кода**: сверить/поменять URL колбэка в личном кабинете ControlPay на `.../adapters/primary/control_pay/callback/`. |
+
+`balance/payment_return/` (возврат оплаты) — отдельный, НЕ мобильный путь: требует одновременно токен клиента И токен админ-сессии (`user_verification`, та же система, что у `azerpetrol-admin-panel`) — инициируется поддержкой/админкой, а не самим приложением. Заодно найден и исправлен соседний баг: `mobile_payment_return()` проверял несуществующий ключ `$res_balance['status']`.
+
 ## Остальные экраны — не разобраны
 
-Coffee, Products, PayBalance, TransferBalance,
+Coffee, Products, TransferBalance,
 Bonuses/Promotions, News, Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
