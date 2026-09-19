@@ -61,9 +61,19 @@
 
 Все 7 эндпоинтов join_accounts прогнаны живым end-to-end сценарием на синтетических тестовых клиентах (созданы и удалены на проде, реальных пользователей не касались): поиск → приглашение → просмотр инвайта → подтверждение → выход → повторное приглашение → отказ → (отдельно) попытка удаления не-создателем → удаление создателем.
 
+## История
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET history/journal/?page=&date_start=&date_end=` | `widgets/HistoryWidget/api/historyWidgetApi.ts` | `history/journal/index.php` → `port_in_mobile_history_list(...)` → `mobile_history_list()` → `select_mobile_history()` | Список операций с пагинацией (по умолчанию 50/страница, без дат — текущий месяц). Правильно отдаёт `pages: null`, когда данных на одну страницу — фронт (`handleScrollToEnd`) корректно на этом останавливается. Есть хардкод спецкейса для одного конкретного `client_id=62762` (скрывает записи `'Начислены бонус%'`) — старый персональный костыль, не трогал. |
+| `GET history/chart/?date_start=&date_end=` | `widgets/HistoryWidget/api/historyWidgetApi.ts` | `history/chart/index.php` → `port_in_mobile_history_chart(...)` → `mobile_history_chart()` → `select_mobile_history_chart()` | Суммы по типам операций для доната. Намеренно (или нет) исключает `type=1` целиком — см. находку в бэклоге фронтенд-багов. |
+| `GET history/detail/?type=&id=` | `widgets/HistoryDetailsWidget/api/historyDetailsWidgetApi.ts` | `history/detail/index.php` → `port_in_mobile_history_detail(...)` → `mobile_history_detail()` | Детали одной записи. **Найдены и исправлены 2 бэк-бага (2026-09-20, коммит `a798527`)**: (1) IDOR — не проверялось владение записью, любой клиент читал чужие детали по `id`; (2) HTTP 500 на любом Топаз-наливе (`type=3`) — код искал `check_id` (UUID заказа Топаз) в легаси-таблице `cheks`, не находил и падал на делении на 0. Оба живо протестированы: IDOR — синтетическая чужая запись вернула `[]` после фикса вместо полных данных; краш — реальный налив (id=18, клиент 66809) вернул `HTTP 200` с верным `{name:"АИ-95", liters:2.51, price:95}` вместо `HTTP 500`. |
+
+Между делом разгадан старый открытый вопрос из памяти `balance-history-clients-transactions-rewrite` (admin-панель, 2026-09-16): почему `mobile_history` пуст по переводам/бонусам, хотя код их пишет. Оказалось — не баг: `mobile_history` завели только с `2026-08-28` (переезд на этот сервер), а `clients_transactions` копит историю с 2023 года из старой системы; реальных переводов через ТЕКУЩЕЕ приложение с 28.08 почти не было. Живой тест перевода между двумя тестовыми клиентами подтвердил — код пишет в `mobile_history` корректно.
+
 ## Остальные экраны — не разобраны
 
-Coffee, Products, History, PayBalance, TransferBalance,
+Coffee, Products, PayBalance, TransferBalance,
 Bonuses/Promotions, News, Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
