@@ -44,10 +44,25 @@
 | `GET get_balance/` | `shared/common/api/userApi.ts` (через `useGetBalance`) | см. раздел Fuel выше | На этом экране баланс не отображается — запрос только обновляет `UserStore`, из которого живёт чип баланса в шапке приложения. |
 | `GET refresh_token/` (косвенно) | `widgets/Home/HomeMainWidget/api/homeMainWidgetApi.ts` | `refresh_token/index.php` → `port_in_refresh_client_token($token)` → `core/clients/refresh_client_token.php` → `adapters/.../clients/update.php` | Сам QR не делает запрос — он рисует `UserStore.token`, который проставляется этим эндпоинтом при первом фокусе экрана Home за сессию (`isTokenRefreshed`). Токен генерируется как `sha1(phone . date('U'))` и ротируется в БД (`clients.token`/`clients.old_token`). **Найден и исправлен бэк-баг (2026-09-19, коммит `898aedd`)**: `update_client_token()` не проверял `rowCount()` — при гонке двух параллельных вызовов с одним и тем же старым токеном второй получал «успешно смененный» токен, которого на самом деле нет в БД (обрыв авторизации до повторного входа по SMS). Подтверждено изолированным SQL-тестом и живым curl на сервере. |
 
+## Profile
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET profile/` | `proccesses/Profile/api/profileApi.ts` | `profile/index.php` → `port_in_mobile_profile($token)` → `core/mobile/mobile_profile.php::mobile_profile()` | Данные экрана: имя/телефон/баланс/бонусы/связанные аккаунты. `useFocusEffect` дёргает на каждый заход на вкладку «Профиль» и пишет `balance`/`bonus_balance` в `UserStore`. **Найден и исправлен бэк-баг (2026-09-19, коммит `689e59f`)**: третье по счёту место с тем же багом, что уже чинили в `/home/` и `/get_balance/` — `mobile_profile()` не подмешивал `bonus_balance`, реальный бонус затирался на `undefined` при каждом открытии «Профиля». Подтверждено живым curl (`74671.79` совпало с БД). |
+| `GET profile/join_accounts/get_account_info/?phone=` | `features/AddJoinAccount/AddJoinAccountConfirm/api/addJoinAccountConfirmApi.ts` | `.../get_account_info/index.php` → `port_in_mobile_account_info($token,$phone)` | Поиск аккаунта по телефону перед добавлением в группу. |
+| `GET profile/join_accounts/add/?id=` | `features/AddJoinAccount/AddJoinAccountConfirm/api/addJoinAccountConfirmApi.ts` | `.../add/index.php` → `port_in_mobile_balance_account_add($token,$id)` | Добавление найденного аккаунта в свою группу (доступно только создателю счёта — гейтится на фронте `balanceCreatorId === profileId`). |
+| `GET profile/join_accounts/invite/` | `features/AddJoinAccount/ConfirmAddJoinAccountModal/api/confirmAddJoinAccountModalApi.ts` | `.../invite/index.php` → `port_in_mobile_account_get_invite($token)` | Получить свой инвайт-код для приглашения. |
+| `GET profile/join_accounts/invite/confirm/` | тот же файл | `.../invite/confirm/index.php` → `port_in_mobile_account_invite_confirm($token)` | Подтвердить чужой инвайт (присоединиться к группе). |
+| `GET profile/join_accounts/invite/abort/` | тот же файл | `.../invite/abort/index.php` → `port_in_mobile_account_invite_abort($token)` | Отменить свой инвайт-код. |
+| `GET profile/join_accounts/delete/?accountId=` | `features/Profile/DeleteJoinAccountModal/api/deleteJoinAccountApi.ts` | `.../delete/index.php` → `port_in_mobile_balance_account_delete($token,$id)` | Создатель удаляет участника из своей группы. |
+| `GET profile/join_accounts/leave/` | `features/Profile/LeaveFromProfileJoinAccounts/api/leaveFromProfileJoinAccountsApi.ts` | `.../leave/index.php` → `port_in_mobile_balance_account_exit($token)` | Участник (не создатель) сам покидает чужую группу. **Замечание**: на бэке рядом есть неиспользуемый дубль `.../exit/index.php` — тот же самый `port_in_mobile_balance_account_exit`, просто с другим форматом ответа; фронт всегда зовёт `leave/`, `exit/` — мёртвый код, не баг, но при следующей уборке бэка можно снести. |
+
+`ExitFromProfile` (кнопка «Выйти») backend не вызывает — чисто локальный логаут через `UserStore.useLogout()`.
+
 ## Остальные экраны — не разобраны
 
-Coffee, Products, Profile, History, PayBalance, TransferBalance,
-Bonuses/Promotions, News, JoinAccount, Settings, About*, Contacts, Help,
+Coffee, Products, History, PayBalance, TransferBalance,
+Bonuses/Promotions, News, Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
 <!-- Следующие находки — добавлять сюда по мере прохода по остальным экранам. -->
