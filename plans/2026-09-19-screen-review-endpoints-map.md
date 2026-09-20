@@ -108,9 +108,20 @@ Help, DeleteAccount — файлы есть, корректность не пр�
 
 `balance/payment_return/` (возврат оплаты) — отдельный, НЕ мобильный путь: требует одновременно токен клиента И токен админ-сессии (`user_verification`, та же система, что у `azerpetrol-admin-panel`) — инициируется поддержкой/админкой, а не самим приложением. Заодно найден и исправлен соседний баг: `mobile_payment_return()` проверял несуществующий ключ `$res_balance['status']`.
 
+## Coffee
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET coffee/get_list/?bonus=0\|1` | `widgets/Coffee/BuyCoffeeWidget/api`, `widgets/Coffee/CoffeeBonusWidget/api` | `coffee/get_list/index.php` → `mobile_coffee_list()` | Список товаров кофейни (`vendor_code != ''`, `bonus=1` дополнительно фильтрует `specification > 0`). Возвращает `bonus` (текущий счётчик бесплатных кофе клиента) и `balance`. **Найден и исправлен бэк-баг (2026-09-20, коммит `c7344b6`)**: каждому товару был жёстко зашит `discount: 10` (10%), никак не связанный с реальной ценой — фронт показывал несуществующую скидку. Теперь `discount: 0`, подтверждено живым curl. |
+| `GET coffee/get_coffee_machines/` | `features/Coffee/SelectCoffeeMachine/api` | `coffee/get_coffee_machines/index.php` → `mobile_get_coffee_machines()` | Список кофемашин для выдачи (id/name/img). |
+| `GET coffee/my_coffee_list/` | `widgets/Coffee/MyCoffeeWidget/api` | `coffee/my_coffee_list/index.php` → `mobile_coffee_my_list()` | Купленные-не-выданные напитки за 24ч (`client_coffee_list WHERE active=1 ORDER BY id DESC`) — самый новый первый, поэтому `coffee[0]` после покупки гарантированно и есть только что купленный кофе. Каждая строка несёт `qr` (код вендинг-протокола Franke) — именно тут клиент реально видит QR, не в ответе `buy/`. |
+| `GET v2/coffee/buy/?bonus=&product_id=&coffee_machine_id=` | `features/Coffee/ConfirmCoffeePurchase/api` | `v2/coffee/buy/index.php` → `port_in_mobile_coffee_buy()` → `mobile_buy_coffee()` | Покупка/получение кофе. Ответ на успех — пустое тело (HTTP 200 без JSON), QR клиент получает отдельным запросом `coffee/my_coffee_list/`. **Найдены и исправлены 3 бэк-бага (2026-09-20, коммит `c1a8ed8`)**: (1) **критично** — `bonus=1` выдавал бесплатный кофе БЕЗ проверки `client_bonus_coffee.count`, любой клиент мог получить неограниченно бесплатного кофе (подтверждено: у реального клиента 224 накопленных бонуса — не теоретическая дыра); (2) платная покупка списывала 50% от розницы при пороге допуска 95% — по решению пользователя приведено к полной цене (акции — будущая фича); (3) `clients_transactions.balance` считался от неверной базы. Все три подтверждены живым curl+SQL циклом (отказ по балансу → отказ по бонусу → полная цена списана верно → бесплатный кофе списал счётчик 1→0, баланс не тронут). |
+
+Начисление `client_bonus_coffee.count` (бонус «каждая заправка от 30 л») **физически не подключено** на этом сервере ни в одном виде — только старая кассовая интеграция (`local-test`) умела его начислять; сейчас работает только списание уже накопленного. `ScanCoffeeMachine` (сканирование QR на самой машине) — чисто локальная логика, без бэкенд-вызовов.
+
 ## Остальные экраны — не разобраны
 
-Coffee, Products, TransferBalance,
+Products (пропущен по просьбе пользователя — там изменения в разработке), TransferBalance,
 Bonuses/Promotions, News, Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
