@@ -134,10 +134,18 @@ Help, DeleteAccount — файлы есть, корректность не пр�
 
 Экран деталей акции (`PromotionsAndBonusesDetailsScreen`) backend вообще не вызывает — все данные (заголовок/картинка/html_text/page_link) приходят route-параметрами из уже загруженного списка. Ветка `page_link` открывает внешнюю страницу во `WebView` с `?token=&theme=`.
 
+## News
+
+| Вызов | Файл фронта | Бэкенд (`azerpetrol-topaz-server`) | Что делает |
+|---|---|---|---|
+| `GET news/` | `widgets/News/NewsWidget/api` (используется и на `/news`, и каруселью на Home) | `news/index.php` → `mobile_news()` → `SELECT * FROM mobile_news WHERE active=1 ORDER BY date_create DESC LIMIT 50` | Список новостей, структура 1:1 с фронтом. Багов не найдено. |
+
+Экран деталей новости (`NewsDetailsScreen`) backend не вызывает — данные route-параметрами из списка, тот же паттерн, что у Promotions.
+
 ## Остальные экраны — не разобраны
 
 Products (пропущен по просьбе пользователя — там изменения в разработке),
-News, Settings, About*, Contacts, Help,
+Settings, About*, Contacts, Help,
 DeleteAccount и т.д. — эндпоинты добавятся сюда по мере прохода.
 
 <!-- Следующие находки — добавлять сюда по мере прохода по остальным экранам. -->
