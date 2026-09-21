@@ -27,6 +27,7 @@ export * from "./common/model/userStore";
 export * from "./common/config/interfaces/IUser";
 export * from "./common/config/lib/hooks/useModal";
 export * from "./common/config/constants/AZS_NAME";
+export * from "./common/config/constants/PARTNER_STORE_NAME";
 export * from "./common/config/constants/SCREENS_TITLES";
 export * from "./common/config/lib/hooks/useGetContactsPermission";
 export * from "./common/config/enums/EPermissionsStatuses";
