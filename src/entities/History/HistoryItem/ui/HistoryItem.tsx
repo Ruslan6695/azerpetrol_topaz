@@ -29,7 +29,7 @@ interface IProps extends IHistoryItem {
 // Переход на детали операции — действие пользователя, поэтому им владеет
 // feature: сюда он приходит колбэком (architecture.md, правило 1).
 export const HistoryItem = memo(
-    ({ date, type, sum, header, last, onPress }: IProps) => {
+    ({ date, type, sum, header, last, onPress, azs_name }: IProps) => {
         const COLORS = ThemeStore.useCOLORS()
 
         const styles = StyleSheet.create({
@@ -80,7 +80,7 @@ export const HistoryItem = memo(
                             color="secondary"
                             marginsPaddings={{ mt: 2 }}
                         >
-                            {date}
+                            {azs_name ? `${date} · ${azs_name}` : date}
                         </Typography>
                     </View>
 

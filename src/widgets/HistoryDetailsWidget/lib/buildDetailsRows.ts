@@ -57,7 +57,13 @@ export function buildDetailsRows(
         }
 
         case EHistoryItemType.PAY_BALANCE: {
-            return [{ k: 'Зачислено', v: divideNumber(data.sum) }]
+            const rows: IHistoryDetailsRow[] = [
+                { k: 'Зачислено', v: divideNumber(data.sum) },
+            ]
+            if (data.azs) {
+                rows.push({ k: 'АЗС', v: data.azs })
+            }
+            return rows
         }
 
         case EHistoryItemType.BUY_ON_CASH: {
@@ -65,13 +71,17 @@ export function buildDetailsRows(
                 return []
             }
 
-            return [
+            const rows: IHistoryDetailsRow[] = [
                 ...data.products.map((product) => ({
                     k: `${product.product_name} — ${divideNumber(product.count)} ${product.unit_name}`,
                     v: divideNumber(product.sale),
                 })),
                 { k: 'Итого', v: divideNumber(data.sum) },
             ]
+            if (data.azs) {
+                rows.push({ k: 'АЗС', v: data.azs })
+            }
+            return rows
         }
 
         default:

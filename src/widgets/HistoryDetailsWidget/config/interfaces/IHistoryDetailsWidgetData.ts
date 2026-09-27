@@ -5,6 +5,8 @@ export interface IHistoryDetailsWidgetData {
     receiver_name?: string
     receiver_phone?: string
     coffee_name?: string
+    /** АЗС, где проведена операция — известна только для пополнения/оплаты через устройство на кассе */
+    azs?: string | null
     petrol?: {
         name: string
         price: number

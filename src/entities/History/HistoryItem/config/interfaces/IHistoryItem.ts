@@ -7,4 +7,6 @@ export interface IHistoryItem {
     sum: number
     header:string
     id:number
+    /** АЗС, где проведена операция — только у пополнения/оплаты через устройство на кассе */
+    azs_name?: string
 }
