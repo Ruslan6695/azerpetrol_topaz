@@ -23,12 +23,22 @@ export function buildDetailsRows(
                 return []
             }
 
-            return [
+            const rows: IHistoryDetailsRow[] = [
                 { k: 'Топливо', v: data.petrol.name },
                 { k: 'Цена за литр', v: divideNumber(data.petrol.price) },
                 { k: 'Литры', v: `${divideNumber(data.petrol.liters)} л` },
                 { k: 'Списано', v: divideNumber(data.sum) },
             ]
+            if (data.source) {
+                rows.push({
+                    k: 'Способ',
+                    v: data.source === 'kassa' ? 'На кассе (QR)' : 'Через приложение',
+                })
+            }
+            if (data.azs) {
+                rows.push({ k: 'АЗС', v: data.azs })
+            }
+            return rows
         }
 
         case EHistoryItemType.BUY_COFFEE: {
@@ -36,10 +46,14 @@ export function buildDetailsRows(
                 return []
             }
 
-            return [
+            const rows: IHistoryDetailsRow[] = [
                 { k: 'Напиток', v: data.coffee_name },
                 { k: 'Списано', v: divideNumber(data.sum) },
             ]
+            if (data.azs) {
+                rows.push({ k: 'АЗС', v: data.azs })
+            }
+            return rows
         }
 
         case EHistoryItemType.TRANSFER_BALANCE: {
