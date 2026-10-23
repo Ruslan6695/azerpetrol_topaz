@@ -1,6 +1,8 @@
 export * from "./common/config/constants/COLORS";
 export * from "./common/api/axiosInstanse";
 export * from "./common/api/authMethodsApi";
+export * from "./common/api/appVersionApi";
+export type { IAppUpdate } from "./common/config/interfaces/IAppUpdate";
 export * from "./common/config/constants/sizes";
 export * from "./common/config/constants/RADII";
 export * from "./common/config/constants/FONTS";

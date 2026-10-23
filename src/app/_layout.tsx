@@ -6,12 +6,14 @@ import * as TaskManager from 'expo-task-manager'
 import React, { useEffect } from 'react'
 import {
     AppStore,
+    appVersionApi,
     ESCREENS,
     FuelStore,
     SCREENS_TITLES,
     ThemeStore,
     UserStore,
     useNotifications,
+    useFetchData,
     useSetFonts,
 } from '../shared'
 import { ToastComponent } from '../shared/ToastComponent'
@@ -20,6 +22,7 @@ import { StatusBar } from 'expo-status-bar'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ConfirmAddJoinAccountModal } from '../features/AddJoinAccount/ConfirmAddJoinAccountModal'
+import { UpdateRequiredScreen } from '../screens/UpdateRequiredScreen'
 
 const TASK = 'BACKGROUND_NOTIFICATION-TASK'
 TaskManager.defineTask(TASK)
@@ -32,6 +35,12 @@ export default function Layout() {
         useNotifications()
     const isHasNet = AppStore.useIsHasNet()
     const toggleIsHasNet = AppStore.useToggleIsHasNet()
+    const appUpdate = AppStore.useAppUpdate()
+    const setAppUpdate = AppStore.useSetAppUpdate()
+    const { fetchData: checkAppVersion } = useFetchData({
+        apiCallback: appVersionApi.check,
+        errorText: '',
+    })
     const router = useRouter()
     const getUser = UserStore.useGetUser()
     const user = UserStore.useUser()
@@ -130,6 +139,18 @@ export default function Layout() {
     }, [user, isGetUserLoading, fontIsLoaded])
 
     useEffect(() => {
+        // Не нужно ли обновиться — до входа тоже. Ошибка проверки без тоста:
+        // запросы устаревшей версии всё равно получат 426.
+        checkAppVersion({
+            args: undefined,
+            hideToastOnError: true,
+            disableSetLoading: true,
+            afterDataCallback(result) {
+                if (result.update_required) {
+                    setAppUpdate({ message: result.message, url: result.url })
+                }
+            },
+        })
         getUser()
         NetInfo.addEventListener((networkState) => {
             networkState.isConnected
@@ -140,7 +161,9 @@ export default function Layout() {
 
     return (
         <GestureHandlerRootView>
-            {!user ? (
+            {appUpdate ? (
+                <UpdateRequiredScreen appUpdate={appUpdate} />
+            ) : !user ? (
                 <Stack
                     screenOptions={{
                         animation: 'none',

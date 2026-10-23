@@ -8,6 +8,12 @@ const store = create<IAppStore>()(
     immer((set) => ({
         isHasNet: true,
         isTokenRefreshed: false,
+        appUpdate: null,
+        setAppUpdate(appUpdate) {
+            set((state) => {
+                state.appUpdate = appUpdate
+            })
+        },
         toggleIsTokenRefreshed(refreshed) {
             set((state) => {
                 state.isTokenRefreshed = refreshed
