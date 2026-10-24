@@ -3,8 +3,16 @@ import { memo, useCallback, useEffect, useState } from 'react'
 import { ICoffeeItem } from '../../../entities/Coffee/CoffeeItem'
 import { CoffeeSuccess } from '../../../entities/Coffee/CoffeeSuccess'
 import { ErrorWhileFetchingForm } from '../../../entities/ErrorWhileFetchingForm'
+import { CoffeeUnavailableDialog } from '../../../features/Coffee/CoffeeUnavailableDialog'
 import { CoffeeMachinesStore } from '../../../features/Coffee/SelectCoffeeMachine'
-import { SPACING, TCoffeeRoad, TCoffeeScreenParams } from '../../../shared'
+import {
+    AppStore,
+    ESCREENS,
+    SPACING,
+    TCoffeeRoad,
+    TCoffeeScreenParams,
+} from '../../../shared'
+import { ITabWithBackground } from '../../../shared/TabBarWithBackground'
 import {
     TabBarWithBackground,
     useTabBar,
@@ -30,7 +38,28 @@ const TABS = [MY_TAB, BUY_TAB]
 export const Coffee = memo(({ params }: Props) => {
     const getCoffeeMachines = CoffeeMachinesStore.useGetCoffeeMachines()
     const coffeeMachinesError = CoffeeMachinesStore.useError()
-    const { handleChangeSelectedTab, selectedTab } = useTabBar(BUY_TAB)
+    // Покупка кофе выключена в панели (текст выключателя; undefined — включена).
+    // «Мой кофе» остаётся: купленный кофе клиент забирает.
+    const purchaseDisabledMessage =
+        AppStore.useDisabledSections()[ESCREENS.COFFEE]
+    const { handleChangeSelectedTab: selectTab, selectedTab } = useTabBar(
+        purchaseDisabledMessage ? MY_TAB : BUY_TAB
+    )
+    const [isUnavailableOpened, setIsUnavailableOpened] = useState(false)
+    const handleChangeSelectedTab = useCallback(
+        (tab: ITabWithBackground) => {
+            if (tab.value === TAB_BUY && purchaseDisabledMessage) {
+                setIsUnavailableOpened(true)
+                return
+            }
+            selectTab(tab)
+        },
+        [purchaseDisabledMessage, selectTab]
+    )
+    const handleCloseUnavailable = useCallback(
+        () => setIsUnavailableOpened(false),
+        []
+    )
 
     const [road, setRoad] = useState<TCoffeeRoad>('main')
     const [selectedCoffeeMachineId, setSelectedCoffeeMachineId] = useState<
@@ -82,11 +111,15 @@ export const Coffee = memo(({ params }: Props) => {
 
     useFocusEffect(
         useCallback(() => {
-            fetchCoffeeMachines()
-        }, [])
+            // Покупка выключена — кофемашины не нужны, и ошибка их загрузки
+            // не должна закрывать «Мой кофе».
+            if (!purchaseDisabledMessage) {
+                fetchCoffeeMachines()
+            }
+        }, [purchaseDisabledMessage])
     )
 
-    if (coffeeMachinesError && road === 'main') {
+    if (coffeeMachinesError && road === 'main' && !purchaseDisabledMessage) {
         return (
             <ErrorWhileFetchingForm
                 onReload={fetchCoffeeMachines}
@@ -154,6 +187,13 @@ export const Coffee = memo(({ params }: Props) => {
                 />
             )}
             {isMyTab ? <MyCoffeeWidget /> : renderBuyRoad()}
+            {purchaseDisabledMessage && (
+                <CoffeeUnavailableDialog
+                    isOpened={isUnavailableOpened}
+                    onClose={handleCloseUnavailable}
+                    message={purchaseDisabledMessage}
+                />
+            )}
         </>
     )
 })

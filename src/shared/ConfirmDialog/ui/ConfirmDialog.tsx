@@ -23,6 +23,8 @@ type Props = {
     /** Содержимое круга. По умолчанию — глиф «!» */
     icon?: ReactNode
     loading?: boolean
+    /** Только одна кнопка (уведомление, а не выбор): «Отмена» не рисуется */
+    hideCancel?: boolean
 }
 
 // Диалог подтверждения из макета: круг 64 → заголовок → тело → две кнопки.
@@ -40,6 +42,7 @@ export const ConfirmDialog = memo(
         variant = 'destructive',
         icon,
         loading,
+        hideCancel,
     }: Props) => {
         const COLORS = ThemeStore.useCOLORS()
 
@@ -117,12 +120,14 @@ export const ConfirmDialog = memo(
                             loading={loading}
                             size="lg"
                         />
-                        <PillButton
-                            title={cancelLabel}
-                            onPress={onClose}
-                            variant="secondary"
-                            size="lg"
-                        />
+                        {!hideCancel && (
+                            <PillButton
+                                title={cancelLabel}
+                                onPress={onClose}
+                                variant="secondary"
+                                size="lg"
+                            />
+                        )}
                     </View>
                 </View>
             </CustomModal>

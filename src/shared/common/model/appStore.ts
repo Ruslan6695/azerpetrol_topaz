@@ -9,6 +9,12 @@ const store = create<IAppStore>()(
         isHasNet: true,
         isTokenRefreshed: false,
         appUpdate: null,
+        disabledSections: {},
+        setDisabledSections(disabledSections) {
+            set((state) => {
+                state.disabledSections = disabledSections
+            })
+        },
         setAppUpdate(appUpdate) {
             set((state) => {
                 state.appUpdate = appUpdate

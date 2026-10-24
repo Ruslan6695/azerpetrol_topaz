@@ -40,6 +40,7 @@ export const HomeMainWidget = memo((props: Props) => {
     const setToken = UserStore.useSetToken()
     const isTokenRefreshed = AppStore.useIsTokenRefreshed()
     const toggleTokenIsRefreshed = AppStore.useToggleIsTokenRefreshed()
+    const setDisabledSections = AppStore.useSetDisabledSections()
     const { errorText, fetchData, isDataLoading } =
         useFetchStoreData<IHomeMainwidgetData>({
             apiCallback: homeMainWidgetApi.getHome,
@@ -53,6 +54,15 @@ export const HomeMainWidget = memo((props: Props) => {
         })
 
     const texts = HomeStore.useTexts()
+    // Баланс — в UserStore, выключенные в панели разделы — в AppStore (по ним
+    // раздел «Кофе» не пускает в покупку, см. proccesses/Coffee).
+    const applyHomeData = (data: IHomeMainwidgetData) => {
+        setBalance({
+            balance: data.balance,
+            bonus_balance: data.bonus_balance,
+        })
+        setDisabledSections(data.disabled_sections ?? {})
+    }
     const reloadData = async () => {
         if (!isTokenRefreshed) {
             refreshToken({
@@ -64,12 +74,7 @@ export const HomeMainWidget = memo((props: Props) => {
                     fetchData({
                         args: undefined,
                         hideToastOnError: true,
-                        afterDataCallback(data) {
-                            setBalance({
-                                balance: data.balance,
-                                bonus_balance: data.bonus_balance,
-                            })
-                        },
+                        afterDataCallback: applyHomeData,
                     })
                 },
             })
@@ -77,12 +82,7 @@ export const HomeMainWidget = memo((props: Props) => {
             fetchData({
                 args: undefined,
                 hideToastOnError: true,
-                afterDataCallback(data) {
-                    setBalance({
-                        balance: data.balance,
-                        bonus_balance: data.bonus_balance,
-                    })
-                },
+                afterDataCallback: applyHomeData,
             })
         }
     }

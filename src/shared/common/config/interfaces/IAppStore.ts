@@ -8,4 +8,7 @@ export interface IAppStore{
     // Не null — сервер не обслуживает эту версию: вместо приложения экран обновления.
     appUpdate: IAppUpdate | null
     setAppUpdate: (appUpdate: IAppUpdate | null) => void
+    // Разделы, выключенные в панели: маршрут → текст для клиента (с главного экрана).
+    disabledSections: Record<string, string>
+    setDisabledSections: (disabledSections: Record<string, string>) => void
 }
