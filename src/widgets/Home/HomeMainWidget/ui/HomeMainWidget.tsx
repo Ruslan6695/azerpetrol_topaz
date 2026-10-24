@@ -2,6 +2,7 @@ import { useFocusEffect } from 'expo-router'
 import React, { memo, useCallback } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { BalanceCard } from '../../../../entities/Home/BalanceCard'
+import { LoyaltyLevelCard } from '../../../../entities/Home/LoyaltyLevelCard'
 import { ErrorWhileFetchingForm } from '../../../../entities/ErrorWhileFetchingForm'
 import { OpenCoffeeBonusScreenFromCoffee } from '../../../../features/Coffee/OpenCoffeeBonusScreen'
 import { ConvertBonusToBalance } from '../../../../features/Home/ConvertBonusToBalance'
@@ -140,6 +141,15 @@ export const HomeMainWidget = memo((props: Props) => {
                 bonusAction={<ConvertBonusToBalance />}
                 visibilityAction={<ToggleBalanceVisibility />}
             />
+
+            {data?.level && (
+                <LoyaltyLevelCard
+                    name={data.level.name}
+                    spent={data.level.spent}
+                    nextName={data.level.next_name}
+                    nextThreshold={data.level.next_threshold}
+                />
+            )}
 
             <OpenFuelScreen
                 big_text={texts[ESCREENS.FUEL]?.big_text}

@@ -6,4 +6,12 @@ export interface IHomeMainwidgetData {
     coffee_bonus: number | null
     // Выключенные в панели разделы: маршрут → текст. Старый сервер поля не шлёт.
     disabled_sections?: Record<string, string>
+    // Уровень лояльности (панель → «Группы» → «Уровни»); null/нет — уровни выключены
+    // или клиент не в группе-уровне. next_* null — уровень высший или закреплён.
+    level?: {
+        name: string
+        spent: number
+        next_name: string | null
+        next_threshold: number | null
+    } | null
 }
