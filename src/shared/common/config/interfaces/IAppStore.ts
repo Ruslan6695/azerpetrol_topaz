@@ -11,4 +11,7 @@ export interface IAppStore{
     // Разделы, выключенные в панели: маршрут → текст для клиента (с главного экрана).
     disabledSections: Record<string, string>
     setDisabledSections: (disabledSections: Record<string, string>) => void
+    // Минимум бонусов для перевода в рубли (с главного экрана); null — без минимума.
+    bonusConvertMin: number | null
+    setBonusConvertMin: (bonusConvertMin: number | null) => void
 }

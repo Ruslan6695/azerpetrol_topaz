@@ -15,6 +15,12 @@ const store = create<IAppStore>()(
                 state.disabledSections = disabledSections
             })
         },
+        bonusConvertMin: null,
+        setBonusConvertMin(bonusConvertMin) {
+            set((state) => {
+                state.bonusConvertMin = bonusConvertMin
+            })
+        },
         setAppUpdate(appUpdate) {
             set((state) => {
                 state.appUpdate = appUpdate

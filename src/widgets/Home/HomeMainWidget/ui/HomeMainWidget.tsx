@@ -42,6 +42,7 @@ export const HomeMainWidget = memo((props: Props) => {
     const isTokenRefreshed = AppStore.useIsTokenRefreshed()
     const toggleTokenIsRefreshed = AppStore.useToggleIsTokenRefreshed()
     const setDisabledSections = AppStore.useSetDisabledSections()
+    const setBonusConvertMin = AppStore.useSetBonusConvertMin()
     const { errorText, fetchData, isDataLoading } =
         useFetchStoreData<IHomeMainwidgetData>({
             apiCallback: homeMainWidgetApi.getHome,
@@ -63,6 +64,7 @@ export const HomeMainWidget = memo((props: Props) => {
             bonus_balance: data.bonus_balance,
         })
         setDisabledSections(data.disabled_sections ?? {})
+        setBonusConvertMin(data.bonus_convert_min ?? null)
     }
     const reloadData = async () => {
         if (!isTokenRefreshed) {

@@ -18,6 +18,8 @@ type Props = {
     isOpened: boolean
     /** Сколько бонусов доступно к переводу */
     max: number
+    /** Минимум за один перевод (панель); null — без минимума */
+    min: number | null
     amount: number
     isLoading: boolean
     onChangeAmount: (amount: number) => void
@@ -31,6 +33,7 @@ export const ConvertBonusModal = memo(
     ({
         isOpened,
         max,
+        min,
         amount,
         isLoading,
         onChangeAmount,
@@ -73,6 +76,9 @@ export const ConvertBonusModal = memo(
             [COLORS]
         )
 
+        // Минимум из панели: меньше перевести нельзя (сервер тоже откажет).
+        const isEnough = min === null || amount >= min
+
         const handleHalf = useCallback(
             () => onChangeAmount(Math.floor(max / 2)),
             [max, onChangeAmount]
@@ -110,6 +116,17 @@ export const ConvertBonusModal = memo(
                     >
                         Доступно {divideNumber(max)} B · 1 B = 1 ₽
                     </Typography>
+                    {min !== null && (
+                        <Typography
+                            type="body125"
+                            color={isEnough ? 'secondary' : 'error'}
+                            textAlign="center"
+                        >
+                            {isEnough
+                                ? `Минимум ${divideNumber(min)} B за перевод`
+                                : `Перевести можно от ${divideNumber(min)} B`}
+                        </Typography>
+                    )}
 
                     <AmountField
                         value={amount}
@@ -139,7 +156,7 @@ export const ConvertBonusModal = memo(
                             title={`Перевести ${divideNumber(amount)} ₽`}
                             onPress={onConfirm}
                             loading={isLoading}
-                            disabled={amount <= 0}
+                            disabled={amount <= 0 || !isEnough}
                             size="lg"
                         />
                         <PillButton

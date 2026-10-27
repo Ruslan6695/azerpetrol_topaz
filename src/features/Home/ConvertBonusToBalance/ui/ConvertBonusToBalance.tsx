@@ -1,6 +1,6 @@
 import { memo, useCallback, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { SIZES, ThemeStore, UserStore, useSendFetch } from '../../../../shared'
+import { AppStore, SIZES, ThemeStore, UserStore, useSendFetch } from '../../../../shared'
 import { Icon } from '../../../../shared/Icons'
 import { PressableScale } from '../../../../shared/PressableScale'
 import { showToast } from '../../../../shared/ToastComponent'
@@ -16,6 +16,7 @@ export const ConvertBonusToBalance = memo((props: Props) => {
     const COLORS = ThemeStore.useCOLORS()
     const bonusBalance = UserStore.useBonus_balance()
     const setBalance = UserStore.useSetBalance()
+    const bonusConvertMin = AppStore.useBonusConvertMin()
 
     const [isOpened, setIsOpened] = useState(false)
     const [amount, setAmount] = useState(0)
@@ -81,6 +82,7 @@ export const ConvertBonusToBalance = memo((props: Props) => {
             <ConvertBonusModal
                 isOpened={isOpened}
                 max={bonusBalance}
+                min={bonusConvertMin}
                 amount={amount}
                 isLoading={isSendFetchLoading}
                 onChangeAmount={setAmount}

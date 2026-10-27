@@ -14,4 +14,7 @@ export interface IHomeMainwidgetData {
         next_name: string | null
         next_threshold: number | null
     } | null
+    // Минимум бонусов для перевода в рубли (панель → «Лимиты денег»);
+    // null/нет — без минимума. Старый сервер поля не шлёт.
+    bonus_convert_min?: number | null
 }
