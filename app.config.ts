@@ -7,7 +7,7 @@ const config: ExpoConfig = {
     // Видимое имя приложения на iOS задано ниже через CFBundleDisplayName.
     name: 'testTopaz',
     slug: 'azerpetrol',
-    version: '1.3.5',
+    version: '1.4.0',
     scheme: 'azerpetrol',
     orientation: 'portrait',
     icon: './assets/icon.png',
@@ -48,7 +48,7 @@ const config: ExpoConfig = {
             backgroundColor: '#FFFFFF',
         },
 
-        versionCode: 25,
+        versionCode: 26,
         package: 'com.vek21.azerpetrol',
     },
     web: {
